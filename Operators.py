@@ -15,7 +15,10 @@ class Operator:
             cast_array_into_complex = np.vectorize(complex)
             input_array = cast_array_into_complex(x)
             self.matrix = input_array
-    pass
+            
+    # Returns the dimensionality of the Hilbert space where the Operator acts
+    def dimension(self):
+        return self.matrix.shape[0]
 
 # Objects of the class Density_Matrix are special Operator objects characterised by the following properties:
 # i) Hermitianity;
