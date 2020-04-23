@@ -20,6 +20,12 @@ class Operator:
     def dimension(self):
         return self.matrix.shape[0]
 
+    # The definition of + and - operators is self-explanatory
+    def __add__(self, addend):
+        return Operator(self.matrix+addend.matrix)
+    def __sub__(self, subtrahend):
+        return Operator(self.matrix-subtrahend.matrix)
+
 # Objects of the class Density_Matrix are special Operator objects characterised by the following properties:
 # i) Hermitianity;
 # ii) Unit trace;
