@@ -47,7 +47,12 @@ class Operator:
     # The definition of the ** operator is self-explanatory
     def __pow__(self, exponent:int):
         return Operator(np.linalg.matrix_power(self.matrix, exponent))
-            
+    
+    # Returns the exponential of the Operator
+    def exp(self):
+        exp_matrix = linalg.expm(self.matrix)
+        return Operator(exp_matrix)
+
 
 # Objects of the class Density_Matrix are special Operator objects characterised by the following properties:
 # i) Hermitianity;
