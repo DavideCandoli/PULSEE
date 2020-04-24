@@ -1,4 +1,4 @@
-# NQR/NMR Simulation Software
+# NQR-NMR Simulation Software
 
 ## Author: Davide Candoli
 

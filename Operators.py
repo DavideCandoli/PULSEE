@@ -25,6 +25,25 @@ class Operator:
         return Operator(self.matrix+addend.matrix)
     def __sub__(self, subtrahend):
         return Operator(self.matrix-subtrahend.matrix)
+    
+    # The * operator is set up to handle both the product between Operator objects and the
+    # multiplication by a scalar
+    def __mul__(self, factor):
+        if isinstance(factor, Operator):
+            return Operator(self.matrix@factor.matrix)
+        else:
+            try:
+                factor = complex(factor)
+                return Operator(self.matrix*factor)
+            except ValueError:
+                print("Invalid type for the right operand of *: the allowed ones are instances of the class Operator or numbers")
+    def __rmul__(self, factor):
+        try:
+            factor = complex(factor)
+            return Operator(factor*self.matrix)
+        except ValueError:
+            print("Invalid type for the right operand of *: the allowed ones are instances of the class Operator or numbers")
+            
 
 # Objects of the class Density_Matrix are special Operator objects characterised by the following properties:
 # i) Hermitianity;
@@ -37,3 +56,11 @@ class Density_Matrix(Operator):
 # system.
 class Observable(Operator):
     pass
+
+# Generates a random Operator whose elements are complex numbers with real and imaginary parts in the range [-128., 128.)
+def Random_Operator(d):
+    round_elements = np.vectorize(round)
+    real_part = round_elements(256*(np.random.random_sample(size=(d, d))-1/2), 2)
+    imaginary_part = 1j*round_elements(256*(np.random.random_sample(size=(d, d))-1/2), 2)
+    random_array = real_part + imaginary_part
+    return Operator(random_array)
