@@ -43,6 +43,10 @@ class Operator:
             return Operator(factor*self.matrix)
         except ValueError:
             print("Invalid type for the right operand of *: the allowed ones are instances of the class Operator or numbers")
+    
+    # The definition of the ** operator is self-explanatory
+    def __pow__(self, exponent:int):
+        return Operator(np.linalg.matrix_power(self.matrix, exponent))
             
 
 # Objects of the class Density_Matrix are special Operator objects characterised by the following properties:
