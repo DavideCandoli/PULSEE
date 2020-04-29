@@ -1,6 +1,9 @@
 import numpy as np
 from scipy import linalg
 
+class DimensionsError(Exception):
+    pass
+
 # Objects of the class Operator represent linear applications which act on the vectors of a Hilbert space
 class Operator:
     
@@ -8,15 +11,26 @@ class Operator:
     # 1) when an integer x is passed, the constructor generates an identity operator of dimensions x;
     # 2) when a square array is passed, this is assigned directly the 'matrix' attribute
     def __init__(self, x):
-        if isinstance(x, int):
-            # Matrix representation of the operator (in the desired basis)
-            self.matrix = np.identity(x, dtype=complex)
-        else:
-            assert x.shape[0] == x.shape[1], "An Operator object should be initialised with a square array"
+        try:
+            if x.shape[0] != x.shape[1]:   # If x doesn't have the method shape, AttributeError is raised
+                raise IndexError   # If x is not a square array, IndexError is raised
             cast_array_into_complex = np.vectorize(complex)
-            input_array = cast_array_into_complex(x)
+            input_array = cast_array_into_complex(x)   # If x is an array of values which cannot be cast into complex, ValueError is raised
             self.matrix = input_array
-            
+        except IndexError:
+            raise IndexError("An Operator object should be initialised with a 2D square array")
+        except ValueError:
+            raise ValueError("There are some elements in the array which cannot be interpreted as complex numbers")
+        except AttributeError:
+            try:
+                d = int(x)
+                # Matrix representation of the operator (in the desired basis)
+                self.matrix = np.identity(d, dtype=complex)
+            except ValueError:
+                raise ValueError("The value of the scalar argument cannot be interpreted as an integer")
+            except TypeError:
+                raise TypeError("The type of the argument is not valid. An Operator must be initialised either with an integer number or an array.")
+
     # Returns the dimensionality of the Hilbert space where the Operator acts
     def dimension(self):
         return self.matrix.shape[0]

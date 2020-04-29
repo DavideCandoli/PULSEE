@@ -9,23 +9,46 @@ def test_Operator_Initialisation_with_Wrong_Dimensions():
     wrong_input = np.ones((1, 2))
     try:
         o = Operator(wrong_input)
-        raise Exception("No AssertionError caused by the initialisation with a non-square array")
-    except AssertionError:
+        raise AssertionError
+    except IndexError:
         pass
-    except Exception as noerror:
-        assert 1==0, print(noerror)
+    except AssertionError:
+        raise AssertionError("No AssertionError caused by the initialisation with a non-square array")
         
 # Checks that the constructor of the class Operator raises error when it receives an input array whose elements cannot be cast into complex
-def test_Operator_Initialisation_with_Wrong_Values():
+def test_Operator_Initialisation_with_Wrong_Matrix_Elements():
     wrong_input = np.array([['a', 'b'], ['c', 'd']])
     try:
         o = Operator(wrong_input)
-        raise Exception("No ValueError caused by the initialisation through an array with wrong values")
+        raise AssertionError
     except ValueError:
         pass
-    except Exception as noerror:
-        assert 1==0, print(noerror)
+    except AssertionError:
+        raise AssertionError("No ValueError caused by the initialisation through an array with wrong values")
+        
+# Checks that the constructor of the class Operator raises error when it receives an input scalar whose value cannot be interpreted as an integer
+def test_Operator_Initialisation_with_Wrong_Scalar_Value():
+    wrong_input = 'a'
+    try:
+        o = Operator(wrong_input)
+        raise AssertionError
+    except ValueError:
+        pass
+    except AssertionError:
+        raise AssertionError("No ValueError caused by the initialisation with a string")
 
+# Checks that the constructor of the class Operator raises error when it receives an argument of invalid type (e.g. a list)
+def test_Operator_Initialisation_with_Wrong_Argument_Type():
+    wrong_input = [1, 'a', "goodbye"]
+    try:
+        o = Operator(wrong_input)
+        raise AssertionError
+    except TypeError:
+        pass
+    except AssertionError:
+        raise AssertionError("No ValueError caused by the initialisation with a list")
+       
+        
 # Checks that the difference between identical operators returns a null square array
 @given(d = st.integers(min_value=1, max_value=16))
 def Opposite_Operator(d):
@@ -87,7 +110,7 @@ def test_Reciprocal_Operator(d):
     note("o_r = %r" % (o_r.matrix))
     assert np.all(np.isclose((o*o_r).matrix, np.identity(d), rtol=1e-10))
     
-# Checks the fact that the eigenvalues of the exponential of an operator o are the exponentials of
+# Checks the fact that the eigenvalues of the exponential of an Operator o are the exponentials of
 # o's eigenvalues
 @given(d = st.integers(min_value=1, max_value=8))
 def test_Exponential_Operator_Eigenvalues(d):
@@ -101,7 +124,7 @@ def test_Exponential_Operator_Eigenvalues(d):
     note("exp(o) = %r" % (o.exp().matrix))
     note("Exponential of the eigenvalues of o = %r" % (sorted_exp_o_e))
     note("Eigenvalues of exp(o) = %r" % (sorted_exp_e))
-    assert np.all(np.isclose(sorted_exp_o_e, sorted_exp_e, rtol=1e-10))
+    assert np.all(np.isclose(sorted_exp_o_e, sorted_exp_e, rtol=1e-10)) # <--- Not always verified!?!
     
     
     
