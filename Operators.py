@@ -1,4 +1,5 @@
 import numpy as np
+from scipy import linalg
 
 # Objects of the class Operator represent linear applications which act on the vectors of a Hilbert space
 class Operator:
@@ -66,10 +67,14 @@ class Density_Matrix(Operator):
 class Observable(Operator):
     pass
 
-# Generates a random Operator whose elements are complex numbers with real and imaginary parts in the range [-128., 128.)
+# Generates a random Operator whose elements are complex numbers with real and imaginary parts in the range [-10., 10.)
 def Random_Operator(d):
     round_elements = np.vectorize(round)
-    real_part = round_elements(256*(np.random.random_sample(size=(d, d))-1/2), 2)
-    imaginary_part = 1j*round_elements(256*(np.random.random_sample(size=(d, d))-1/2), 2)
+    real_part = round_elements(20*(np.random.random_sample(size=(d, d))-1/2), 2)
+    imaginary_part = 1j*round_elements(20*(np.random.random_sample(size=(d, d))-1/2), 2)
     random_array = real_part + imaginary_part
     return Operator(random_array)
+
+# Computes the commutator of two Operator objects
+def Commutator(A, B):
+    return A*B - B*A
