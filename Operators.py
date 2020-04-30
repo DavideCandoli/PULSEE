@@ -83,6 +83,13 @@ class Operator:
         except LinAlgError as e:
             if "Singular matrix" in e.args[0]:
                 raise LinAlgError("The matrix for the change of basis must be invertible")
+      
+    # Computes the trace of the Operator
+    def trace(self):
+        trace = 0
+        for i in range(self.dimension()):
+            trace = trace + self.matrix[i][i]
+        return trace
 
 
 # Objects of the class Density_Matrix are special Operator objects characterised by the following properties:
