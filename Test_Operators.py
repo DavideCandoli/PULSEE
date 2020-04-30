@@ -1,4 +1,5 @@
 from Operators import Operator, Density_Matrix, Observable, Random_Operator, Commutator
+import math
 import numpy as np
 from scipy import linalg
 import hypothesis.strategies as st
@@ -140,7 +141,24 @@ def test_Diagonalising_Change_Of_Basis(d):
     note("Eigenvalues of o = %r" % (o_e))
     assert np.all(np.isclose(o_sim, o_diag, rtol=1e-10))
 
-
+@given(d = st.integers(min_value=1, max_value=16))
+def test_Trace_Invariance_under_Similarity(d):
+    o = Random_Operator(d)
+    singularity = True
+    while(singularity):
+        p = Random_Operator(d)
+        try:
+            o_sim = o.sim_trans(p)
+            singularity = False
+        except LinAlgError:
+            pass
+    diff = np.absolute(o.trace()-o_sim.trace())
+    note("o = %r" % (o.matrix))
+    note("p^{-1}op = %r" % (o_sim.matrix))
+    note("Trace of o = %r" % (o.trace()))
+    note("Trace of p^{-1}op = %r" % (o_sim.trace()))
+    note("diff = %r" % (diff))
+    assert diff < 1e-10
 
 
 
