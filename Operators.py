@@ -1,4 +1,5 @@
 import numpy as np
+from numpy.linalg import LinAlgError
 from scipy import linalg
 
 class DimensionsError(Exception):
@@ -12,10 +13,10 @@ class Operator:
     # 2) when a square array is passed, this is assigned directly the 'matrix' attribute
     def __init__(self, x):
         try:
-            if x.shape[0] != x.shape[1]:   # If x doesn't have the method shape, AttributeError is raised
-                raise IndexError   # If x is not a square array, IndexError is raised
+            if x.shape[0] != x.shape[1]:  # If x doesn't have the method shape, AttributeError is raised
+                raise IndexError  # If x is not a square array, IndexError is raised
             cast_array_into_complex = np.vectorize(complex)
-            input_array = cast_array_into_complex(x)   # If x is an array of values which cannot be cast into complex, ValueError is raised
+            input_array = cast_array_into_complex(x)  # If x is an array of values which cannot be cast into complex, ValueError is raised
             self.matrix = input_array
         except IndexError:
             raise IndexError("An Operator object should be initialised with a 2D square array")
@@ -67,6 +68,20 @@ class Operator:
     def exp(self):
         exp_matrix = linalg.expm(self.matrix)
         return Operator(exp_matrix)
+    
+    # Performs a similarity transformation P^(-1)*M*P on the Operator M according to the given Operator
+    # P for the change of basis
+    def sim_trans(self, change_of_basis_operator):
+        try:
+            if not isinstance(change_of_basis_operator, Operator):
+                raise TypeError
+            new_basis_operator = (change_of_basis_operator**(-1))*self*change_of_basis_operator
+            return Operator(new_basis_operator.matrix)
+        except TypeError:
+            raise TypeError("Invalid type for the matrix of the change of basis: it should be an Operator object")
+        except LinAlgError as e:
+            if "Singular matrix" in e.args[0]:
+                raise LinAlgError("The matrix for the change of basis must be invertible")
 
 
 # Objects of the class Density_Matrix are special Operator objects characterised by the following properties:

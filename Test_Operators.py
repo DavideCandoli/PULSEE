@@ -115,7 +115,6 @@ def test_Reciprocal_Operator(d):
 @given(d = st.integers(min_value=1, max_value=8))
 def test_Exponential_Operator_Eigenvalues(d):
     o = Random_Operator(d)
-    #Operator(np.array([[1, 2, 3, 4, 5], [1, 2, 3, 4, 5], [1, 2, 3, 4, 5+2j], [1, 2, 3, 4, 5+2j], [1, 2, 3, 4, 5+2j]]))    #When using Random_Operator, the test fails, probably due to the inaccuracy of the linalg functions when the dimensionality of the space increases. This is a problem!
     o_e, o_v = linalg.eig(o.matrix)
     exp_e, exp_v = linalg.eig(o.exp().matrix)
     sorted_exp_o_e = np.sort(np.exp(o_e))
@@ -125,8 +124,23 @@ def test_Exponential_Operator_Eigenvalues(d):
     note("Exponential of the eigenvalues of o = %r" % (sorted_exp_o_e))
     note("Eigenvalues of exp(o) = %r" % (sorted_exp_e))
     assert np.all(np.isclose(sorted_exp_o_e, sorted_exp_e, rtol=1e-10)) # <--- Not always verified!?!
-    
-    
-    
-    
+
+# Checks that the similarity transformation is equivalent to diagonalising an Operator o when the chosen change of basis operator has the eigenvectors of o as columns
+@given(d = st.integers(min_value=1, max_value=8))
+def test_Diagonalising_Change_Of_Basis(d):
+    o = Random_Operator(d)
+    o_e, o_v = linalg.eig(o.matrix)
+    p = Operator(o_v)
+    o_sim = o.sim_trans(p).matrix
+    o_diag = np.diag(o_e)
+    note("o = %r" % (o.matrix))
+    note("o (diagonalised through the sim_trans method) = %r" % (o_sim))
+    note("o (expressed in diagonal form through direct computation of the eigenvalues) = %r"
+         % (o_diag))
+    note("Eigenvalues of o = %r" % (o_e))
+    assert np.all(np.isclose(o_sim, o_diag, rtol=1e-10))
+
+
+
+
 
