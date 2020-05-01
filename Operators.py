@@ -1,6 +1,6 @@
 import numpy as np
 from numpy.linalg import LinAlgError
-from scipy import linalg
+from scipy.linalg import expm, eig
 
 class DimensionsError(Exception):
     pass
@@ -60,16 +60,23 @@ class Operator:
             return Operator(factor*self.matrix)
         except:
             raise ValueError("Invalid type for the right operand of *: the allowed ones are instances of the class Operator or numbers")
-    
+
     # The definition of the ** operator is self-explanatory
     def __pow__(self, exponent:int):
         return Operator(np.linalg.matrix_power(self.matrix, exponent))
     
     # Returns the exponential of the Operator
     def exp(self):
-        exp_matrix = linalg.expm(self.matrix)
+        exp_matrix = expm(self.matrix)
         return Operator(exp_matrix)
     
+    # Returns the exponential of the Operator
+    def exp2(self):
+        e, v = eig(self.matrix)
+        diag_exp = Operator(np.diag(np.exp(e)))
+        exp_operator = diag_exp.sim_trans(Operator(v**(-1)))
+        return exp_operator
+
     # Performs a similarity transformation P^(-1)*M*P on the Operator M according to the given Operator
     # P for the change of basis
     def sim_trans(self, change_of_basis_operator):
@@ -83,13 +90,18 @@ class Operator:
         except LinAlgError as e:
             if "Singular matrix" in e.args[0]:
                 raise LinAlgError("The matrix for the change of basis must be invertible")
-      
+
     # Computes the trace of the Operator
     def trace(self):
         trace = 0
         for i in range(self.dimension()):
             trace = trace + self.matrix[i][i]
         return trace
+    
+    # Returns the adjoint of the Operator
+    def dagger(self):
+        adjoint_matrix = (np.conj(self.matrix)).T
+        return Operator(adjoint_matrix)
 
 
 # Objects of the class Density_Matrix are special Operator objects characterised by the following properties:

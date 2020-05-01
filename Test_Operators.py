@@ -122,6 +122,7 @@ def test_Exponential_Operator_Eigenvalues(d):
     sorted_exp_e = np.sort(exp_e)
     note("o = %r" % (o.matrix))
     note("exp(o) = %r" % (o.exp().matrix))
+    note("Eigenvalues of o = %r" % (np.sort(o_e)))
     note("Exponential of the eigenvalues of o = %r" % (sorted_exp_o_e))
     note("Eigenvalues of exp(o) = %r" % (sorted_exp_e))
     assert np.all(np.isclose(sorted_exp_o_e, sorted_exp_e, rtol=1e-10)) # <--- Not always verified!?!
@@ -142,7 +143,7 @@ def test_Diagonalising_Change_Of_Basis(d):
     assert np.all(np.isclose(o_sim, o_diag, rtol=1e-10))
 
 @given(d = st.integers(min_value=1, max_value=16))
-def test_Trace_Invariance_under_Similarity(d):
+def test_Trace_Invariance_Under_Similarity(d):
     o = Random_Operator(d)
     singularity = True
     while(singularity):
@@ -160,5 +161,16 @@ def test_Trace_Invariance_under_Similarity(d):
     note("diff = %r" % (diff))
     assert diff < 1e-10
 
+# Checks that the adjoint of an Operator o's exponential is the exponential of the adjoint of o
+@given(d = st.integers(min_value=1, max_value=16))
+def test_Adjoint_Exponential(d):
+    o = Random_Operator(d)
+    o_exp = o.exp()
+    left_hand_side = (o_exp.dagger()).matrix
+    right_hand_side = ((o.dagger()).exp()).matrix
+    note("(exp(o))+ = %r" % (left_hand_side))
+    note("exp(o+) = %r" % (right_hand_side))    
+    assert np.all(np.isclose(left_hand_side, right_hand_side, rtol=1e-10))
 
 
+    
