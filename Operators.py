@@ -1,11 +1,9 @@
+import math
 import numpy as np
 from numpy.linalg import LinAlgError
 from scipy.linalg import expm, eig
 from scipy.constants import hbar
 import Pade_Exp
-
-class DimensionsError(Exception):
-    pass
 
 # Objects of the class Operator represent linear applications which act on the vectors of a Hilbert space
 class Operator:
@@ -101,7 +99,7 @@ class Operator:
             trace = trace + self.matrix[i][i]
         return trace
 
-    # Returns the adjoint of the Operator
+    # Returns the adjoint of the Operators
     def dagger(self):
         adjoint_matrix = (np.conj(self.matrix)).T
         return Operator(adjoint_matrix)
@@ -122,7 +120,7 @@ class Operator:
 
     # Checks if the Operator has unit trace
     def check_unit_trace(self):
-        return math.isclose(self.trace(), 1, rel_tol=1e-10)
+        return np.isclose(self.trace(), 1, rtol=1e-10)
 
     # Checks if the Operator is positive
     def check_positivity(self):
@@ -130,13 +128,42 @@ class Operator:
         return np.all(eigenvalues >= 0)
 
 
+class NotHermitianMatrix(Exception):
+    pass
+
+class NotUnitTraceMatrix(Exception):
+    pass
+
+class NotPositiveMatrix(Exception):
+    pass
+
 # Objects of the class Density_Matrix are special Operator objects characterised by the following properties:
 # i) Hermitianity;
 # ii) Unit trace;
 # iii) Positivity
 class Density_Matrix(Operator):
-    pass
 
+    # An instance may be initialised in two alternative ways:
+    # 1) when an integer x is passed, the constructor generates an identity operator of dimensions x;
+    # 2) when a square array is passed, this is assigned directly the 'matrix' attribute
+    def __init__(self, x):
+        d_m_operator = Operator(x)
+        if isinstance(x, np.ndarray):
+            error_message = "The input array lacks the following properties: \n"
+            em = error_message
+            if not d_m_operator.check_hermitianity():
+                em = em + "- hermitianity \n"
+            if not d_m_operator.check_unit_trace():
+                em = em + "- unit trace \n"                
+            if not d_m_operator.check_positivity():
+                em = em + "- positivity \n"
+            if em != error_message:
+                raise Exception(em)
+        else:
+            d = int(x)
+            d_m_operator = d_m_operator*(1/d)
+        self.matrix = d_m_operator.matrix
+        
 # Objects of the class Observable are hermitian operators representing the measurable properties of the
 # system.
 class Observable(Operator):
