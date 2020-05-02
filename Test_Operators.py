@@ -192,7 +192,6 @@ def test_Reversibility_Interaction_Picture(d):
     o_ip = o.interaction_picture(h, 1, invert=False)
     o1 = o_ip.interaction_picture(h, 1, invert=True)
     note("o = %r" % (o.matrix))
-    note("Eigenvalues of o = %r" % (eig(o.matrix))[0])
     note("o in the interaction picture = %r" % (o_ip.matrix))
     note("o brought back from the interaction picture = %r" % (o1.matrix))
     assert np.all(np.isclose(o.matrix, o1.matrix, rtol=1e-1))

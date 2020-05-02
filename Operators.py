@@ -112,7 +112,7 @@ class Operator:
     # Dirac picture to the traditional Schroedinger one
     def interaction_picture(self, unperturbed_hamiltonian, time, invert=False):
         T = unperturbed_hamiltonian*(-1j*float(time))
-        if invert: T = T*(-1)
+        if invert: T = (-1)*T
         exp_T = T.exp()
         return self.sim_trans(exp_T)
 
