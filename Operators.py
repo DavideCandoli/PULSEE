@@ -128,13 +128,7 @@ class Operator:
         return np.all(eigenvalues >= 0)
 
 
-class NotHermitianMatrix(Exception):
-    pass
-
-class NotUnitTraceMatrix(Exception):
-    pass
-
-class NotPositiveMatrix(Exception):
+class InvalidDensityMatrix(Exception):
     pass
 
 # Objects of the class Density_Matrix are special Operator objects characterised by the following properties:
@@ -158,7 +152,7 @@ class Density_Matrix(Operator):
             if not d_m_operator.check_positivity():
                 em = em + "- positivity \n"
             if em != error_message:
-                raise Exception(em)
+                raise InvalidDensityMatrix(em)
         else:
             d = int(x)
             d_m_operator = d_m_operator*(1/d)

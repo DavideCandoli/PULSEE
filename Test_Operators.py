@@ -1,4 +1,6 @@
-from Operators import Operator, Density_Matrix, Observable, Random_Operator, Commutator
+from Operators import Operator, Density_Matrix, \
+                      Observable, Random_Operator, \
+                      Commutator, InvalidDensityMatrix
 import math
 import numpy as np
 from scipy import linalg
@@ -196,9 +198,26 @@ def test_Reversibility_Interaction_Picture(d):
     note("o brought back from the interaction picture = %r" % (o1.matrix))
     assert np.all(np.isclose(o.matrix, o1.matrix, rtol=1e-1))
 
+# Checks that the constructor of the class Density_Matrix raises error when it is initialised with a non-hermitian square array
+def test_DMatrix_Initialisation_Non_Hermitian():
+    wrong_input = np.array([[1, 1], [0, 0]])
+    try:
+        dm = Density_Matrix(wrong_input)
+        raise AssertionError
+    except InvalidDensityMatrix:
+        pass
+    except AssertionError:
+        raise AssertionError("No InvalidDensityMatrix exception caused by the initialisation with a non-hermitian matrix")
 
 
 
 
 
-    
+
+
+
+
+
+
+
+
