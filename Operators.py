@@ -1,6 +1,8 @@
 import numpy as np
 from numpy.linalg import LinAlgError
 from scipy.linalg import expm, eig
+from scipy.constants import hbar
+import Pade_Exp
 
 class DimensionsError(Exception):
     pass
@@ -67,15 +69,8 @@ class Operator:
     
     # Returns the exponential of the Operator
     def exp(self):
-        exp_matrix = expm(self.matrix)
+        exp_matrix = Pade_Exp.expm(self.matrix, 45)
         return Operator(exp_matrix)
-    
-    # Returns the exponential of the Operator
-    def exp2(self):
-        e, v = eig(self.matrix)
-        diag_exp = Operator(np.diag(np.exp(e)))
-        exp_operator = diag_exp.sim_trans(Operator(v**(-1)))
-        return exp_operator
 
     # Performs a similarity transformation P^(-1)*M*P on the Operator M according to the given Operator
     # P for the change of basis
@@ -83,6 +78,7 @@ class Operator:
         try:
             if not isinstance(change_of_basis_operator, Operator):
                 raise TypeError
+            change_of_basis_operator = change_of_basis_operator.rescale()[0]
             new_basis_operator = (change_of_basis_operator**(-1))*self*change_of_basis_operator
             return Operator(new_basis_operator.matrix)
         except TypeError:
@@ -91,17 +87,34 @@ class Operator:
             if "Singular matrix" in e.args[0]:
                 raise LinAlgError("The matrix for the change of basis must be invertible")
 
+    # Returns an Operator whose matrix has been divided by the maximum value of the matrix of the
+    # owner object, and the maximum value itself
+    def rescale(self):
+        matrix_max = np.amax(np.abs(self.matrix))
+        rescaled_operator = Operator(self.matrix*(1/matrix_max))
+        return rescaled_operator, matrix_max
+
     # Computes the trace of the Operator
     def trace(self):
         trace = 0
         for i in range(self.dimension()):
             trace = trace + self.matrix[i][i]
         return trace
-    
+
     # Returns the adjoint of the Operator
     def dagger(self):
         adjoint_matrix = (np.conj(self.matrix)).T
         return Operator(adjoint_matrix)
+
+    # Returns the same Operator expressed in the interaction (or Dirac) picture induced by the
+    # (stationary) unperturbed_hamiltonian which is passed as an argument.
+    # Passing a parameter `invert=True` yields the opposite transformation, bringing an Operator in the
+    # Dirac picture to the traditional Schroedinger one
+    def interaction_picture(self, unperturbed_hamiltonian, time, invert=False):
+        T = unperturbed_hamiltonian*(-1j*float(time))
+        if invert: T = T*(-1)
+        exp_T = T.exp()
+        return self.sim_trans(exp_T)
 
 
 # Objects of the class Density_Matrix are special Operator objects characterised by the following properties:

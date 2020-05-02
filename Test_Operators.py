@@ -2,6 +2,7 @@ from Operators import Operator, Density_Matrix, Observable, Random_Operator, Com
 import math
 import numpy as np
 from scipy import linalg
+from scipy.linalg import eig
 import hypothesis.strategies as st
 from hypothesis import given, note, assume
 
@@ -171,6 +172,34 @@ def test_Adjoint_Exponential(d):
     note("(exp(o))+ = %r" % (left_hand_side))
     note("exp(o+) = %r" % (right_hand_side))    
     assert np.all(np.isclose(left_hand_side, right_hand_side, rtol=1e-10))
+    
+# Checks that the inverse of the exponential of an Operator o is the same as the exponential of an operator o changed by sign
+@given(d = st.integers(min_value=1, max_value=4))
+def test_Inverse_Exponential(d):
+    o = Random_Operator(d)
+    o_exp = o.exp()
+    left_hand_side = (o_exp**(-1)).matrix
+    right_hand_side = ((o*(-1)).exp()).matrix
+    note("(exp(o))^(-1) = %r" % (left_hand_side))
+    note("exp(-o) = %r" % (right_hand_side))    
+    assert np.all(np.isclose(left_hand_side, right_hand_side, rtol=1e-2))
+
+# Checks the reversibility of the method Operator.interaction_picture, i.e. that the double application of this method with toggled argument `invert` leaves the Operator invariant
+@given(d = st.integers(min_value=1, max_value=4))
+def test_Reversibility_Interaction_Picture(d):
+    o = Random_Operator(d)
+    h = Random_Operator(d)
+    o_ip = o.interaction_picture(h, 1, invert=False)
+    o1 = o_ip.interaction_picture(h, 1, invert=True)
+    note("o = %r" % (o.matrix))
+    note("Eigenvalues of o = %r" % (eig(o.matrix))[0])
+    note("o in the interaction picture = %r" % (o_ip.matrix))
+    note("o brought back from the interaction picture = %r" % (o1.matrix))
+    assert np.all(np.isclose(o.matrix, o1.matrix, rtol=1e-1))
+
+
+
+
 
 
     
