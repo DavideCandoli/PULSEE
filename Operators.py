@@ -122,12 +122,16 @@ class Operator:
 # ii) Unit trace;
 # iii) Positivity
 class Density_Matrix(Operator):
-    
+
     def check_hermitianity(self):
-    return np.all(np.isclose(self.matrix, self.dagger().matrix, rtol=1e-10))
+        return np.all(np.isclose(self.matrix, self.dagger().matrix, rtol=1e-10))
 
     def check_unit_trace(self):
         return math.isclose(self.trace(), 1, rel_tol=1e-10)
+    
+    def check_positivity(self):
+        eigenvalues = eig(self.matrix)[0]
+        return np.all(eigenvalues >= 0)
 
 
 # Objects of the class Observable are hermitian operators representing the measurable properties of the
