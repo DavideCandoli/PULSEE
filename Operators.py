@@ -157,7 +157,7 @@ class Density_Matrix(Operator):
     def free_evolution(self, stat_hamiltonian, time):
         U = (1j*stat_hamiltonian*float(time))
         evolved_dm = self.sim_trans(U, exp=True)
-        return evolved_dm
+        return Density_Matrix(evolved_dm.matrix)
         
 # Objects of the class Observable are hermitian operators representing the measurable properties of the
 # system.
@@ -177,6 +177,15 @@ def Random_Hermitian(d):
     o_random = Random_Operator(d)
     o_hermitian_random = (o_random + o_random.dagger())*(1/2)
     return o_hermitian_random
+
+# Generates a random Density_Matrix object
+def Random_Density_Matrix(d):
+    spectrum = np.random.random(d)
+    spectrum_norm = spectrum/(spectrum.sum())
+    dm_diag = Density_Matrix(np.diag(spectrum_norm))
+    cob = (1j*Random_Hermitian(d))  # The exponential of this matrix is a generic unitary transformation
+    dm = dm_diag.sim_trans(cob, exp=True)
+    return Density_Matrix(dm.matrix)
 
 # Computes the commutator of two Operator objects
 def Commutator(A, B):
