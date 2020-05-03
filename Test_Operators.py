@@ -231,8 +231,23 @@ def test_DMatrix_Initialisation_Not_Positive():
     except AssertionError:
         raise AssertionError("No ValueError raised by the initialisation of a Density_Matrix with a square array which is not positive")
 
-
-
+# Checks that the method Density_Matrix.free_evolution conserves the defining properties of the Density_Matrix, i.e. it returns a valid Density_Matrix object.
+@given(d = st.integers(min_value=1, max_value=4))
+def test_Free_Evolution_Returns_DM(d):
+    dm = Density_Matrix(np.array([[1, 0],[0, 0]]))
+    h = Operator(np.array([[1, 2+3j],[2-3j, 1]]))
+    evolved_dm = dm.free_evolution(h, 4)
+    try:
+        checked_dm = Density_Matrix(evolved_dm.matrix)
+    except ValueError as ve:
+        if "The input array lacks the following properties: \n" in ve.args[0]:
+            error_message = ve.args[0][49:]
+            error_message = "The evolved Density_Matrix lacks the following properties: \n" + error_message
+            note("Initial Density_Matrix = %r" % (dm.matrix))
+            note("Hamiltonian = %r" % (h.matrix))
+            note("Evolved Density_Matrix = %r" % (evolved_dm.matrix))
+            note("Evolved Density_Matrix eigenvalues = %r" % (eig(evolved_dm.matrix)[0]))
+            raise AssertionError(error_message)
 
 
 

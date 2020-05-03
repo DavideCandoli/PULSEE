@@ -108,8 +108,7 @@ class Operator:
     def interaction_picture(self, unperturbed_hamiltonian, time, invert=False):
         T = unperturbed_hamiltonian*(-1j*float(time))
         if invert: T = (-1)*T
-        exp_T = T.exp()
-        return self.sim_trans(exp_T)
+        return self.sim_trans(T, exp=True)
 
     # Checks if the Operator is hermitian
     def check_hermitianity(self):
@@ -122,7 +121,7 @@ class Operator:
     # Checks if the Operator is positive
     def check_positivity(self):
         eigenvalues = eig(self.matrix)[0]
-        return np.all(eigenvalues >= 0)
+        return np.all(np.real(eigenvalues) >= -1e-10)
 
 
 # Objects of the class Density_Matrix are special Operator objects characterised by the following properties:
@@ -153,6 +152,12 @@ class Density_Matrix(Operator):
             d = int(x)
             d_m_operator = d_m_operator*(1/d)
         self.matrix = d_m_operator.matrix
+    
+    # Makes the Density_Matrix evolve under the effect of a stationary Hamiltonian
+    def free_evolution(self, stat_hamiltonian, time):
+        U = (1j*stat_hamiltonian*float(time))
+        evolved_dm = self.sim_trans(U, exp=True)
+        return evolved_dm
         
 # Objects of the class Observable are hermitian operators representing the measurable properties of the
 # system.
