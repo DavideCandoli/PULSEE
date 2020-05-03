@@ -128,18 +128,17 @@ class Operator:
         return np.all(eigenvalues >= 0)
 
 
-class InvalidDensityMatrix(Exception):
-    pass
-
 # Objects of the class Density_Matrix are special Operator objects characterised by the following properties:
 # i) Hermitianity;
 # ii) Unit trace;
 # iii) Positivity
 class Density_Matrix(Operator):
 
-    # An instance may be initialised in two alternative ways:
-    # 1) when an integer x is passed, the constructor generates an identity operator of dimensions x;
-    # 2) when a square array is passed, this is assigned directly the 'matrix' attribute
+    # An instance of Density_Matrix is constructed in the same way as an Operator, with two differences:
+    # 1) When x is a square array, the constructor checks the validity of the defining properties of a
+    #    density matrix and raises error when any of them is not verified.
+    # 2) When x is an integer, the matrix attribute is initialised by default with a maximally entangled
+    #    density matrix, which means the identity matrix divided by its dimensions
     def __init__(self, x):
         d_m_operator = Operator(x)
         if isinstance(x, np.ndarray):
@@ -152,7 +151,7 @@ class Density_Matrix(Operator):
             if not d_m_operator.check_positivity():
                 em = em + "- positivity \n"
             if em != error_message:
-                raise InvalidDensityMatrix(em)
+                raise ValueError(em)
         else:
             d = int(x)
             d_m_operator = d_m_operator*(1/d)

@@ -1,6 +1,6 @@
 from Operators import Operator, Density_Matrix, \
                       Observable, Random_Operator, \
-                      Commutator, InvalidDensityMatrix
+                      Commutator
 import math
 import numpy as np
 from scipy import linalg
@@ -17,8 +17,8 @@ def test_Operator_Initialisation_with_Wrong_Dimensions():
     except IndexError:
         pass
     except AssertionError:
-        raise AssertionError("No AssertionError caused by the initialisation with a non-square array")
-        
+        raise AssertionError("No IndexError caused by the initialisation with a non-square array")
+
 # Checks that the constructor of the class Operator raises error when it receives an input array whose elements cannot be cast into complex
 def test_Operator_Initialisation_with_Wrong_Matrix_Elements():
     wrong_input = np.array([['a', 'b'], ['c', 'd']])
@@ -50,12 +50,12 @@ def test_Operator_Initialisation_with_Wrong_Argument_Type():
     except TypeError:
         pass
     except AssertionError:
-        raise AssertionError("No ValueError caused by the initialisation with a list")
+        raise AssertionError("No TypeError caused by the initialisation with a list")
        
         
 # Checks that the difference between identical operators returns a null square array
 @given(d = st.integers(min_value=1, max_value=16))
-def Opposite_Operator(d):
+def test_Opposite_Operator(d):
     o = Random_Operator(d)
     note("o = %r" % (o.matrix))
     assert np.all(np.isclose((o-o).matrix, np.zeros((d,d)), rtol=1e-10))
@@ -204,14 +204,32 @@ def test_DMatrix_Initialisation_Non_Hermitian():
     try:
         dm = Density_Matrix(wrong_input)
         raise AssertionError
-    except InvalidDensityMatrix:
+    except ValueError:
         pass
     except AssertionError:
-        raise AssertionError("No InvalidDensityMatrix exception caused by the initialisation with a non-hermitian matrix")
+        raise AssertionError("No ValueError raised by the initialisation of a Density_Matrix with a non-hermitian square array")
 
+# Checks that the constructor of the class Density_Matrix raises error when it is initialised with a square array with trace different from 1
+def test_DMatrix_Initialisation_Non_Unit_Trace():
+    wrong_input = np.array([[1, 0], [0, 1]])
+    try:
+        dm = Density_Matrix(wrong_input)
+        raise AssertionError
+    except ValueError:
+        pass
+    except AssertionError:
+        raise AssertionError("No ValueError raised by the initialisation of a Density_Matrix with a square array with trace different from 1")
 
-
-
+# Checks that the constructor of the class Density_Matrix raises error when it is initialised with a square array which is not positive
+def test_DMatrix_Initialisation_Not_Positive():
+    wrong_input = np.array([[2, 0], [0, -1]])
+    try:
+        dm = Density_Matrix(wrong_input)
+        raise AssertionError
+    except ValueError:
+        pass
+    except AssertionError:
+        raise AssertionError("No ValueError raised by the initialisation of a Density_Matrix with a square array which is not positive")
 
 
 
