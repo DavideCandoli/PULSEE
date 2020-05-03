@@ -72,25 +72,22 @@ class Operator:
 
     # Performs a similarity transformation P^(-1)*M*P on the Operator M according to the given Operator
     # P for the change of basis
-    def sim_trans(self, change_of_basis_operator):
+    def sim_trans(self, change_of_basis_operator, exp=False):
         try:
             if not isinstance(change_of_basis_operator, Operator):
                 raise TypeError
-            change_of_basis_operator = change_of_basis_operator.rescale()[0]
-            new_basis_operator = (change_of_basis_operator**(-1))*self*change_of_basis_operator
+            if exp==True:
+                left_exp = (change_of_basis_operator*(-1)).exp()
+                right_exp = change_of_basis_operator.exp()
+                new_basis_operator = left_exp*self*right_exp
+            else:
+                new_basis_operator = (change_of_basis_operator**(-1))*self*change_of_basis_operator
             return Operator(new_basis_operator.matrix)
         except TypeError:
             raise TypeError("Invalid type for the matrix of the change of basis: it should be an Operator object")
         except LinAlgError as e:
             if "Singular matrix" in e.args[0]:
                 raise LinAlgError("The matrix for the change of basis must be invertible")
-
-    # Returns an Operator whose matrix has been divided by the maximum value of the matrix of the
-    # owner object, and the maximum value itself
-    def rescale(self):
-        matrix_max = np.amax(np.abs(self.matrix))
-        rescaled_operator = Operator(self.matrix*(1/matrix_max))
-        return rescaled_operator, matrix_max
 
     # Computes the trace of the Operator
     def trace(self):
