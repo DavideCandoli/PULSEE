@@ -153,7 +153,7 @@ class Density_Matrix(Operator):
             d_m_operator = d_m_operator*(1/d)
         self.matrix = d_m_operator.matrix
     
-    # Makes the Density_Matrix evolve under the effect of a stationary Hamiltonian
+    # Makes the Density_Matrix evolve under the effect of a stationary Hamiltonian throughout a time interval 'time'
     def free_evolution(self, stat_hamiltonian, time):
         U = (1j*stat_hamiltonian*float(time))
         evolved_dm = self.sim_trans(U, exp=True)
@@ -171,6 +171,12 @@ def Random_Operator(d):
     imaginary_part = 1j*round_elements(20*(np.random.random_sample(size=(d, d))-1/2), 2)
     random_array = real_part + imaginary_part
     return Operator(random_array)
+
+# Generates a random Operator equal to its adjoint
+def Random_Hermitian(d):
+    o_random = Random_Operator(d)
+    o_hermitian_random = (o_random + o_random.dagger())*(1/2)
+    return o_hermitian_random
 
 # Computes the commutator of two Operator objects
 def Commutator(A, B):

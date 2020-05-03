@@ -1,6 +1,6 @@
 from Operators import Operator, Density_Matrix, \
                       Observable, Random_Operator, \
-                      Commutator
+                      Random_Hermitian, Commutator
 import math
 import numpy as np
 from scipy import linalg
@@ -249,8 +249,17 @@ def test_Free_Evolution_Returns_DM(d):
             note("Evolved Density_Matrix eigenvalues = %r" % (eig(evolved_dm.matrix)[0]))
             raise AssertionError(error_message)
 
+# Checks that the Operator returned by the function Random_Hermitian is actually hermitian
+@given(d = st.integers(min_value=1, max_value=16))
+def test_Random_Hermitian(d):
+    rh = Random_Hermitian(d)
+    note("Operator returned by Random_Hermitian = %r" % (rh.matrix))
+    assert rh.check_hermitianity()
 
 
 
 
-
+    
+    
+    
+    
