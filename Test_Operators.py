@@ -333,6 +333,22 @@ def test_Real_Expectation_Values(d):
     exp_val = ob.expectation_value(dm)
     assert np.imag(exp_val) == 0
     
+# Checks the well-known relation
+# <(O-<O>)^2> = <O^2> - <O>^2
+# where O is an observable, and the angular brackets indicate the expectation value over some state
+@given(d = st.integers(min_value=1, max_value=16))
+def test_Variance_Formula(d):
+    ob = Random_Observable(d)
+    i = Observable(d)
+    dm = Random_Density_Matrix(d)
+    ob_ev = ob.expectation_value(dm)
+    sq_dev = (ob - ob_ev*i)**2
+    left_hand_side = sq_dev.expectation_value(dm)
+    right_hand_side = (ob**2).expectation_value(dm)-ob_ev**2
+    assert np.all(np.isclose(left_hand_side, right_hand_side, 1e-10))
+    
+    
+    
     
     
     

@@ -128,11 +128,21 @@ class Operator:
     def cast_to_Density_Matrix(self):
         return Density_Matrix(self.matrix)
     
-    # Tries to interpret the Operator as a Density_Matrix object, and if this step succeeds performs the
+    # Casts the Operator into the type of the subclass Observable (if it is hermitian)
+    def cast_to_Observable(self):
+        return Observable(self.matrix)
+
+    # Tries to cast the Operator into a Density_Matrix object, and if this step succeeds it performs the
     # evolution under the effect of a stationary Hamiltonian throughout a time interval 'time'
     def free_evolution(self, stat_hamiltonian, time):
         dm = self.cast_to_Density_Matrix()
         return dm.free_evolution(stat_hamiltonian, time)
+    
+    # Tries to cast the Operator into an Observable object, and if this step succeeds it computes the
+    # expectation value of this Observable in the state represented by the given density matrix
+    def expectation_value(self, density_matrix):
+        ob = self.cast_to_Observable()
+        return ob.expectation_value(density_matrix)
 
 
 # Objects of the class Density_Matrix are special Operator objects characterised by the following properties:
