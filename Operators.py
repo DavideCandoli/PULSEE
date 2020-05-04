@@ -40,6 +40,7 @@ class Operator:
     # The definition of + and - operators is self-explanatory
     def __add__(self, addend):
         return Operator(self.matrix+addend.matrix)
+
     def __sub__(self, subtrahend):
         return Operator(self.matrix-subtrahend.matrix)
     
@@ -122,6 +123,10 @@ class Operator:
     def check_positivity(self):
         eigenvalues = eig(self.matrix)[0]
         return np.all(np.real(eigenvalues) >= -1e-10)
+    
+    # Casts the Operator into the type of the subclass Density_Matrix (if all requirements are met)
+    def cast_to_Density_Matrix(self):
+        return Density_Matrix(self.matrix)
 
 
 # Objects of the class Density_Matrix are special Operator objects characterised by the following properties:
@@ -152,17 +157,19 @@ class Density_Matrix(Operator):
             d = int(x)
             d_m_operator = d_m_operator*(1/d)
         self.matrix = d_m_operator.matrix
-    
+        
     # Makes the Density_Matrix evolve under the effect of a stationary Hamiltonian throughout a time interval 'time'
     def free_evolution(self, stat_hamiltonian, time):
-        U = (1j*stat_hamiltonian*float(time))
-        evolved_dm = self.sim_trans(U, exp=True)
+        iHt = (1j*stat_hamiltonian*float(time))
+        evolved_dm = self.sim_trans(iHt, exp=True)
         return Density_Matrix(evolved_dm.matrix)
-        
+
+
 # Objects of the class Observable are hermitian operators representing the measurable properties of the
 # system.
 class Observable(Operator):
     pass
+
 
 # Generates a random Operator whose elements are complex numbers with real and imaginary parts in the range [-10., 10.)
 def Random_Operator(d):
@@ -172,20 +179,23 @@ def Random_Operator(d):
     random_array = real_part + imaginary_part
     return Operator(random_array)
 
-# Generates a random Operator equal to its adjoint
+
+# Generates a random Operator equal to its adjoint, whose elements are complex numbers with both real and imaginary parts in the range [-10., 10.)
 def Random_Hermitian(d):
     o_random = Random_Operator(d)
     o_hermitian_random = (o_random + o_random.dagger())*(1/2)
     return o_hermitian_random
 
-# Generates a random Density_Matrix object
+
+# Generates a random Density_Matrix object, whose eigenvalues belong to the interval [0, 10.)
 def Random_Density_Matrix(d):
-    spectrum = np.random.random(d)
+    spectrum = 10*np.random.random(d)
     spectrum_norm = spectrum/(spectrum.sum())
     dm_diag = Density_Matrix(np.diag(spectrum_norm))
     cob = (1j*Random_Hermitian(d))  # The exponential of this matrix is a generic unitary transformation
     dm = dm_diag.sim_trans(cob, exp=True)
     return Density_Matrix(dm.matrix)
+
 
 # Computes the commutator of two Operator objects
 def Commutator(A, B):
