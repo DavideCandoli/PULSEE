@@ -1,6 +1,6 @@
 from Operators import Operator, Density_Matrix, \
                       Observable, Random_Operator, \
-                      Random_Hermitian, Random_Density_Matrix, \
+                      Random_Observable, Random_Density_Matrix, \
                       Commutator
 import math
 import numpy as np
@@ -236,7 +236,7 @@ def test_DMatrix_Initialisation_Not_Positive():
 @given(d = st.integers(min_value=1, max_value=8))
 def test_Free_Evolution_Returns_DM(d):
     dm = Random_Density_Matrix(d)
-    h = Random_Hermitian(d)
+    h = Random_Observable(d)
     try:
         evolved_dm = dm.free_evolution(h, 4)
     except ValueError as ve:
@@ -247,12 +247,16 @@ def test_Free_Evolution_Returns_DM(d):
             note("Hamiltonian = %r" % (h.matrix))
             raise AssertionError(error_message)
 
-# Checks that the Operator returned by the function Random_Hermitian is actually Hermitian
+# Checks that the algorithm used in function Random_Observable to initialise an Observable object 
+# actually yields a hermitian operator
 @given(d = st.integers(min_value=1, max_value=16))
-def test_Random_Hermitian(d):
-    rh = Random_Hermitian(d)
-    note("Operator returned by Random_Hermitian = %r" % (rh.matrix))
-    assert rh.check_hermitianity()
+def test_Random_Observable(d):
+    try:
+        ob_random = Random_Observable(d)
+    except ValueError as ve:
+        if "The input array is not hermitian" in ve.args[0]:
+            note("Operator returned by Random_Observable = %r" % (ob_random.matrix))
+            raise AssertionError("Random_Observable fails in the creation of hermitian matrices")
 
 # Checks that the Operator returned by the function Random_Density_Matrix is actually a Density_Matrix
 @given(d = st.integers(min_value=1, max_value=16))
@@ -297,7 +301,7 @@ def test_Convexity_Density_Matrix_Space(d):
 def test_Linearity_Evolution(d):
     dm1 = Random_Density_Matrix(d)
     dm2 = Random_Density_Matrix(d)
-    h = Random_Hermitian(d)
+    h = Random_Observable(d)
     dm_sum = 0.5*(dm1+dm2)
     evolved_dm_sum = dm_sum.free_evolution(h, 5)
     evolved_dm1 = dm1.free_evolution(h, 5)
@@ -321,7 +325,13 @@ def test_Observable_Initialisation_Not_Hermitian():
     except AssertionError:
         raise AssertionError("No ValueError raised by the initialisation of an Observable object with a square array which is not hermitian")
 
-
+# Checks that the expectation values of an Observable are always a real numbers
+@given(d = st.integers(min_value=1, max_value=16))
+def test_Real_Expectation_Values(d):
+    dm = Random_Density_Matrix(d)
+    ob = Random_Observable(d)
+    exp_val = ob.expectation_value(dm)
+    assert np.imag(exp_val) == 0
     
     
     
