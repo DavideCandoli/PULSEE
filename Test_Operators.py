@@ -265,6 +265,38 @@ def test_Random_Density_Matrix(d):
             error_message = "The generated random Density_Matrix lacks the following properties: \n" + error_message
             raise AssertionError(error_message)
 
+# Checks that the space of density matrices is a convex space, i.e. that the linear combination
+# a*dm1 + b*dm2
+# where dm1, dm2 are density matrices, a and b real numbers, is a density matrix iff
+# a, b in [0, 1] and a + b = 1
+@given(d = st.integers(min_value=1, max_value=16))
+def test_Convexity_Density_Matrix_Space(d):
+    dm1 = Random_Density_Matrix(d)
+    dm2 = Random_Density_Matrix(d)
+    a = np.random.random()
+    b = 1-a
+    hyp_dm = a*dm1 + b*dm2
+    try:
+        hyp_dm.cast_to_Density_Matrix()
+    except ValueError as ve:
+        if "The input array lacks the following properties: \n" in ve.args[0]:
+            error_message = ve.args[0][49:]
+            error_message = "The linear combination a*dm1 + (1-a)*dm2, a in [0, 1.), lacks the following properties: \n" + error_message
+            raise AssertionError(error_message)
+    not_dm = dm1 + dm2
+    try:
+        not_dm.cast_to_Density_Matrix()
+        raise AssertionError
+    except ValueError:
+        pass
+    except AssertionError:
+        raise AssertionError("No ValueError raised when trying to cast the sum of two Density_Matrix object to Density_Matrix")
+
+
+
+
+
+
 
     
     
