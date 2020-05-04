@@ -292,8 +292,23 @@ def test_Convexity_Density_Matrix_Space(d):
     except AssertionError:
         raise AssertionError("No ValueError raised when trying to cast the sum of two Density_Matrix object to Density_Matrix")
 
-
-
+# Checks that the evolution is linear, meaning that the evolution of a linear combination of two density matrices through a time t is the linear combination of the evolution of each of them through the same time interval.
+@given(d = st.integers(min_value=1, max_value=16))
+def test_Linearity_Evolution(d):
+    dm1 = Random_Density_Matrix(d)
+    dm2 = Random_Density_Matrix(d)
+    h = Random_Hermitian(d)
+    dm_sum = 0.5*(dm1+dm2)
+    evolved_dm_sum = dm_sum.free_evolution(h, 5)
+    evolved_dm1 = dm1.free_evolution(h, 5)
+    evolved_dm2 = dm2.free_evolution(h, 5)
+    left_hand_side = evolved_dm_sum.matrix
+    right_hand_side = (0.5*(evolved_dm1+evolved_dm2)).matrix
+    note("dm1 = %r" % (dm1.matrix))
+    note("dm2 = %r" % (dm2.matrix))
+    note("Evolved dm1+dm2 = %r" % (left_hand_side))
+    note("Evolved dm1 + evolved dm2 = %r" % (right_hand_side))
+    assert np.all(np.isclose(left_hand_side, right_hand_side, rtol=1e-10))
 
 
 

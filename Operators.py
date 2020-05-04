@@ -127,6 +127,12 @@ class Operator:
     # Casts the Operator into the type of the subclass Density_Matrix (if all requirements are met)
     def cast_to_Density_Matrix(self):
         return Density_Matrix(self.matrix)
+    
+    # Tries to interpret the Operator as a Density_Matrix object, and if this step succeeds performs the
+    # evolution under the effect of a stationary Hamiltonian throughout a time interval 'time'
+    def free_evolution(self, stat_hamiltonian, time):
+        dm = self.cast_to_Density_Matrix()
+        return dm.free_evolution(stat_hamiltonian, time)
 
 
 # Objects of the class Density_Matrix are special Operator objects characterised by the following properties:
@@ -158,7 +164,8 @@ class Density_Matrix(Operator):
             d_m_operator = d_m_operator*(1/d)
         self.matrix = d_m_operator.matrix
         
-    # Makes the Density_Matrix evolve under the effect of a stationary Hamiltonian throughout a time interval 'time'
+    # Makes the Density_Matrix evolve under the effect of a stationary Hamiltonian throughout a time
+    # interval 'time'
     def free_evolution(self, stat_hamiltonian, time):
         iHt = (1j*stat_hamiltonian*float(time))
         evolved_dm = self.sim_trans(iHt, exp=True)
@@ -171,7 +178,8 @@ class Observable(Operator):
     pass
 
 
-# Generates a random Operator whose elements are complex numbers with real and imaginary parts in the range [-10., 10.)
+# Generates a random Operator whose elements are complex numbers with real and imaginary parts in the
+# range [-10., 10.)
 def Random_Operator(d):
     round_elements = np.vectorize(round)
     real_part = round_elements(20*(np.random.random_sample(size=(d, d))-1/2), 2)
