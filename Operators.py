@@ -175,7 +175,16 @@ class Density_Matrix(Operator):
 # Objects of the class Observable are hermitian operators representing the measurable properties of the
 # system.
 class Observable(Operator):
-    pass
+    
+    # An instance of Observable is initialised in the same way as an Operator, the only difference being
+    # that when a square array is passed to the constructor, this latter checks if it is hermitian and
+    # raises error if it is not
+    def __init__(self, x):
+        ob_operator = Operator(x)
+        if isinstance(x, np.ndarray):
+            if not ob_operator.check_hermitianity():
+                raise ValueError("The input array is not hermitian")
+        self.matrix = ob_operator.matrix
 
 
 # Generates a random Operator whose elements are complex numbers with real and imaginary parts in the

@@ -310,7 +310,16 @@ def test_Linearity_Evolution(d):
     note("Evolved dm1 + evolved dm2 = %r" % (right_hand_side))
     assert np.all(np.isclose(left_hand_side, right_hand_side, rtol=1e-10))
 
-
+# Checks that the constructor of the class Observable raises error when it is initialised with a square array which is not hermitian
+def test_Observable_Initialisation_Not_Hermitian():
+    wrong_input = np.array([[1, 1], [0, 0]])
+    try:
+        dm = Observable(wrong_input)
+        raise AssertionError
+    except ValueError:
+        pass
+    except AssertionError:
+        raise AssertionError("No ValueError raised by the initialisation of an Observable object with a square array which is not hermitian")
 
 
     
