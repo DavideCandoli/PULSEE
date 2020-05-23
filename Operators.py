@@ -253,15 +253,21 @@ def Commutator(A, B):
     
 
 # Computes the integral of a function of a single real parameter which returns Operator objects
-def Integrate_Operator(O, t1, t2):
-    n_points = int(np.absolute(t2-t1)*100)
-    points, width = np.linspace(t1, t2, num=n_points, retstep=True)
+def Integrate_Operator(O, left_bound, right_bound):
+    n_points = int(np.absolute(left_bound-right_bound)*100)
+    points, width = np.linspace(left_bound, right_bound, num=n_points, retstep=True)
     sum_points = O(points[0])
     for t in points[1:(n_points-1)]:
         sum_points = sum_points + 2*O(t)
     sum_points = sum_points + O(points[n_points-1])
     integral = sum_points*width/2
     return integral
+
+# Computes the 1st term of the Magnus expansion for the time-dependent Hamiltonian 'Hamiltonian' over
+# the time interval [0, t]
+def Magnus_Expansion_1st_Term(Hamiltonian, t):
+    magnus_1st_term = -1j*Integrate_Operator(Hamiltonian, 0, t)
+    return magnus_1st_term
     
     
     
