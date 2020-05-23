@@ -1,12 +1,13 @@
 from Operators import Operator, Density_Matrix, \
                       Observable, Random_Operator, \
                       Random_Observable, Random_Density_Matrix, \
-                      Commutator
+                      Commutator, Integrate_Operator
 import math
 from numpy import log
 import numpy as np
 from scipy import linalg
 from scipy.linalg import eig
+from scipy.integrate import quad
 import hypothesis.strategies as st
 from hypothesis import given, note, assume
 
@@ -360,12 +361,41 @@ def test_Variance_Formula(d):
     left_hand_side = sq_dev.expectation_value(dm)
     right_hand_side = (ob**2).expectation_value(dm)-ob_ev**2
     assert np.all(np.isclose(left_hand_side, right_hand_side, 1e-10))
-    
-# Casual time-dependent Operator
-def Time_Dependent_Observable(t):
-    o = Observable(np.array([[t^2+1, t-np.log(t+1)], [2/(t+1)**2, t*(t+1)]]))
+
+# Generic function which takes a single parameter and returns Operators, to check that the function
+# Integrate_Operator works
+def Operator_Function(x):
+    matrix = np.array([[x, x**2],[x**3, x**4]])
+    o = Operator(matrix)
     return o
-    
+
+# Single components of Operator_Function, to be defined individually for the purposes of later test function test_Integrate_Operator
+def x1(x):
+    return x
+
+def x2(x):
+    return x**2
+
+def x3(x):
+    return x**3
+
+def x4(x):
+    return x**4
+
+# Checks that the results of Integrate_Operator are consistent with conventional integration algorithm
+# in Python
+@given(d = st.floats(min_value=1, max_value=20))
+def test_Integrate_Operator(d):
+    int_matrix = np.empty((2, 2))
+    int_matrix[0][0] = quad(x1, 0, d)[0]
+    int_matrix[0][1] = quad(x2, 0, d)[0]
+    int_matrix[1][0] = quad(x3, 0, d)[0]
+    int_matrix[1][1] = quad(x4, 0, d)[0]
+    int_operator = Integrate_Operator(Operator_Function, 0, d)
+    note("Matrix integrated element-wise= %r" % (int_matrix))
+    note("Matrix integrated with Integrate_Operator = %r" % (int_operator.matrix))
+    assert np.all(np.isclose(int_matrix, int_operator.matrix, 1e-3))
+
     
     
     

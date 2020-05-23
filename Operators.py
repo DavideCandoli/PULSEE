@@ -251,13 +251,17 @@ def Random_Density_Matrix(d):
 def Commutator(A, B):
     return A*B - B*A
     
-    
-    
-    
-    
-    
-    
-    
+
+# Computes the integral of a function of a single real parameter which returns Operator objects
+def Integrate_Operator(O, t1, t2):
+    n_points = int(np.absolute(t2-t1)*100)
+    points, width = np.linspace(t1, t2, num=n_points, retstep=True)
+    sum_points = O(points[0])
+    for t in points[1:(n_points-1)]:
+        sum_points = sum_points + 2*O(t)
+    sum_points = sum_points + O(points[n_points-1])
+    integral = sum_points*width/2
+    return integral
     
     
     
