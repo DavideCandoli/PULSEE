@@ -3,6 +3,7 @@ import numpy as np
 from numpy.linalg import LinAlgError
 from scipy.linalg import expm, eig
 from scipy.constants import hbar
+from scipy.integrate import quad
 import Pade_Exp
 
 # Objects of the class Operator represent linear applications which act on the vectors of a Hilbert space
@@ -61,6 +62,19 @@ class Operator:
             return Operator(factor*self.matrix)
         except:
             raise ValueError("Invalid type for the right operand of *: the allowed ones are instances of the class Operator or numbers")
+            
+    # The / operator acts between a Operator object (left) and a complex number (right) and returns the
+    # operator divided by a this latter
+    def __truediv__(self, divisor):
+        try:
+            divisor = complex(divisor)
+            if divisor == 0:
+                raise ZeroDivisionError                
+            return Operator(self.matrix/divisor)
+        except ValueError:
+            raise ValueError("Invalid type for the right operand of /: the divisor must be a complex number")
+        except ZeroDivisionError:
+            raise ZeroDivisionError("The division of an Operator by 0 makes no sense")
 
     # The definition of the ** operator is self-explanatory
     def __pow__(self, exponent:int):
@@ -236,3 +250,20 @@ def Random_Density_Matrix(d):
 # Computes the commutator of two Operator objects
 def Commutator(A, B):
     return A*B - B*A
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

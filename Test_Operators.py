@@ -3,6 +3,7 @@ from Operators import Operator, Density_Matrix, \
                       Random_Observable, Random_Density_Matrix, \
                       Commutator
 import math
+from numpy import log
 import numpy as np
 from scipy import linalg
 from scipy.linalg import eig
@@ -105,6 +106,19 @@ def test_Operator_Distributivity(d):
     note("(a*(b+c) = %r" % (left_hand_side.matrix))
     note("a*b+a*c = %r" % (right_hand_side.matrix))
     assert np.all(np.isclose(left_hand_side.matrix, right_hand_side.matrix, rtol=1e-10))
+    
+# Checks that dividing an Operator by its trace makes it a unit trace operator
+@given(d = st.integers(min_value=1, max_value=16))
+def test_Operator_Trace_Normalisation(d):
+    o = Random_Operator(d)
+    o_trace = o.trace()
+    o_norm = o/o_trace
+    o_norm_trace = o_norm.trace()
+    note("o = %r" % (o.matrix))
+    note("Trace of o = %r" % (o_trace))
+    note("Trace-normalised o = %r" % (o_norm))
+    note("Trace of trace-normalised o = %r" % (o_norm_trace))
+    assert np.all(np.isclose(o_norm_trace, 1, rtol=1e-10))
 
 # Checks that an Operator o to the power of -1 is the reciprocal of o
 @given(d = st.integers(min_value=1, max_value=16))
@@ -347,6 +361,10 @@ def test_Variance_Formula(d):
     right_hand_side = (ob**2).expectation_value(dm)-ob_ev**2
     assert np.all(np.isclose(left_hand_side, right_hand_side, 1e-10))
     
+# Casual time-dependent Operator
+def Time_Dependent_Observable(t):
+    o = Observable(np.array([[t^2+1, t-np.log(t+1)], [2/(t+1)**2, t*(t+1)]]))
+    return o
     
     
     
