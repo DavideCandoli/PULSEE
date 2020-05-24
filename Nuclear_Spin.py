@@ -24,8 +24,9 @@ class Nuclear_Spin:
         if not math.isclose(int(2*s), 2*s, rel_tol=1e-10):
             raise ValueError("The given spin quantum number is not a half-integer number")
         self.quantum_number = s
+        self.d = self.multiplicity()
     def multiplicity(self):
-        pass
+        return (2*self.quantum_number)+1
     def raising_operator(self):
         pass
     def lowering_operator(self):
