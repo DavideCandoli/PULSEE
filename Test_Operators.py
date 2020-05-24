@@ -1,9 +1,9 @@
 from Operators import Operator, Density_Matrix, \
                       Observable, Random_Operator, \
                       Random_Observable, Random_Density_Matrix, \
-                      Commutator, Integrate_Operator, \
-                      Magnus_Expansion_1st_Term, \
-                      Magnus_Expansion_2nd_Term
+                      Commutator, \
+                      Magnus_Expansion_1st_Term
+
 import math
 from numpy import log
 import numpy as np
@@ -364,56 +364,66 @@ def test_Variance_Formula(d):
     right_hand_side = (ob**2).expectation_value(dm)-ob_ev**2
     assert np.all(np.isclose(left_hand_side, right_hand_side, 1e-10))
 
+#def test_Integrate_Operator():
+#    int_matrix = np.empty((2, 2))
+#    int_matrix[0][0] = quad(x1, 0, 5)[0]
+#    int_matrix[0][1] = quad(x2, 0, 5)[0]
+#    int_matrix[1][0] = quad(x3, 0, 5)[0]
+#    int_matrix[1][1] = quad(x4, 0, 5)[0]
+#    int_operator = Integrate_Operator(Operator_Function, 0, 5)
+#    assert np.all(np.isclose(int_matrix, int_operator.matrix, 1e-3))
+    
+# Checks that the function Magnus_Expansion_2nd_Term returns an anti-hermitian operator as expected
+#def test_AntiHermitianity_Magnus_1st():
+#    magnus_1st = Magnus_Expansion_1st_Term(Observable_Function, 5)
+#    magnus_1st_dagger = magnus_1st.dagger()
+#    assert np.all(np.isclose(magnus_1st_dagger.matrix, (-1)*magnus_1st.matrix, 1e-10))
+    
+# Checks that the function Magnus_Expansion_1st_Term returns an anti-hermitian operator as expected
+#def test_AntiHermitianity_Magnus_2nd():
+#    magnus_2nd = Magnus_Expansion_2nd_Term(Observable_Function, 5)
+#    magnus_2nd_dagger = magnus_2nd.dagger()
+#    assert np.all(np.isclose(magnus_2nd_dagger.matrix, (-1)*magnus_2nd.matrix, 1e-10))
+
 # Generic function which takes a single parameter and returns Operators, defined in order to check that
 # the function Integrate_Operator works
-def Operator_Function(x):
-    matrix = np.array([[x, x**2],[x**3, x**4]])
-    o = Operator(matrix)
-    return o
+#def Operator_Function(x):
+#    matrix = np.array([[x, x**2], [x**3, x**4]])
+#    o = Operator(matrix)
+#    return o
 
 # Single components of Operator_Function, to be defined individually for the purposes of test function
 # test_Integrate_Operator
-def x1(x):
-    return x
+#def x1(x):
+#    return x
 
-def x2(x):
-    return x**2
+#def x2(x):
+#    return x**2
 
-def x3(x):
-    return x**3
+#def x3(x):
+#    return x**3
 
-def x4(x):
-    return x**4
-
-# Checks that the results of Integrate_Operator are consistent with conventional integration algorithm
-# in Python
-def test_Integrate_Operator():
-    int_matrix = np.empty((2, 2))
-    int_matrix[0][0] = quad(x1, 0, 5)[0]
-    int_matrix[0][1] = quad(x2, 0, 5)[0]
-    int_matrix[1][0] = quad(x3, 0, 5)[0]
-    int_matrix[1][1] = quad(x4, 0, 5)[0]
-    int_operator = Integrate_Operator(Operator_Function, 0, 5)
-    assert np.all(np.isclose(int_matrix, int_operator.matrix, 1e-3))
+#def x4(x):
+#    return x**4
 
 # Generic function which takes a single parameter and returns Observable objects
 def Observable_Function(x):
-    matrix = np.array([[x, 1+1j*x**2],[1-1j*x**2, x**4]])
+    matrix = np.array([[x, 1+1j*x**2],[1-1j*x**2, x**3]])
     o = Observable(matrix)
     return o
-    
-# Checks that the function Magnus_Expansion_2nd_Term returns an anti-hermitian operator as expected
+
+# Checks that the function Magnus_Expansion_1st_Term returns an anti-hermitian operator as expected
 def test_AntiHermitianity_Magnus_1st():
-    magnus_1st = Magnus_Expansion_1st_Term(Observable_Function, 5)
+    times, time_step = np.linspace(0, 20, num=2001, retstep=True)
+    Hamiltonian = np.vectorize(Observable_Function)
+    hamiltonian = Hamiltonian(times)
+    magnus_1st = Magnus_Expansion_1st_Term(hamiltonian, time_step)
     magnus_1st_dagger = magnus_1st.dagger()
     assert np.all(np.isclose(magnus_1st_dagger.matrix, (-1)*magnus_1st.matrix, 1e-10))
-    
-# Checks that the function Magnus_Expansion_1st_Term returns an anti-hermitian operator as expected
-def test_AntiHermitianity_Magnus_2nd():
-    magnus_2nd = Magnus_Expansion_2nd_Term(Observable_Function, 5)
-    magnus_2nd_dagger = magnus_2nd.dagger()
-    assert np.all(np.isclose(magnus_2nd_dagger.matrix, (-1)*magnus_2nd.matrix, 1e-10))
+
+
     
     
     
+        
     
