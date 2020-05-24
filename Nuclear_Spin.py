@@ -12,7 +12,7 @@ from Operators import Operator, Density_Matrix, \
 # angular momentum. Indeed, it includes all the Operators typically associated with the spin and also
 # specific parameters like the spin quantum number and the spin multiplicity
 class Nuclear_Spin:
-    
+
     # The constructor of Nuclear_Spin objects receives as an argument only the spin quantum number s
     # and checks that this is a half-integer number as expected. Then, all other attributes are
     # initialised from the quantum number s.
@@ -25,11 +25,27 @@ class Nuclear_Spin:
             raise ValueError("The given spin quantum number is not a half-integer number")
         self.quantum_number = s
         self.d = self.multiplicity()
+        self.I = {'+': self.lowering_operator(),
+                  '-': self.raising_operator()}
+
     def multiplicity(self):
-        return (2*self.quantum_number)+1
+        return int((2*self.quantum_number)+1)
+
     def raising_operator(self):
-        pass
+        I_raising = np.zeros((self.d, self.d))
+        for m in range(self.d):
+            for n in range(self.d):
+                if n - m == 1:
+                    I_raising[m, n] = math.sqrt(self.quantum_number*(self.quantum_number+1) - (self.quantum_number-n)*(self.quantum_number-n + 1))
+        return Operator(I_raising)
+
     def lowering_operator(self):
-        pass
+        I_lowering = np.zeros((self.d, self.d))
+        for m in range(self.d):
+            for n in range(self.d):
+                if n - m == -1:
+                    I_lowering[m, n] = math.sqrt(self.quantum_number*(self.quantum_number+1) - (self.quantum_number-n)*(self.quantum_number-n - 1))
+        return Operator(I_lowering)
+
     def cartesian_operator(self):
         pass
