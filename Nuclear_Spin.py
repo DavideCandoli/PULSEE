@@ -9,4 +9,13 @@ from Operators import Operator, Density_Matrix, \
                       Magnus_Expansion_2nd_Term
 
 class Nuclear_Spin:
-    pass
+    def __init__(self, s=1):
+        pass
+    def multiplicity():
+        pass
+    def raising_operator():
+        pass
+    def lowering_operator():
+        pass
+    def cartesian_operator():
+        pass
