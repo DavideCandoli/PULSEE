@@ -2,7 +2,8 @@ from Operators import Operator, Density_Matrix, \
                       Observable, Random_Operator, \
                       Random_Observable, Random_Density_Matrix, \
                       Commutator, \
-                      Magnus_Expansion_1st_Term
+                      Magnus_Expansion_1st_Term, \
+                      Magnus_Expansion_2nd_Term
 
 import math
 from numpy import log
@@ -422,8 +423,18 @@ def test_AntiHermitianity_Magnus_1st():
     assert np.all(np.isclose(magnus_1st_dagger.matrix, (-1)*magnus_1st.matrix, 1e-10))
 
 
-    
-    
-    
-        
-    
+# Checks that the function Magnus_Expansion_2nd_Term returns an anti-hermitian operator as expected
+def test_AntiHermitianity_Magnus_2nd():
+    times, time_step = np.linspace(0, 5, num=501, retstep=True)
+    Hamiltonian = np.vectorize(Observable_Function)
+    hamiltonian = Hamiltonian(times)
+    magnus_2nd = Magnus_Expansion_2nd_Term(hamiltonian, time_step)
+    magnus_2nd_dagger = magnus_2nd.dagger()
+    assert np.all(np.isclose(magnus_2nd_dagger.matrix, (-1)*magnus_2nd.matrix, 1e-10))
+
+
+
+
+
+
+

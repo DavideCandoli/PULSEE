@@ -286,24 +286,21 @@ def Commutator(A, B):
 
 
 def Magnus_Expansion_1st_Term(h, time_step):
-    integral = h[0]
+    integral = h[0].matrix
     for t in range(len(h)-2):
-        integral = integral + 2*h[t+1]
-    integral = (integral + h[-1])*(time_step)/2
-    magnus_1st_term = -1j*integral
+        integral = integral + 2*h[t+1].matrix
+    integral = (integral + h[-1].matrix)*(time_step)/2
+    magnus_1st_term = Operator(-1j*integral)
     return magnus_1st_term
 
 
 def Magnus_Expansion_2nd_Term(h, time_step):
-    integral = h[0]*0
+    integral = (h[0]*0).matrix
     for t1 in range(len(h)-1):
         for t2 in range(len(h)-1):
-            integral = integral + Commutator(h[t1], h[t2])*(time_step**2)
-    magnus_2nd_term = -(1/2)*integral
+            integral = integral + (Commutator(h[t1], h[t2]).matrix)*(time_step**2)
+    magnus_2nd_term = Operator(-(1/2)*integral)
     return magnus_2nd_term
-
-
-
 
 
 
