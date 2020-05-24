@@ -57,9 +57,9 @@ class Nuclear_Spin:
     # components of the spin
     def cartesian_operator(self):
         I = []
-        I.append((self.raising_operator() + self.lowering_operator())/2)
-        I.append((self.raising_operator() - self.lowering_operator())/(2j))
-        I.append(Operator(self.d))
+        I.append(Observable(((self.raising_operator() + self.lowering_operator())/2).matrix))
+        I.append(Observable(((self.raising_operator() - self.lowering_operator())/(2j)).matrix))
+        I.append(Observable(self.d))
         for m in range(self.d):
             I[2].matrix[m, m] = self.quantum_number - m
         return I
