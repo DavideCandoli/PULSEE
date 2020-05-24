@@ -269,7 +269,19 @@ def Magnus_Expansion_1st_Term(Hamiltonian, t):
     magnus_1st_term = -1j*Integrate_Operator(Hamiltonian, 0, t)
     return magnus_1st_term
     
-    
+# Computes the 2nd term of the Magnus expansion for the time-dependent Hamiltonian 'Hamiltonian' over
+# the time interval [0, t]
+def Magnus_Expansion_2nd_Term(Hamiltonian, t):
+    integral = Hamiltonian(t)*0
+    n_points = int(np.absolute(t)*100)
+    points, width = np.linspace(0, t, num=n_points, retstep=True)
+    for t1 in points:
+        for t2 in points:
+            if t2 > t1: break
+            integral = integral + Commutator(Hamiltonian(t1), Hamiltonian(t2))
+    magnus_2nd_term = -(1/2)*integral
+    return magnus_2nd_term
+            
     
     
     
