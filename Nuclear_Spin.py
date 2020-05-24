@@ -13,9 +13,9 @@ from Operators import Operator, Density_Matrix, \
 # specific parameters like the spin quantum number and the spin multiplicity
 class Nuclear_Spin:
 
-    # The constructor of Nuclear_Spin objects receives as an argument only the spin quantum number s
-    # and checks that this is a half-integer number as expected. Then, all other attributes are
-    # initialised from the quantum number s.
+    # The constructor of Nuclear_Spin receives as an argument only the spin quantum number s
+    # and checks that this is a half-integer number as expected, raising appropriate errors if it
+    # isn't. Then, all other attributes are initialised from the quantum number s.
     def __init__(self, s=1):
         try:
             s = float(s)
@@ -26,11 +26,16 @@ class Nuclear_Spin:
         self.quantum_number = s
         self.d = self.multiplicity()
         self.I = {'+': self.lowering_operator(),
-                  '-': self.raising_operator()}
-
+                  '-': self.raising_operator(),
+                  'x': self.cartesian_operator()[0],
+                  'y': self.cartesian_operator()[1],
+                  'z': self.cartesian_operator()[2]}
+    
+    # Computes the dimensions of the spin Hilbert space
     def multiplicity(self):
         return int((2*self.quantum_number)+1)
 
+    # Returns the spin raising Operator of dimensions given by multiplicity()
     def raising_operator(self):
         I_raising = np.zeros((self.d, self.d))
         for m in range(self.d):
@@ -39,6 +44,7 @@ class Nuclear_Spin:
                     I_raising[m, n] = math.sqrt(self.quantum_number*(self.quantum_number+1) - (self.quantum_number-n)*(self.quantum_number-n + 1))
         return Operator(I_raising)
 
+    # Returns the spin lowering Operator of dimensions given by multiplicity()
     def lowering_operator(self):
         I_lowering = np.zeros((self.d, self.d))
         for m in range(self.d):
@@ -47,5 +53,13 @@ class Nuclear_Spin:
                     I_lowering[m, n] = math.sqrt(self.quantum_number*(self.quantum_number+1) - (self.quantum_number-n)*(self.quantum_number-n - 1))
         return Operator(I_lowering)
 
+    # Returns a list of Operator objects representing in the order the x, y and z cartesian 
+    # components of the spin
     def cartesian_operator(self):
-        pass
+        I = []
+        I.append((self.raising_operator() + self.lowering_operator())/2)
+        I.append((self.raising_operator() - self.lowering_operator())/(2j))
+        I.append(Operator(self.d))
+        for m in range(self.d):
+            I[2].matrix[m, m] = self.quantum_number - m
+        return I

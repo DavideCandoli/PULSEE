@@ -47,6 +47,16 @@ def test_Nuclear_Spin_Raising_Lowering_Hermitian_Conjugate(s):
     note("I_lowering = %r" % (lowering.matrix))
     assert np.all(np.isclose(raising_dagger.matrix, lowering.matrix, rtol=1e-10))
     
-        
-        
-        
+# Checks the well-known commutation relation
+# [I_x, I_y] = i hbar I_z
+# between the cartesian components of the spin (for computational purposes, we have set hbar=1)
+@given(s = st.integers(min_value=1, max_value=14))
+def test_Nuclear_Spin_Commutation_Relation(s):
+    n_s = Nuclear_Spin(s/2)
+    left_hand_side = Commutator(n_s.I['x'], n_s.I['y'])
+    right_hand_side = 1j*n_s.I['z']
+    note("[I_x, I_y] = %r" % (left_hand_side.matrix))
+    note("i I_z = %r" % (right_hand_side.matrix))
+    assert np.all(np.isclose(left_hand_side.matrix, right_hand_side.matrix, rtol=1e-10))    
+
+    
