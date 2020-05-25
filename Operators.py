@@ -96,7 +96,7 @@ class Operator:
             if not isinstance(change_of_basis_operator, Operator):
                 raise TypeError
             if exp==True:
-                left_exp = (change_of_basis_operator*(-1)).exp()
+                left_exp = (-change_of_basis_operator).exp()
                 right_exp = change_of_basis_operator.exp()
                 new_basis_operator = left_exp*self*right_exp
             else:
@@ -126,7 +126,7 @@ class Operator:
     # Dirac picture to the traditional Schroedinger one
     def interaction_picture(self, unperturbed_hamiltonian, time, invert=False):
         T = unperturbed_hamiltonian*(-1j*float(time))
-        if invert: T = (-1)*T
+        if invert: T = -T
         return self.sim_trans(T, exp=True)
 
     # Checks if the Operator is hermitian
