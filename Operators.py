@@ -45,6 +45,10 @@ class Operator:
     def __sub__(self, subtrahend):
         return Operator(self.matrix-subtrahend.matrix)
     
+    # Returns the Operator changed by sign
+    def __neg__(self):
+        return Operator(-self.matrix)
+    
     # The * operator is set up to handle both the product between Operator objects and the
     # multiplication by a scalar
     def __mul__(self, factor):
@@ -250,41 +254,9 @@ def Random_Density_Matrix(d):
 # Computes the commutator of two Operator objects
 def Commutator(A, B):
     return A*B - B*A
-    
-
-# Computes the integral of a function of a single real parameter which returns Operator objects
-#def Integrate_Operator(O, left_bound, right_bound):
-#    n_points = int(np.absolute(left_bound-right_bound)*100)
-#    points, width = np.linspace(left_bound, right_bound, num=n_points, retstep=True)
-#    sum_points = O(points[0])
-#    for t in points[1:(n_points-1)]:
-#        sum_points = sum_points + 2*O(t)
-#    sum_points = sum_points + O(points[n_points-1])
-#    integral = sum_points*width/2
-#    return integral
 
 
-# Computes the 1st term of the Magnus expansion for the time-dependent Hamiltonian 'Hamiltonian' over
-# the time interval [0, t]
-#def Magnus_Expansion_1st_Term(Hamiltonian, t):
-#    magnus_1st_term = -1j*Integrate_Operator(Hamiltonian, 0, t)
-#    return magnus_1st_term
-
-
-# Computes the 2nd term of the Magnus expansion for the time-dependent Hamiltonian 'Hamiltonian' over
-# the time interval [0, t]
-#def Magnus_Expansion_2nd_Term(Hamiltonian, t):
-#    integral = Hamiltonian(t)*0
-#    n_points = int(np.absolute(t)*100)
-#    points, width = np.linspace(0, t, num=n_points, retstep=True)
-#    for t1 in points:
-#        for t2 in points:
-#            if t2 > t1: break
-#            integral = integral + Commutator(Hamiltonian(t1), Hamiltonian(t2))*(width**2)
-#    magnus_2nd_term = -(1/2)*integral
-#    return magnus_2nd_term
-
-
+# Computes the 1st order term of the Magnus expansion of the passed time-dependent Hamiltonian
 def Magnus_Expansion_1st_Term(h, time_step):
     integral = h[0].matrix
     for t in range(len(h)-2):
@@ -294,6 +266,7 @@ def Magnus_Expansion_1st_Term(h, time_step):
     return magnus_1st_term
 
 
+# Computes the 2nd order term of the Magnus expansion of the passed time-dependent Hamiltonian
 def Magnus_Expansion_2nd_Term(h, time_step):
     integral = (h[0]*0).matrix
     for t1 in range(len(h)-1):
@@ -301,6 +274,7 @@ def Magnus_Expansion_2nd_Term(h, time_step):
             integral = integral + (Commutator(h[t1], h[t2]).matrix)*(time_step**2)
     magnus_2nd_term = Operator(-(1/2)*integral)
     return magnus_2nd_term
+
 
 
 
