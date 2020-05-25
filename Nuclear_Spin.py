@@ -16,7 +16,7 @@ class Nuclear_Spin:
     # The constructor of Nuclear_Spin receives as an argument only the spin quantum number s
     # and checks that this is a half-integer number as expected, raising appropriate errors if it
     # isn't. Then, all other attributes are initialised from the quantum number s.
-    def __init__(self, s=1):
+    def __init__(self, s=1, gamma=1):
         try:
             s = float(s)
         except:
@@ -30,6 +30,11 @@ class Nuclear_Spin:
                   'x': self.cartesian_operator()[0],
                   'y': self.cartesian_operator()[1],
                   'z': self.cartesian_operator()[2]}
+        try:
+            gamma = float(gamma)
+        except:
+            raise TypeError("The given gyromagnetic ratio cannot be interpreted as a float")
+        self.gyromagnetic_ratio = gamma
     
     # Computes the dimensions of the spin Hilbert space
     def multiplicity(self):

@@ -14,8 +14,8 @@ from Operators import Operator, Density_Matrix, \
 from Nuclear_Spin import Nuclear_Spin
 
 # Checks that the constructor of the class Nuclear_Spin raises an appropriate error when a string is
-# passed as an argument
-def test_Nuclear_Spin_Initialisation_with_Wrong_Type():
+# passed as the first argument
+def test_Spin_Quantum_Number_Initialisation_with_Wrong_Type():
     wrong_input = 'a'
     try:
         I = Nuclear_Spin(wrong_input)
@@ -23,11 +23,11 @@ def test_Nuclear_Spin_Initialisation_with_Wrong_Type():
     except TypeError:
         pass
     except AssertionError:
-        raise AssertionError("No TypeError caused by the initialisation with a string")
+        raise AssertionError("No TypeError caused by the initialisation of the spin quantum number with a string")
         
 # Checks that the constructor of the class Nuclear_Spin raises an appropriate error when a non-half-
-# integer argument is passed
-def test_Nuclear_Spin_Initialisation_with_Non_Half_Integer():
+# integer is passed as the first argument
+def test_Spin_Quantum_Number_Initialisation_with_Non_Half_Integer():
     wrong_input = 2.6
     try:
         I = Nuclear_Spin(wrong_input)
@@ -35,7 +35,19 @@ def test_Nuclear_Spin_Initialisation_with_Non_Half_Integer():
     except ValueError:
         pass
     except AssertionError:
-        raise AssertionError("No ValueError caused by the initialisation with a non-half-integer number")
+        raise AssertionError("No ValueError caused by the initialisation of the spin quantum number with a non-half-integer number")
+        
+# Checks that the constructor of the class Nuclear_Spin raises an appropriate error when a string is
+# passed as the second argument
+def test_Gyromagnetic_Ratio_Initialisation_with_Wrong_Type():
+    wrong_input = 'a'
+    try:
+        I = Nuclear_Spin(3/2, wrong_input)
+        raise AssertionError
+    except TypeError:
+        pass
+    except AssertionError:
+        raise AssertionError("No TypeError caused by the initialisation of the gyromagnetic ratio with a string")
         
 # Checks that the raising and lowering operators are hermitian conjugate
 @given(s = st.integers(min_value=1, max_value=14))
@@ -57,6 +69,6 @@ def test_Nuclear_Spin_Commutation_Relation(s):
     right_hand_side = 1j*n_s.I['z']
     note("[I_x, I_y] = %r" % (left_hand_side.matrix))
     note("i I_z = %r" % (right_hand_side.matrix))
-    assert np.all(np.isclose(left_hand_side.matrix, right_hand_side.matrix, rtol=1e-10))    
+    assert np.all(np.isclose(left_hand_side.matrix, right_hand_side.matrix, rtol=1e-10))
 
     
