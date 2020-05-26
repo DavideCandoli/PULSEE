@@ -21,6 +21,7 @@ def H_Zeeman(spin, theta_z, phi_z, H_0):
     return Observable(h_Zeeman.matrix)
 
 def H_Quadrupole(spin, eQ, eq, eta, alpha, beta, gamma):
+    if eta<0 or eta>1: raise ValueError("The asymmetry parameter must fall in the interval [0, 1]")
     h_quadrupole = (eQ/(spin.quantum_number*(2*spin.quantum_number-1)))* \
                    ((1/2)*(3*(spin.I['z']**2) - \
                            Operator(spin.d)*spin.quantum_number*(spin.quantum_number+1))* \
