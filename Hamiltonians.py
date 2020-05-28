@@ -62,7 +62,24 @@ def V1(sign, eq, eta, alpha, beta, gamma):
          
 
 def V2(sign, eq, eta, alpha, beta, gamma):
-    return 1j*sign
+    sign = np.sign(sign)
+    v2 = (eq/2)*\
+         (-math.sqrt(3/8)*((math.sin(beta))**2)*exp(sign*2j*alpha) +\
+          (eta/math.sqrt(6))*exp(sign*2j*alpha)*\
+           (
+            exp(2j*gamma)*((1+sign*math.cos(beta))**2)/4 +\
+            exp(-2j*gamma)*((1-sign*math.cos(beta))**2)/4
+           )
+         )
+    return v2
 
 def H_Pulse():
     pass
+
+
+
+
+
+
+
+
