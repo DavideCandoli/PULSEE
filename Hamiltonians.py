@@ -29,7 +29,7 @@ def H_Quadrupole(spin, eQ, eq, eta, alpha, beta, gamma):
                     (math.sqrt(6)/4)* \
                     ((spin.I['z']*spin.I['+'] + \
                       spin.I['+']*spin.I['z'])* \
-                     V1(-1, eq, eta, alpha, beta, gamma) - \
+                     V1(-1, eq, eta, alpha, beta, gamma) + \
                      (spin.I['z']*spin.I['-'] + \
                       spin.I['-']*spin.I['z'])* \
                      V1(+1, eq, eta, alpha, beta, gamma) + \
@@ -39,11 +39,15 @@ def H_Quadrupole(spin, eQ, eq, eta, alpha, beta, gamma):
                       V2(2, eq, eta, alpha, beta, gamma)))
     return Observable(h_quadrupole.matrix)
 
-def V0(eq, eta_q, alpha_q, beta_q, gamma_q):
-    return 1.
+def V0(eq, eta, alpha, beta, gamma):
+    v0 = (eq/2)*\
+         (
+          ((3*(math.cos(beta))**2-1)/2) - (eta*(math.sin(beta))**2)*(math.cos(2*gamma))/2
+         )
+    return v0
 
 def V1(sign, eq, eta, alpha, beta, gamma):
-    return 1j
+    return 1j*sign
 
 def V2(sign, eq, eta, alpha, beta, gamma):
     return 1j*sign
