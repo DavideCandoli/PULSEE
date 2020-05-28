@@ -1,4 +1,5 @@
 import math
+from cmath import exp
 import numpy as np
 
 from Operators import Operator, Density_Matrix, \
@@ -47,7 +48,18 @@ def V0(eq, eta, alpha, beta, gamma):
     return v0
 
 def V1(sign, eq, eta, alpha, beta, gamma):
-    return 1j*sign
+    sign = np.sign(sign)
+    v1 = (eq/2)*\
+         (
+          -sign*1j*math.sqrt(3/8)*math.sin(2*beta)*exp(sign*1j*alpha)+\
+          1j*(eta/(math.sqrt(6)))*math.sin(beta)*\
+          (
+           -((1+sign*math.cos(beta))/2)*exp(1j*(sign*alpha+2*gamma))+\
+            ((1-sign*math.cos(beta))/2)*exp(1j*(sign*alpha-2*gamma))
+          )
+         )
+    return v1
+         
 
 def V2(sign, eq, eta, alpha, beta, gamma):
     return 1j*sign
