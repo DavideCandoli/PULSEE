@@ -11,6 +11,7 @@ from Operators import Operator, Density_Matrix, \
 
 from Nuclear_Spin import Nuclear_Spin
 
+
 # Returns the Observable object representing the Hamiltonian for the Zeeman interaction with an external
 # static field
 def H_Zeeman(spin, theta_z, phi_z, H_0):
@@ -21,6 +22,9 @@ def H_Zeeman(spin, theta_z, phi_z, H_0):
                  math.cos(theta_z)*spin.I['z'])
     return Observable(h_Zeeman.matrix)
 
+
+# Returns the Observable object representing the Hamiltonian for the interaction between the quadrupole
+# moment of the nucleus and the electric field gradient
 def H_Quadrupole(spin, eQ, eq, eta, alpha, beta, gamma):
     if eta<0 or eta>1: raise ValueError("The asymmetry parameter must fall in the interval [0, 1]")
     h_quadrupole = (eQ/(spin.quantum_number*(2*spin.quantum_number-1)))* \
@@ -40,6 +44,8 @@ def H_Quadrupole(spin, eQ, eq, eta, alpha, beta, gamma):
                       V2(2, eq, eta, alpha, beta, gamma)))
     return Observable(h_quadrupole.matrix)
 
+
+# Returns the spherical component V^0 of the EFG tensor
 def V0(eq, eta, alpha, beta, gamma):
     v0 = (eq/2)*\
          (
@@ -47,6 +53,8 @@ def V0(eq, eta, alpha, beta, gamma):
          )
     return v0
 
+
+# Returns the spherical components V^{+/-1} of the EFG tensor
 def V1(sign, eq, eta, alpha, beta, gamma):
     sign = np.sign(sign)
     v1 = (eq/2)*\
@@ -59,8 +67,9 @@ def V1(sign, eq, eta, alpha, beta, gamma):
           )
          )
     return v1
-         
 
+
+# Returns the spherical components V^{+/-2} of the EFG tensor
 def V2(sign, eq, eta, alpha, beta, gamma):
     sign = np.sign(sign)
     v2 = (eq/2)*\
@@ -73,8 +82,21 @@ def V2(sign, eq, eta, alpha, beta, gamma):
          )
     return v2
 
-def H_Pulse():
-    pass
+
+# Returns the Observable object representing the Hamiltonian of the interaction between the nucleus
+# and a time-dependent, monochromatic and linearly polarized electromagnetic pulse
+def H_Pulse(spin, theta, phi, frequency, phase, H_1, t):
+    if frequency < 0: raise ValueError("The angular frequency of the electromagnetic wave must be a positive quantity")
+    if H_1 < 0: raise ValueError("The amplitude of the electromagnetic wave must be a positive quantity")
+    h_pulse = -spin.gyromagnetic_ratio*H_1*\
+              (math.sin(theta)*math.cos(phi)*spin.I['x'] +\
+               math.sin(theta)*math.sin(phi)*spin.I['y'] +\
+               math.cos(theta)*spin.I['z']
+               )*\
+               math.cos(frequency*t-phase)
+    return Observable(h_pulse.matrix)
+    
+    
 
 
 

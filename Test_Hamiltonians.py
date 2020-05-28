@@ -11,7 +11,8 @@ from Operators import Operator, Density_Matrix, \
 from Nuclear_Spin import Nuclear_Spin
 
 from Hamiltonians import H_Zeeman, H_Quadrupole, \
-                         V0, V1, V2
+                         V0, V1, V2, \
+                         H_Pulse
 
 import hypothesis.strategies as st
 from hypothesis import given, note
@@ -61,6 +62,20 @@ def test_V2_Reduces_To_eta(eta):
     for sign in [-2, +2]:
         v2 = V2(sign, 5., eta, 0, 0, 0)
         assert np.isclose(v2, 5*eta/(2*math.sqrt(6)), rtol=1e-10)
+        
+# Checks that the Hamiltonians returned by H_Pulse at times which differ by an integer multiple of the
+# period of the electromagnetic wave is the same
+@given(n = st.integers(min_value=-20, max_value=20))
+def test_Periodical_Pulse_Hamiltonian(n):
+    spin = Nuclear_Spin(1., 1.)
+    omega = 5.
+    t1 = 1.
+    t2 = t1 + n*(2*math.pi)/omega
+    h_p1 = H_Pulse(spin, math.pi/2, 0, omega, 0, 10., t1)
+    h_p2 = H_Pulse(spin, math.pi/2, 0, omega, 0, 10., t2)
+    note("H_Pulse(t1) = %r" % (h_p1.matrix))
+    note("H_Pulse(t2) = %r" % (h_p2.matrix))
+    assert np.all(np.isclose(h_p1.matrix, h_p2.matrix, rtol=1e-10))
     
     
     
