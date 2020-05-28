@@ -10,7 +10,8 @@ from Operators import Operator, Density_Matrix, \
 
 from Nuclear_Spin import Nuclear_Spin
 
-from Hamiltonians import H_Zeeman, H_Quadrupole
+from Hamiltonians import H_Zeeman, H_Quadrupole, \
+                         V0, V1, V2
 
 import hypothesis.strategies as st
 from hypothesis import given, note
@@ -38,6 +39,28 @@ def test_Symmetrical_EFG(gamma):
     note("H_Quadrupole(gamma1) = %r" % (h_q1.matrix))
     note("H_Quadrupole(gamma2) = %r" % (h_q2.matrix))
     assert np.all(np.absolute(h_q1.matrix-h_q2.matrix) < 1e-10)
+    
+# Checks that the formula for V^0 reduces to the half of the parameter eq when the Euler angles are set
+# to 0
+@given(eq = st.floats(min_value=0, max_value=20))
+def test_V0_Reduces_To_eq(eq):
+    v0 = V0(eq, 5., 0, 0, 0)
+    assert math.isclose(eq/2, v0, rel_tol=1e-10)
+    
+# Checks that the formula for V^{+/-1} reduces to 0 when the Euler angles are set to 0
+def test_V1_Reduces_To_0():
+    for sign in [-1, +1]:
+        v1 = V1(sign, 5., 5., 0, 0, 0)
+        assert np.absolute(v1) < 1e-10
+        
+# Checks that the formula for V^{+/-2} reduces to
+# (eq/(2*sqrt(6)))*eta
+# when the Euler angles are set to 0
+@given(eta = st.floats(min_value=0, max_value=1))
+def test_V2_Reduces_To_eta(eta):
+    for sign in [-2, +2]:
+        v2 = V2(sign, 5., eta, 0, 0, 0)
+        assert np.isclose(v2, 5*eta/(2*math.sqrt(6)), rtol=1e-10)
     
     
     
