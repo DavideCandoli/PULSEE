@@ -3,7 +3,8 @@ from Operators import Operator, Density_Matrix, \
                       Random_Observable, Random_Density_Matrix, \
                       Commutator, \
                       Magnus_Expansion_1st_Term, \
-                      Magnus_Expansion_2nd_Term
+                      Magnus_Expansion_2nd_Term, \
+                      Canonical_Density_Matrix
 
 import math
 from numpy import log
@@ -58,7 +59,6 @@ def test_Operator_Initialisation_with_Wrong_Argument_Type():
     except AssertionError:
         raise AssertionError("No TypeError caused by the initialisation with a list")
        
-        
 # Checks that the difference between identical operators returns a null square array
 @given(d = st.integers(min_value=1, max_value=16))
 def test_Opposite_Operator(d):
@@ -388,6 +388,18 @@ def test_AntiHermitianity_Magnus_2nd():
     magnus_2nd = Magnus_Expansion_2nd_Term(hamiltonian, time_step)
     magnus_2nd_dagger = magnus_2nd.dagger()
     assert np.all(np.isclose(magnus_2nd_dagger.matrix, -magnus_2nd.matrix, 1e-10))
+    
+# Checks that the canonical density matrix computed with the function Canonical_Density_Matrix reduces
+# to (1 - H_0/T)/Z when the temperature T gets very large
+@given(d = st.integers(min_value=1, max_value=16))
+def test_Canonical_Density_Matrix_Large_T_Approximation(d):
+    h0 = Random_Observable(d)
+    can_dm = Canonical_Density_Matrix(h0, 1e5)
+    minus_h0_over_T = -h0/1e5
+    exp_h0_over_T = minus_h0_over_T.exp()
+    can_p_f = exp_h0_over_T.trace()    
+    can_dm_apx = (Operator(d)+minus_h0_over_T)/can_p_f
+    assert np.all(np.isclose(can_dm.matrix, can_dm_apx.matrix, rtol=1e-10))
 
 
 
