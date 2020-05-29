@@ -1,6 +1,7 @@
 import math
 from cmath import exp
 import numpy as np
+import pandas as pd
 
 from Operators import Operator, Density_Matrix, \
                       Observable, Random_Operator, \
@@ -99,8 +100,16 @@ def H_Single_Mode_Pulse(spin, frequency, H_1, phase, theta, phi, t):
 
 # Returns the Hamiltonian of interaction between the nucleus and multiple single-mode electromagnetic
 # pulses
-#def H_Multiple_Mode_Pulse(spin, )
-
+def H_Multiple_Mode_Pulse(spin, mode, t):
+    h_pulse = Operator(spin.d)*0
+    omega = mode['frequency']
+    H = mode['amplitude']
+    phase = mode['phase']
+    theta = mode['theta']
+    phi = mode['phi']
+    for i in mode.index:
+        h_pulse = h_pulse + H_Single_Mode_Pulse(spin, omega[i], H[i], phase[i], theta[i], phi[i], t)
+    return Observable(h_pulse.matrix)
 
 
 
