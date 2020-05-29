@@ -112,6 +112,12 @@ def H_Multiple_Mode_Pulse(spin, mode, t):
     return Observable(h_pulse.matrix)
 
 
+# Hamiltonian of the pulse cast into the interaction picture
+def H_Pulse_IP(spin, mode, t, h_change_of_picture):
+    h_pulse_ip = H_Multiple_Mode_Pulse(spin, mode, t).interaction_picture(h_change_of_picture, t)
+    return Observable(h_pulse_ip.matrix)
+    
+
 
 
 
