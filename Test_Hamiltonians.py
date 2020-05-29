@@ -71,9 +71,9 @@ def test_Periodical_Pulse_Hamiltonian(n):
     omega = 5.
     t1 = 1.
     t2 = t1 + n*(2*math.pi)/omega
-    h_p1 = H_Single_Mode_Pulse(spin, math.pi/2, 0, omega, 0, 10., t1)
-    h_p2 = H_Single_Mode_Pulse(spin, math.pi/2, 0, omega, 0, 10., t2)
-    note("H_Single_ModePulse(t1) = %r" % (h_p1.matrix))
+    h_p1 = H_Single_Mode_Pulse(spin, omega, 10., 0, math.pi/2, 0, t1)
+    h_p2 = H_Single_Mode_Pulse(spin, omega, 10., 0, math.pi/2, 0, t2)
+    note("H_Single_Mode_Pulse(t1) = %r" % (h_p1.matrix))
     note("H_Single_Mode_Pulse(t2) = %r" % (h_p2.matrix))
     assert np.all(np.isclose(h_p1.matrix, h_p2.matrix, rtol=1e-10))
     

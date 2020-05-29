@@ -85,7 +85,7 @@ def V2(sign, eq, eta, alpha, beta, gamma):
 
 # Returns the Observable object representing the Hamiltonian of the interaction between the nucleus
 # and a time-dependent, monochromatic and linearly polarized electromagnetic pulse
-def H_Single_Mode_Pulse(spin, theta, phi, frequency, phase, H_1, t):
+def H_Single_Mode_Pulse(spin, frequency, H_1, phase, theta, phi, t):
     if frequency < 0: raise ValueError("The angular frequency of the electromagnetic wave must be a positive quantity")
     if H_1 < 0: raise ValueError("The amplitude of the electromagnetic wave must be a positive quantity")
     h_pulse = -spin.gyromagnetic_ratio*H_1*\
@@ -96,7 +96,10 @@ def H_Single_Mode_Pulse(spin, theta, phi, frequency, phase, H_1, t):
                math.cos(frequency*t-phase)
     return Observable(h_pulse.matrix)
     
-    
+
+# Returns the Hamiltonian of interaction between the nucleus and multiple single-mode electromagnetic
+# pulses
+#def H_Multiple_Mode_Pulse(spin, )
 
 
 
