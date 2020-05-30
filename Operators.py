@@ -2,7 +2,7 @@ import math
 import numpy as np
 from numpy.linalg import LinAlgError
 from scipy.linalg import expm, eig
-from scipy.constants import hbar
+from scipy.constants import hbar, Boltzmann
 from scipy.integrate import quad
 import Pade_Exp
 
@@ -282,8 +282,8 @@ def Magnus_Expansion_2nd_Term(h, time_step):
 
 # Returns the Density_Matrix associated with a canonically distributed ensemble of nuclear spins
 def Canonical_Density_Matrix(hamiltonian, temperature):
-    minus_h_over_T = -hamiltonian/temperature
-    numerator = minus_h_over_T.exp()
+    exponent = -(hbar*hamiltonian)/(Boltzmann*temperature)
+    numerator = exponent.exp()
     canonical_partition_function = numerator.trace()
     canonical_dm = numerator/canonical_partition_function
     return Density_Matrix(canonical_dm.matrix)

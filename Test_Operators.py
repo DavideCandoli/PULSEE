@@ -12,6 +12,8 @@ import numpy as np
 from scipy import linalg
 from scipy.linalg import eig
 from scipy.integrate import quad
+from scipy.constants import hbar, Boltzmann
+
 import hypothesis.strategies as st
 from hypothesis import given, note, assume
 
@@ -399,15 +401,15 @@ def test_AntiHermitianity_Magnus_2nd():
     assert np.all(np.isclose(magnus_2nd_dagger.matrix, -magnus_2nd.matrix, 1e-10))
     
 # Checks that the canonical density matrix computed with the function Canonical_Density_Matrix reduces
-# to (1 - H_0/T)/Z when the temperature T gets very large
+# to (1 - hbar*H_0/(k_B*T))/Z when the temperature T gets very large
 @given(d = st.integers(min_value=1, max_value=16))
 def test_Canonical_Density_Matrix_Large_T_Approximation(d):
     h0 = Random_Observable(d)
-    can_dm = Canonical_Density_Matrix(h0, 1e5)
-    minus_h0_over_T = -h0/1e5
-    exp_h0_over_T = minus_h0_over_T.exp()
-    can_p_f = exp_h0_over_T.trace()    
-    can_dm_apx = (Operator(d)+minus_h0_over_T)/can_p_f
+    can_dm = Canonical_Density_Matrix(h0, 300)
+    exp = -(hbar*h0)/(Boltzmann*300)
+    num = exp.exp()
+    can_p_f = num.trace()   
+    can_dm_apx = (Operator(d)+exp)/can_p_f
     assert np.all(np.isclose(can_dm.matrix, can_dm_apx.matrix, rtol=1e-10))
 
 
