@@ -148,6 +148,15 @@ def test_Exponential_Operator_Eigenvalues(d):
     note("Exponential of the eigenvalues of o = %r" % (sorted_exp_o_e))
     note("Eigenvalues of exp(o) = %r" % (sorted_exp_e))
     assert np.all(np.isclose(sorted_exp_o_e, sorted_exp_e, rtol=1e-10)) # <--- Not always verified!?!
+    
+# Checks that the eigenvalues of an Observable (computed with the method Operator.eigenvalues) are real
+# numbers
+@given(d = st.integers(min_value=1, max_value=16))
+def test_Observable_Real_Eigenvalues(d):
+    o = Random_Observable(d)
+    eig = o.eigenvalues()
+    note("Eigenvalues of o = %r" % (eig))
+    assert np.all(np.absolute(np.imag(eig)) < 1e-10)
 
 # Checks that the similarity transformation is equivalent to diagonalising an Operator o when the chosen change of basis operator has the eigenvectors of o as columns
 @given(d = st.integers(min_value=1, max_value=8))

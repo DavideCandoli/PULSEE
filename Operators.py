@@ -88,6 +88,10 @@ class Operator:
     def exp(self):
         exp_matrix = Pade_Exp.expm(self.matrix, 45)
         return Operator(exp_matrix)
+    
+    # Returns the eigenvalues of the Operator
+    def eigenvalues(self):
+        return np.linalg.eig(self.matrix)[0]
 
     # Performs a similarity transformation P^(-1)*M*P on the Operator M according to the given Operator
     # P for the change of basis
