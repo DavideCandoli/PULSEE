@@ -24,7 +24,7 @@ def test_Generic_Simulation():
                         columns=['frequency', 'amplitude', 'phase', 'theta', 'phi'])
     Simulate(s=1, gyro_ratio=1., \
              theta_z=0, phi_z=0, H_0=5., \
-             eQ=2., eq=2., eta=0.5, alpha_q=math.pi/2, beta_q=math.pi/2, gamma_q=math.pi/2, \
+             e2qQ=2., eta=0.5, alpha_q=math.pi/2, beta_q=math.pi/2, gamma_q=math.pi/2, \
              temperature=300, \
              mode=mode, \
              pulse_duration=5.)

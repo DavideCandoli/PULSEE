@@ -38,33 +38,32 @@ def test_Zeeman_Hamiltonian_Flipped_Magnetic_Field(par):
 @given(gamma = st.lists(st.floats(min_value=0, max_value=2*math.pi), min_size=2, max_size=2))
 def test_Symmetrical_EFG(gamma):
     spin = Nuclear_Spin()
-    h_q1 = H_Quadrupole(spin, 1, 1, 0, 1, 1, gamma[0])
-    h_q2 = H_Quadrupole(spin, 1, 1, 0, 1, 1, gamma[1])
+    h_q1 = H_Quadrupole(spin, 1, 0, 1, 1, gamma[0])
+    h_q2 = H_Quadrupole(spin, 1, 0, 1, 1, gamma[1])
     note("H_Quadrupole(gamma1) = %r" % (h_q1.matrix))
     note("H_Quadrupole(gamma2) = %r" % (h_q2.matrix))
     assert np.all(np.absolute(h_q1.matrix-h_q2.matrix) < 1e-10)
     
-# Checks that the formula for V^0 reduces to the half of the parameter eq when the Euler angles are set
-# to 0
-@given(eq = st.floats(min_value=0, max_value=20))
-def test_V0_Reduces_To_eq(eq):
-    v0 = V0(eq, 5., 0, 0, 0)
-    assert math.isclose(eq/2, v0, rel_tol=1e-10)
+# Checks that the formula for V^0 reduces to the 1/2 when the Euler angles are set to 0
+@given(eta = st.floats(min_value=0, max_value=1))
+def test_V0_Reduces_To_Half(eta):
+    v0 = V0(eta, 0, 0, 0)
+    assert math.isclose(1/2, v0, rel_tol=1e-10)
     
 # Checks that the formula for V^{+/-1} reduces to 0 when the Euler angles are set to 0
 def test_V1_Reduces_To_0():
     for sign in [-1, +1]:
-        v1 = V1(sign, 5., 5., 0, 0, 0)
+        v1 = V1(sign, 0.5, 0, 0, 0)
         assert np.absolute(v1) < 1e-10
         
 # Checks that the formula for V^{+/-2} reduces to
-# (eq/(2*sqrt(6)))*eta
+# (1/(2*sqrt(6)))*eta
 # when the Euler angles are set to 0
 @given(eta = st.floats(min_value=0, max_value=1))
 def test_V2_Reduces_To_eta(eta):
     for sign in [-2, +2]:
-        v2 = V2(sign, 5., eta, 0, 0, 0)
-        assert np.isclose(v2, 5*eta/(2*math.sqrt(6)), rtol=1e-10)
+        v2 = V2(sign, eta, 0, 0, 0)
+        assert np.isclose(v2, eta/(2*math.sqrt(6)), rtol=1e-10)
         
 # Checks that the Hamiltonians returned by H_Single_Mode_Pulse at times which differ by an integer
 # multiple of the period of the electromagnetic wave is the same

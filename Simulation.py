@@ -21,7 +21,7 @@ from Hamiltonians import H_Zeeman, H_Quadrupole, \
 # Function that runs the simulation
 def Simulate(s, gyro_ratio, \
              theta_z, phi_z, H_0, \
-             eQ, eq, eta, alpha_q, beta_q, gamma_q, \
+             e2qQ, eta, alpha_q, beta_q, gamma_q, \
              temperature, \
              mode, \
              pulse_duration):
@@ -33,7 +33,7 @@ def Simulate(s, gyro_ratio, \
     h_zeeman = H_Zeeman(spin, theta_z, phi_z, H_0)
     
     # Quadrupole term of the Hamiltonian
-    h_quadrupole = H_Quadrupole(spin, eQ, eq, eta, alpha_q, beta_q, gamma_q)
+    h_quadrupole = H_Quadrupole(spin, e2qQ, eta, alpha_q, beta_q, gamma_q)
     
     # Computes the unperturbed Hamiltonian of the system, namely the sum of the Zeeman and quadrupole
     # contributions
@@ -55,7 +55,9 @@ def Simulate(s, gyro_ratio, \
     
     print("Evolved density matrix = \n %r" % (dm_evolved.matrix))
 
-    
+
+# Computes the density matrix of the system after the application of a desired pulse for a given time,
+# given the initial preparation of the ensemble
 def Evolve(spin, dm_0, h_0, mode, T):
     
     # Sampling of the time-dependent term of the Hamiltonian representing the coupling with the
