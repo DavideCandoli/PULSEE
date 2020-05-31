@@ -20,11 +20,17 @@ from Simulation import Simulate
 
 # Checks if the simulation works, doesn't check if there is wrong output
 def test_Generic_Simulation():
+    spin_par = pd.DataFrame([(1, 1.)],
+                            columns=['quantum number', 'gyromagnetic ratio'])
+    zeem_par = pd.DataFrame([(5., 0, 0)],
+                            columns=['field magnitude', 'theta', 'phi'])
+    quad_par = pd.DataFrame([(2., 0.5, math.pi/2, math.pi/2, math.pi/2)],
+                            columns=['coupling constant', 'asymmetry parameter', 'alpha', 'beta', 'gamma'])
     mode = pd.DataFrame([(5., 10., 0., math.pi/2, 0.)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta', 'phi'])
-    Simulate(s=1, gyro_ratio=1., \
-             theta_z=0, phi_z=0, H_0=5., \
-             e2qQ=2., eta=0.5, alpha_q=math.pi/2, beta_q=math.pi/2, gamma_q=math.pi/2, \
-             temperature=300, \
+    Simulate(spin_par, \
+             zeem_par, \
+             quad_par, \
              mode=mode, \
-             pulse_duration=5.)
+             temperature=300, \
+             pulse_time=5.)

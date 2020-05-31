@@ -19,21 +19,26 @@ from Hamiltonians import H_Zeeman, H_Quadrupole, \
                          V0, V1, V2
 
 # Function that runs the simulation
-def Simulate(s, gyro_ratio, \
-             theta_z, phi_z, H_0, \
-             e2qQ, eta, alpha_q, beta_q, gamma_q, \
-             temperature, \
-             mode, \
-             pulse_duration):
+def Simulate(spin_par, zeem_par, quad_par, mode, temperature, pulse_time):
     
     # Nuclear spin under study
-    spin = Nuclear_Spin(s, gyro_ratio)
+    spin_par = spin_par.iloc[0]
+    spin = Nuclear_Spin(spin_par['quantum number'], \
+                        spin_par['gyromagnetic ratio'])
     
     # Zeeman term of the Hamiltonian
-    h_zeeman = H_Zeeman(spin, theta_z, phi_z, H_0)
+    zeem_par = zeem_par.iloc[0]
+    h_zeeman = H_Zeeman(spin, zeem_par['theta'], \
+                              zeem_par['phi'], \
+                              zeem_par['field magnitude'])
     
     # Quadrupole term of the Hamiltonian
-    h_quadrupole = H_Quadrupole(spin, e2qQ, eta, alpha_q, beta_q, gamma_q)
+    quad_par = quad_par.iloc[0]
+    h_quadrupole = H_Quadrupole(spin, quad_par['coupling constant'], \
+                                      quad_par['asymmetry parameter'], \
+                                      quad_par['alpha'], \
+                                      quad_par['beta'], \
+                                      quad_par['gamma'])
     
     # Computes the unperturbed Hamiltonian of the system, namely the sum of the Zeeman and quadrupole
     # contributions
@@ -50,8 +55,8 @@ def Simulate(s, gyro_ratio, \
     print("Initial density matrix = \n %r" % (dm_initial.matrix))
     
     # Evolves the density matrix under the action of the specified pulse through the time interval
-    # pulse_duration
-    dm_evolved = Evolve(spin, dm_initial, h_unperturbed, mode, pulse_duration)
+    # pulse_time
+    dm_evolved = Evolve(spin, dm_initial, h_unperturbed, mode, pulse_time)
     
     print("Evolved density matrix = \n %r" % (dm_evolved.matrix))
 
