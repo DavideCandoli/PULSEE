@@ -26,29 +26,30 @@ def H_Zeeman(spin, theta_z, phi_z, H_0):
 
 # Returns the Observable object representing the Hamiltonian for the interaction between the quadrupole
 # moment of the nucleus and the electric field gradient
-def H_Quadrupole(spin, eQ, eq, eta, alpha, beta, gamma):
+def H_Quadrupole(spin, e2qQ, eta, alpha, beta, gamma):
     if eta<0 or eta>1: raise ValueError("The asymmetry parameter must fall in the interval [0, 1]")
-    h_quadrupole = (eQ/(spin.quantum_number*(2*spin.quantum_number-1)))* \
+    h_quadrupole = (e2qQ/(spin.quantum_number*(2*spin.quantum_number-1)))* \
                    ((1/2)*(3*(spin.I['z']**2) - \
                            Operator(spin.d)*spin.quantum_number*(spin.quantum_number+1))* \
-                    V0(eq, eta, alpha, beta, gamma) + \
+                    V0(eta, alpha, beta, gamma) + \
                     (math.sqrt(6)/4)* \
                     ((spin.I['z']*spin.I['+'] + \
                       spin.I['+']*spin.I['z'])* \
-                     V1(-1, eq, eta, alpha, beta, gamma) + \
+                     V1(-1, eta, alpha, beta, gamma) + \
                      (spin.I['z']*spin.I['-'] + \
                       spin.I['-']*spin.I['z'])* \
-                     V1(+1, eq, eta, alpha, beta, gamma) + \
+                     V1(+1, eta, alpha, beta, gamma) + \
                      (spin.I['+']**2)* \
-                      V2(-2, eq, eta, alpha, beta, gamma) + \
+                      V2(-2, eta, alpha, beta, gamma) + \
                      (spin.I['-']**2)* \
-                      V2(2, eq, eta, alpha, beta, gamma)))
+                      V2(2, eta, alpha, beta, gamma)))
     return Observable(h_quadrupole.matrix)
 
 
 # Returns the spherical component V^0 of the EFG tensor
-def V0(eq, eta, alpha, beta, gamma):
-    v0 = (eq/2)*\
+def V0(eta, alpha, beta, gamma):
+    if eta<0 or eta>1: raise ValueError("The asymmetry parameter must fall in the interval [0, 1]")
+    v0 = (1/2)*\
          (
           ((3*(math.cos(beta))**2-1)/2) - (eta*(math.sin(beta))**2)*(math.cos(2*gamma))/2
          )
@@ -56,9 +57,10 @@ def V0(eq, eta, alpha, beta, gamma):
 
 
 # Returns the spherical components V^{+/-1} of the EFG tensor
-def V1(sign, eq, eta, alpha, beta, gamma):
+def V1(sign, eta, alpha, beta, gamma):
+    if eta<0 or eta>1: raise ValueError("The asymmetry parameter must fall in the interval [0, 1]")
     sign = np.sign(sign)
-    v1 = (eq/2)*\
+    v1 = (1/2)*\
          (
           -sign*1j*math.sqrt(3/8)*math.sin(2*beta)*exp(sign*1j*alpha)+\
           1j*(eta/(math.sqrt(6)))*math.sin(beta)*\
@@ -71,9 +73,10 @@ def V1(sign, eq, eta, alpha, beta, gamma):
 
 
 # Returns the spherical components V^{+/-2} of the EFG tensor
-def V2(sign, eq, eta, alpha, beta, gamma):
+def V2(sign, eta, alpha, beta, gamma):
+    if eta<0 or eta>1: raise ValueError("The asymmetry parameter must fall in the interval [0, 1]")
     sign = np.sign(sign)
-    v2 = (eq/2)*\
+    v2 = (1/2)*\
          (-math.sqrt(3/8)*((math.sin(beta))**2)*exp(sign*2j*alpha) +\
           (eta/math.sqrt(6))*exp(sign*2j*alpha)*\
            (
