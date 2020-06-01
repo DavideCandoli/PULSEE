@@ -20,13 +20,26 @@ from Hamiltonians import H_Zeeman, H_Quadrupole, \
                          H_Pulse_IP, \
                          V0, V1, V2
 
+
 def Zeeman_Spectrum():
     spin = Nuclear_Spin(1, 1.)
     h_zeeman = H_Zeeman(spin, math.pi/2, math.pi/2, 1.)
     energy_spectrum = h_zeeman.eigenvalues()
     print("Energy spectrum of the pure Zeeman Hamiltonian = %r" % energy_spectrum)
     
+        
+def Quadrupole_Spectrum_Axially_Symmetric():
+    spin = Nuclear_Spin(1, 0.)
+    h_quadrupole = H_Quadrupole(spin, 1., 0, math.pi/2, math.pi/2, math.pi/2)
+    energy_spectrum = h_quadrupole.eigenvalues()
+    print("Energy spectrum of the pure Quadrupole Hamiltonian = %r" % energy_spectrum)
     
+        
+def Quadrupole_Spectrum_Axially_Symmetric():
+    spin = Nuclear_Spin(1, 0.)
+    h_quadrupole = H_Quadrupole(spin, 1., 1, math.pi/2, math.pi/2, math.pi/2)
+    energy_spectrum = h_quadrupole.eigenvalues()
+    print("Energy spectrum of the pure Quadrupole Hamiltonian = %r" % energy_spectrum)
     
     
     
