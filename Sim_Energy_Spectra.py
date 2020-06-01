@@ -42,5 +42,42 @@ def Quadrupole_Spectrum_Axially_Asymmetric():
     print("Energy spectrum of the pure Quadrupole Hamiltonian = %r" % energy_spectrum)
     
     
+def Quadrupole_Perturbation_Satellite_Frequency_Shift():
+    spin = Nuclear_Spin(3/2, 1.)
     
+    h_zeeman = H_Zeeman(spin, 0., 0., 5.)
+    
+    field_crystal_angles = np.linspace(0, math.pi, num=15)
+    
+    frequency_shift = {}
+    
+    x = field_crystal_angles
+    y = []
+    
+    for theta_q in field_crystal_angles:
+        
+        h_quadrupole = H_Quadrupole(spin, 0.1, 0., 0., theta_q, 0.)
+        
+        h_unperturbed = Observable(h_zeeman.matrix + h_quadrupole.matrix)
+        
+        energy_spectrum = h_unperturbed.eigenvalues()
+        
+        energy_spectrum = np.sort(energy_spectrum)
+        
+        satellite_frequency = energy_spectrum[3] - energy_spectrum[2]
+        
+        central_frequency = energy_spectrum[2] - energy_spectrum[1]
+        
+        frequency_shift[theta_q] = satellite_frequency - central_frequency
+        
+        y.append(frequency_shift[theta_q])
+
+    plt.plot(x, y)
+    
+    plt.xlabel("\N{GREEK SMALL LETTER THETA} (rad)")    
+    plt.ylabel("\N{GREEK SMALL LETTER NU}3/2 - \N{GREEK SMALL LETTER NU}1/2 (MHz)")
+    
+    plt.show()
+    
+    return frequency_shift
     
