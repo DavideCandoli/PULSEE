@@ -45,9 +45,7 @@ def Simulate(spin_par, zeem_par, quad_par, mode, temperature, pulse_time):
     
     # Density matrix of the system at time t=0, when the ensemble of spins is at equilibrium
     dm_initial = Canonical_Density_Matrix(h_unperturbed, temperature)
-    
-    print("Initial density matrix = \n %r" % (dm_initial.matrix), '\n')
-    
+        
     # Evolves the density matrix under the action of the specified pulse through the time interval
     # pulse_time
     Evolve(spin, dm_initial, h_unperturbed, mode, pulse_time)
@@ -64,6 +62,8 @@ def Energy_Spectrum(h_0):
 def Evolve(spin, dm_0, h_0, mode, T):
     
     if T == 0: return dm_0
+    
+    print("Initial density matrix = \n %r" % (dm_0.matrix), '\n')
     
     # Sampling of the time-dependent term of the Hamiltonian representing the coupling with the
     # electromagnetic pulse (already cast in the interaction picture) in the time window [0, T]
