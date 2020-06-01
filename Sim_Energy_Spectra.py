@@ -35,7 +35,7 @@ def Quadrupole_Spectrum_Axially_Symmetric():
     print("Energy spectrum of the pure Quadrupole Hamiltonian = %r" % energy_spectrum)
     
         
-def Quadrupole_Spectrum_Axially_Symmetric():
+def Quadrupole_Spectrum_Axially_Asymmetric():
     spin = Nuclear_Spin(1, 0.)
     h_quadrupole = H_Quadrupole(spin, 1., 1, math.pi/2, math.pi/2, math.pi/2)
     energy_spectrum = h_quadrupole.eigenvalues()
