@@ -21,27 +21,33 @@ from Hamiltonians import H_Zeeman, H_Quadrupole, \
                          V0, V1, V2
 
 
+# Computes the energy spectrum of a nucleus subject to pure Zeeman interaction
 def Zeeman_Spectrum():
     spin = Nuclear_Spin(1, 1.)
     h_zeeman = H_Zeeman(spin, math.pi/2, math.pi/2, 1.)
     energy_spectrum = h_zeeman.eigenvalues()
     print("Energy spectrum of the pure Zeeman Hamiltonian = %r" % energy_spectrum)
     
-        
+
+# Computes the energy spectrum of a nucleus subject to pure quadrupole interaction, where the EFG is
+# axially symmetric (eta = 0)
 def Quadrupole_Spectrum_Axially_Symmetric():
     spin = Nuclear_Spin(1, 0.)
     h_quadrupole = H_Quadrupole(spin, 1., 0, math.pi/2, math.pi/2, math.pi/2)
     energy_spectrum = h_quadrupole.eigenvalues()
     print("Energy spectrum of the pure Quadrupole Hamiltonian = %r" % energy_spectrum)
     
-        
+# Computes the energy spectrum of a nucleus subject to pure quadrupole interaction, where the EFG is
+# axially asymmetric (eta = 1)
 def Quadrupole_Spectrum_Axially_Asymmetric():
     spin = Nuclear_Spin(1, 0.)
     h_quadrupole = H_Quadrupole(spin, 1., 1, math.pi/2, math.pi/2, math.pi/2)
     energy_spectrum = h_quadrupole.eigenvalues()
     print("Energy spectrum of the pure Quadrupole Hamiltonian = %r" % energy_spectrum)
     
-    
+# Computes the energy spectrum of a spin 3/2 nucleus where the quadrupole interaction is a small
+# perturbation of the Zeeman energy levels, and plots the difference between the satellite and central
+# transition frequencies as a function of the angle between the magnetic field and the crystal axis
 def Quadrupole_Perturbation_Satellite_Frequency_Shift():
     spin = Nuclear_Spin(3/2, 1.)
     
@@ -81,3 +87,4 @@ def Quadrupole_Perturbation_Satellite_Frequency_Shift():
     
     return frequency_shift
     
+
