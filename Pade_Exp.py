@@ -5,7 +5,7 @@ import numpy as np
 from scipy.linalg import norm
 from numpy.linalg import solve
 
-def expm(A, q=7):
+def expm(A, q=13):
     """Compute the matrix exponential using Pade approximation.
     Parameters
     ----------
