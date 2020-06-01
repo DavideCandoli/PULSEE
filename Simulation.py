@@ -44,12 +44,6 @@ def Simulate(spin_par, zeem_par, quad_par, mode, temperature, pulse_time):
     # contributions
     h_unperturbed = Observable(h_zeeman.matrix + h_quadrupole.matrix)
     
-    # Computes the energy eigenvalues of the unperturbed Hamiltonian
-    energy_spectrum = Energy_Spectrum(h_unperturbed)
-    
-    # Computes the frequencies of the transitions between energy levels
-    transition_frequencies = Frequency_Spectrum(energy_spectrum)
-    
     # Density matrix of the system at time t=0, when the ensemble of spins is at equilibrium
     dm_initial = Canonical_Density_Matrix(h_unperturbed, temperature)
         
@@ -58,23 +52,6 @@ def Simulate(spin_par, zeem_par, quad_par, mode, temperature, pulse_time):
     Evolve(spin, dm_initial, h_unperturbed, mode, pulse_time)
 
     
-def Energy_Spectrum(h_0):
-    energy_spectrum = h_0.eigenvalues()
-    print("Energy spectrum of the system = %r" % (energy_spectrum), '\n')
-    return energy_spectrum
-
-
-def Frequency_Spectrum(energies):
-    transitions = []
-    energies = np.sort(energies)
-    for e1 in energies:
-        for e2 in energies:
-            if e1<e2:
-                transitions.append(np.absolute(e1-e2))
-    print("Spectrum of the transition frequencies = %r" % (transitions), '\n')
-    return transitions
-
-
 # Computes the density matrix of the system after the application of a desired pulse for a given time,
 # given the initial preparation of the ensemble
 def Evolve(spin, dm_0, h_0, mode, T):
