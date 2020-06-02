@@ -140,8 +140,8 @@ def test_Reciprocal_Operator(d):
 @given(d = st.integers(min_value=1, max_value=8))
 def test_Exponential_Operator_Eigenvalues(d):
     o = Random_Operator(d)
-    o_e, o_v = linalg.eig(o.matrix)
-    exp_e, exp_v = linalg.eig(o.exp().matrix)
+    o_e = o.diagonalise()[0]
+    exp_e = o.exp().diagonalise()[0]
     sorted_exp_o_e = np.sort(np.exp(o_e))
     sorted_exp_e = np.sort(exp_e)
     note("o = %r" % (o.matrix))
@@ -156,16 +156,16 @@ def test_Exponential_Operator_Eigenvalues(d):
 @given(d = st.integers(min_value=1, max_value=16))
 def test_Observable_Real_Eigenvalues(d):
     o = Random_Observable(d)
-    eig = o.eigenvalues()
+    eig = o.diagonalise()[0]
     note("Eigenvalues of o = %r" % (eig))
     assert np.all(np.absolute(np.imag(eig)) < 1e-10)
 
-# Checks that the similarity transformation is equivalent to diagonalising an Operator o when the chosen change of basis operator has the eigenvectors of o as columns
+# Checks that the similarity transformation is equivalent to diagonalising an Operator o when the chosen 
+# change of basis operator has the eigenvectors of o as columns
 @given(d = st.integers(min_value=1, max_value=8))
 def test_Diagonalising_Change_Of_Basis(d):
     o = Random_Operator(d)
-    o_e, o_v = linalg.eig(o.matrix)
-    p = Operator(o_v)
+    o_e, p = o.diagonalise()
     o_sim = o.sim_trans(p).matrix
     o_diag = np.diag(o_e)
     note("o = %r" % (o.matrix))
