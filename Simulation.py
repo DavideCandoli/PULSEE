@@ -49,24 +49,23 @@ def Simulate(spin_par, zeem_par, quad_par, mode, temperature, pulse_time):
         
     # Evolves the density matrix under the action of the specified pulse through the time interval
     # pulse_time
-    Evolve(spin, dm_initial, h_unperturbed, mode, pulse_time)
+    return Evolve(spin, dm_initial, h_unperturbed, mode, pulse_time)
 
     
 # Computes the density matrix of the system after the application of a desired pulse for a given time,
 # given the initial preparation of the ensemble
-def Evolve(spin, dm_0, h_0, mode, T):
+def Evolve(spin, dm_0, h_0, mode, T, n_points = 10):
     
     if T == 0:
         return dm_0
     
-    print("Initial density matrix = \n %r" % (dm_0.matrix), '\n')
-          
     # Sampling of the time-dependent term of the Hamiltonian representing the coupling with the
     # electromagnetic pulse (already cast in the interaction picture) in the time window [0, T]
-    times, time_step = np.linspace(0, T, num=int(T*100), retstep=True)
+    times, time_step = np.linspace(0, T, num=int(T*n_points), retstep=True)
     h_pulse_ip = []
     for t in times:
         h_pulse_ip.append(H_Pulse_IP(spin, mode, t, h_0))
+    
     # Evaluation of the 1st and 2nd terms of the Magnus expansion for the pulse Hamiltonian in the
     # interaction picture
     magnus_1st = Magnus_Expansion_1st_Term(h_pulse_ip, time_step)
@@ -78,7 +77,5 @@ def Evolve(spin, dm_0, h_0, mode, T):
 
     # Evolved density matrix cast back in the Schroedinger picture
     dm_T = dm_T_ip.interaction_picture(h_0, T, invert=True)
-    
-    print("Evolved density matrix = \n %r" % (dm_T.matrix), '\n')
     
     return Density_Matrix(dm_T.matrix)
