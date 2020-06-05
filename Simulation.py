@@ -18,7 +18,7 @@ from Nuclear_Spin import Nuclear_Spin
 from Hamiltonians import H_Zeeman, H_Quadrupole, \
                          H_Single_Mode_Pulse, \
                          H_Multiple_Mode_Pulse, \
-                         H_Pulse_IP, \
+                         H_Changed_Picture, \
                          V0, V1, V2
 
 # Function that runs the simulation
@@ -52,7 +52,7 @@ def Simulate(spin_par, zeem_par, quad_par, mode, temperature, pulse_time):
     return Evolve(spin, dm_initial, h_unperturbed, mode, pulse_time)
 
     
-# Computes the density matrix of the system after the application of a desired pulse for a given time,
+# Computes the density matrix of the system aftcaratteristicaer the application of a desired pulse for a given time,
 # given the initial preparation of the ensemble
 def Evolve(spin, dm_0, h_0, mode, T, n_points = 10):
     
@@ -60,16 +60,16 @@ def Evolve(spin, dm_0, h_0, mode, T, n_points = 10):
         return dm_0
     
     # Sampling of the time-dependent term of the Hamiltonian representing the coupling with the
-    # electromagnetic pulse (already cast in the interaction picture) in the time window [0, T]
+    # electromagnetic pulse (cast in the interaction picture) throughout the time window [0, T]
     times, time_step = np.linspace(0, T, num=int(T*n_points), retstep=True)
-    h_pulse_ip = []
+    h_ip = []
     for t in times:
-        h_pulse_ip.append(H_Pulse_IP(spin, mode, t, h_0))
+        h_ip.append(H_Changed_Picture(spin, mode, h_0, h_0, t))
     
     # Evaluation of the 1st and 2nd terms of the Magnus expansion for the pulse Hamiltonian in the
     # interaction picture
-    magnus_1st = Magnus_Expansion_1st_Term(h_pulse_ip, time_step)
-    magnus_2nd = Magnus_Expansion_2nd_Term(h_pulse_ip, time_step)
+    magnus_1st = Magnus_Expansion_1st_Term(h_ip, time_step)
+    magnus_2nd = Magnus_Expansion_2nd_Term(h_ip, time_step)
 
     # Density matrix of the system after evolution under the action of the pulse (in the interaction
     # picture)
