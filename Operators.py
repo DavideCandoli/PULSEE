@@ -129,8 +129,8 @@ class Operator:
     # (stationary) unperturbed_hamiltonian which is passed as an argument.
     # Passing a parameter `invert=True` yields the opposite transformation, bringing an Operator in the
     # Dirac picture to the traditional Schroedinger one
-    def interaction_picture(self, unperturbed_hamiltonian, time, invert=False):
-        T = unperturbed_hamiltonian*(-1j*float(time))
+    def change_picture(self, h_change_of_picture, time, invert=False):
+        T = h_change_of_picture*(-1j*float(time))
         if invert: T = -T
         return self.sim_trans(T, exp=True)
 

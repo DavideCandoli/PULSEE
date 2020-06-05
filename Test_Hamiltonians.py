@@ -95,7 +95,7 @@ def test_Time_Reversal_Equivalent_Opposite_Circular_Polarization(t):
     h_p_backward = H_Multiple_Mode_Pulse(spin, mode_backward, -t)
     assert np.all(np.isclose(h_p_forward.matrix, h_p_backward.matrix, rtol=1e-10))
     
-# Checks that the Hamiltonian of the pulse expressed in the interaction picture is equal to that in the
+# Checks that the Hamiltonian of the pulse expressed in a new picture is equal to that in the
 # Schroedinger picture when this latter commutes with the operator for the change of picture
 def test_Invariant_IP_Pulse_Hamiltonian_When_Commutation_Holds():
     spin = Nuclear_Spin(1., 1.)

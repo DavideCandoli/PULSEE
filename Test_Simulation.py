@@ -14,7 +14,7 @@ from Operators import Operator, Density_Matrix, \
 
 from Nuclear_Spin import Nuclear_Spin
 
-from Hamiltonians import H_Zeeman, H_Quadrupole, H_Pulse_IP
+from Hamiltonians import H_Zeeman, H_Quadrupole, H_Changed_Picture
 
 from Simulation import Simulate
 
@@ -38,3 +38,5 @@ def test_Generic_Simulation():
              mode=mode, \
              temperature=300, \
              pulse_time=5.)
+    
+test_Generic_Simulation()

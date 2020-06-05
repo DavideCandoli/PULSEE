@@ -216,16 +216,16 @@ def test_Inverse_Exponential(d):
     note("exp(-o) = %r" % (right_hand_side))    
     assert np.all(np.isclose(left_hand_side, right_hand_side, rtol=1e-2))
 
-# Checks the reversibility of the method Operator.interaction_picture, i.e. that the double application of this method with toggled argument `invert` leaves the Operator invariant
+# Checks the reversibility of the method Operator.change_picture, i.e. that the double application of this method with toggled argument `invert` leaves the Operator invariant
 @given(d = st.integers(min_value=1, max_value=4))
-def test_Reversibility_Interaction_Picture(d):
+def test_Reversibility_Change_Picture(d):
     o = Random_Operator(d)
     h = Random_Operator(d)
-    o_ip = o.interaction_picture(h, 1, invert=False)
-    o1 = o_ip.interaction_picture(h, 1, invert=True)
+    o_ip = o.change_picture(h, 1, invert=False)
+    o1 = o_ip.change_picture(h, 1, invert=True)
     note("o = %r" % (o.matrix))
-    note("o in the interaction picture = %r" % (o_ip.matrix))
-    note("o brought back from the interaction picture = %r" % (o1.matrix))
+    note("o in the changed picture = %r" % (o_ip.matrix))
+    note("o brought back from the changed picture = %r" % (o1.matrix))
     assert np.all(np.isclose(o.matrix, o1.matrix, rtol=1e-1))
 
 # Checks that the constructor of the class Density_Matrix raises error when it is initialised with a non-hermitian square array

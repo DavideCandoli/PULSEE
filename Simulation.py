@@ -52,7 +52,7 @@ def Simulate(spin_par, zeem_par, quad_par, mode, temperature, pulse_time):
     return Evolve(spin, dm_initial, h_unperturbed, mode, pulse_time)
 
     
-# Computes the density matrix of the system aftcaratteristicaer the application of a desired pulse for a given time,
+# Computes the density matrix of the system after the application of a desired pulse for a given time, 
 # given the initial preparation of the ensemble
 def Evolve(spin, dm_0, h_0, mode, T, n_points = 10):
     
@@ -76,6 +76,6 @@ def Evolve(spin, dm_0, h_0, mode, T, n_points = 10):
     dm_T_ip = dm_0.sim_trans(-(magnus_1st+magnus_2nd), exp=True)
 
     # Evolved density matrix cast back in the Schroedinger picture
-    dm_T = dm_T_ip.interaction_picture(h_0, T, invert=True)
+    dm_T = dm_T_ip.change_picture(h_0, T, invert=True)
     
     return Density_Matrix(dm_T.matrix)
