@@ -2,8 +2,7 @@ import numpy as np
 import pandas as pd
 import math
 
-import sys
-sys.path.append('../')
+import matplotlib.pylab as plt
 
 from Operators import Operator, Density_Matrix, \
                       Observable, Random_Operator, \
@@ -44,12 +43,54 @@ def Simulate(spin_par, zeem_par, quad_par, mode, temperature, pulse_time):
     # contributions
     h_unperturbed = Observable(h_zeeman.matrix + h_quadrupole.matrix)
     
+    # Computes the frequencies and probabilities of transition induced by the pulse under consideration
+    # between the eigenstates of h_unperturbed
+    Transition_Spectrum(spin, h_unperturbed, mode, pulse_time)
+    
     # Density matrix of the system at time t=0, when the ensemble of spins is at equilibrium
     dm_initial = Canonical_Density_Matrix(h_unperturbed, temperature)
         
     # Evolves the density matrix under the action of the specified pulse through the time interval
     # pulse_time
     return Evolve(spin, dm_initial, h_unperturbed, mode, pulse_time, h_unperturbed)
+
+
+# Plots the spectrum of the transitions induced by the pulse specified by 'mode' between the eigenstates
+# of h_unperturbed after a time T
+def Transition_Spectrum(spin, h_unperturbed, mode, T):
+        
+    # Energy levels and eigenstates of the unperturbed Hamiltonian
+    energies, o_change_of_basis = h_unperturbed.diagonalise()
+    
+    # Hamiltonian of the pulse evaluated at time T
+    h_pulse_T = H_Multiple_Mode_Pulse(spin, mode, T)
+    
+    transition_frequency = []
+    
+    transition_probability = []
+    
+    d = h_unperturbed.dimension()
+    
+    # In the following loop, the frequencies and the respective probabilities of transition are computed
+    # and recorded in the appropriate lists
+    for i in range(d):
+        for j in range(d):
+            if i < j:
+                transition_frequency.append(np.absolute(energies[j] - energies[i]))
+                h_pulse_T_eig = h_pulse_T.sim_trans(o_change_of_basis)
+                transition_probability.append((np.absolute(h_pulse_T_eig.matrix[j][i]))**2)
+            else:
+                pass
+    
+    # A graph of probabilities vs frequencies of transition is plotted
+    plt.vlines(transition_frequency, 0, transition_probability, colors='b')
+    
+    plt.xlabel("\N{GREEK SMALL LETTER OMEGA} (MHz)")    
+    plt.ylabel("Probability (a. u.)")
+    
+    plt.savefig('Data/TransitionSpectra/TransitionSpectrum.png')
+    
+    plt.show()
 
     
 # Computes the density matrix of the system after the application of a desired pulse for a given time, 
