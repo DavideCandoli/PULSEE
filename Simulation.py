@@ -49,7 +49,7 @@ def Simulate(spin_par, zeem_par, quad_par, mode, temperature, pulse_time):
         
     # Evolves the density matrix under the action of the specified pulse through the time interval
     # pulse_time
-    return Evolve(spin, dm_initial, h_unperturbed, mode, pulse_time)
+    return Evolve(spin, dm_initial, h_unperturbed, mode, pulse_time, h_unperturbed)
 
     
 # Computes the density matrix of the system after the application of a desired pulse for a given time, 
