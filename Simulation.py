@@ -45,7 +45,9 @@ def Simulate(spin_par, zeem_par, quad_par, mode, temperature, pulse_time):
     
     # Computes the frequencies and probabilities of transition induced by the pulse under consideration
     # between the eigenstates of h_unperturbed
-    Transition_Spectrum(spin, h_unperturbed, mode, pulse_time)
+    t_frequencies, t_probabilities = Transition_Spectrum(spin, h_unperturbed, mode, pulse_time)
+    
+    Plot_Transition_Spectrum(t_frequencies, t_probabilities)
     
     # Density matrix of the system at time t=0, when the ensemble of spins is at equilibrium
     dm_initial = Canonical_Density_Matrix(h_unperturbed, temperature)
@@ -55,10 +57,10 @@ def Simulate(spin_par, zeem_par, quad_par, mode, temperature, pulse_time):
     return Evolve(spin, dm_initial, h_unperturbed, mode, pulse_time, h_unperturbed)
 
 
-# Plots the spectrum of the transitions induced by the pulse specified by 'mode' between the eigenstates
-# of h_unperturbed after a time T
+# Computes the spectrum of the transitions induced by the pulse specified by 'mode' between the
+# eigenstates of h_unperturbed after a time T
 def Transition_Spectrum(spin, h_unperturbed, mode, T):
-        
+    
     # Energy levels and eigenstates of the unperturbed Hamiltonian
     energies, o_change_of_basis = h_unperturbed.diagonalise()
     
@@ -82,8 +84,11 @@ def Transition_Spectrum(spin, h_unperturbed, mode, T):
             else:
                 pass
     
-    # A graph of probabilities vs frequencies of transition is plotted
-    plt.vlines(transition_frequency, 0, transition_probability, colors='b')
+    return transition_frequency, transition_probability
+
+
+def Plot_Transition_Spectrum(frequencies, probabilities):
+    plt.vlines(frequencies, 0, probabilities, colors='b')
     
     plt.xlabel("\N{GREEK SMALL LETTER OMEGA} (MHz)")    
     plt.ylabel("Probability (a. u.)")
