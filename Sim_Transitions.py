@@ -148,3 +148,25 @@ def Spectrum_Perturbed_Quadrupole_Integer_Spin():
              temperature=300, \
              pulse_time=20)
 
+    
+def Spectrum_Perturbed_Quadrupole_Half_Integer_Spin():
+    spin_par = {'quantum number' : 3/2,
+                'gyromagnetic ratio' : 1.}
+    zeem_par = {'field magnitude' : 1/(math.cos(math.atan(math.sqrt(3)/2))),
+                'theta_z' : math.atan(math.sqrt(3)/2),
+                'phi_z' : 0}
+    quad_par = {'coupling constant' : 12,
+                'asymmetry parameter' : 0,
+                'alpha_q' : 0,
+                'beta_q' : 0,
+                'gamma_q' : 0}
+    mode = pd.DataFrame([(10, 1., 0., math.pi/2, 0.)], 
+                        columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
+    Simulate(spin_par, \
+             zeem_par, \
+             quad_par, \
+             mode=mode, \
+             temperature=300, \
+             pulse_time=20)
+
+    
