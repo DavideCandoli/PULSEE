@@ -28,6 +28,8 @@ def H_Zeeman(spin, theta_z, phi_z, H_0):
 # moment of the nucleus and the electric field gradient
 def H_Quadrupole(spin, e2qQ, eta, alpha, beta, gamma):
     if eta<0 or eta>1: raise ValueError("The asymmetry parameter must fall in the interval [0, 1]")
+    if math.isclose(spin.quantum_number, 1/2, rel_tol=1e-10):
+        return Observable(spin.d)*0
     h_quadrupole = (e2qQ/(spin.quantum_number*(2*spin.quantum_number-1)))* \
                    ((1/2)*(3*(spin.I['z']**2) - \
                            Operator(spin.d)*spin.quantum_number*(spin.quantum_number+1))* \
