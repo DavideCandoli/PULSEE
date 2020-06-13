@@ -65,6 +65,46 @@ def Spectrum_Perturbed_Zeeman():
              pulse_time=20)
 
 
+def Spectrum_Pure_Symmetric_Quadrupole():
+    spin_par = {'quantum number' : 2,
+                'gyromagnetic ratio' : 1.}
+    zeem_par = {'field magnitude' : 0.,
+                'theta_z' : 0,
+                'phi_z' : 0}
+    quad_par = {'coupling constant' : 8,
+                'asymmetry parameter' : 0.,
+                'alpha_q' : math.pi/4,
+                'beta_q' : math.pi/4,
+                'gamma_q' : math.pi/4}
+    mode = pd.DataFrame([(10, 1., 0., math.pi/2, 0.)], 
+                        columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
+    Simulate(spin_par, \
+             zeem_par, \
+             quad_par, \
+             mode=mode, \
+             temperature=300, \
+             pulse_time=20)
+    
 
+def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
+    spin_par = {'quantum number' : 1,
+                'gyromagnetic ratio' : 1.}
+    zeem_par = {'field magnitude' : 0.,
+                'theta_z' : 0,
+                'phi_z' : 0}
+    quad_par = {'coupling constant' : 10,
+                'asymmetry parameter' : 0.6,
+                'alpha_q' : math.pi/4,
+                'beta_q' : math.pi/4,
+                'gamma_q' : math.pi/4}
+    mode = pd.DataFrame([(10, 1., 0., math.pi/2, 0.)], 
+                        columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
+    Simulate(spin_par, \
+             zeem_par, \
+             quad_par, \
+             mode=mode, \
+             temperature=300, \
+             pulse_time=20)
+    
 
 
