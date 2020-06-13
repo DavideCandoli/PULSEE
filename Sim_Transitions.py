@@ -84,7 +84,7 @@ def Spectrum_Pure_Symmetric_Quadrupole():
              mode=mode, \
              temperature=300, \
              pulse_time=20)
-    
+
 
 def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
     spin_par = {'quantum number' : 1,
@@ -105,6 +105,4 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
              mode=mode, \
              temperature=300, \
              pulse_time=20)
-    
-
 
