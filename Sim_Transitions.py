@@ -36,14 +36,17 @@ def Spectrum_Pure_Zeeman():
                 'gamma_q' : 0}
     mode = pd.DataFrame([(10., 1., 0., math.pi/2, 0.)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
+    RRF_par = {'omega_RRF': 10,
+               'theta_RRF': math.pi,
+               'phi_RRF': 0}
     Simulate(spin_par, \
              zeem_par, \
              quad_par, \
              mode=mode, \
              temperature=1e-10, \
              pulse_time=20, \
-             picture = 'RRF',
-             RRF_frequency = -10.)
+             picture = 'RRF', \
+             RRF_par=RRF_par)
     
 
 def Spectrum_Perturbed_Zeeman():
@@ -59,6 +62,9 @@ def Spectrum_Perturbed_Zeeman():
                 'gamma_q' : math.pi/4}
     mode = pd.DataFrame([(10., 1., 0., math.pi/2, 0.)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
+    RRF_par = {'omega_RRF': 10,
+               'theta_RRF': math.pi,
+               'phi_RRF': 0}
     Simulate(spin_par, \
              zeem_par, \
              quad_par, \
@@ -66,7 +72,7 @@ def Spectrum_Perturbed_Zeeman():
              temperature= 1e-10, \
              pulse_time=20, \
              picture='RRF', \
-             RRF_frequency=-10)
+             RRF_par=RRF_par)
 
 
 def Spectrum_Pure_Symmetric_Quadrupole():
@@ -82,12 +88,17 @@ def Spectrum_Pure_Symmetric_Quadrupole():
                 'gamma_q' : math.pi/4}
     mode = pd.DataFrame([(10, 1., 0., math.pi/2, 0.)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
+    RRF_par = {'omega_RRF': 10,
+               'theta_RRF': math.pi/4,
+               'phi_RRF': -math.pi/4}
     Simulate(spin_par, \
              zeem_par, \
              quad_par, \
              mode=mode, \
-             temperature=300, \
-             pulse_time=20)
+             temperature=1e-10, \
+             pulse_time=20, \
+             picture = 'RRF', 
+             RRF_par=RRF_par)
 
 
 def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
@@ -103,12 +114,17 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
                 'gamma_q' : math.pi/4}
     mode = pd.DataFrame([(10, 1., 0., math.pi/2, 0.)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
+    RRF_par = {'omega_RRF': 10,
+               'theta_RRF': 0,
+               'phi_RRF': 0}
     Simulate(spin_par, \
              zeem_par, \
              quad_par, \
              mode=mode, \
              temperature=300, \
-             pulse_time=20)
+             pulse_time=20, \
+             picture = 'RRF',
+             RRF_par=RRF_par)
     
     
 def Spectrum_Pure_Asymmetric_Quadrupole_Half_Integer_Spin():
@@ -124,12 +140,17 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Half_Integer_Spin():
                 'gamma_q' : math.pi/4}
     mode = pd.DataFrame([(10, 1., 0., math.pi/2, 0.)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
+    RRF_par = {'omega_RRF': 10,
+               'theta_RRF': 0,
+               'phi_RRF': 0}
     Simulate(spin_par, \
              zeem_par, \
              quad_par, \
              mode=mode, \
              temperature=300, \
-             pulse_time=20)
+             pulse_time=20, \
+             picture = 'RRF', \
+             RRF_par=RRF_par)
 
     
 def Spectrum_Perturbed_Quadrupole_Integer_Spin():
@@ -145,12 +166,17 @@ def Spectrum_Perturbed_Quadrupole_Integer_Spin():
                 'gamma_q' : 0}
     mode = pd.DataFrame([(10, 1., 0., math.pi/2, 0.)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
+    RRF_par = {'omega_RRF': 10,
+               'theta_RRF': 0,
+               'phi_RRF': 0}
     Simulate(spin_par, \
              zeem_par, \
              quad_par, \
              mode=mode, \
              temperature=300, \
-             pulse_time=20)
+             pulse_time=20, \
+             picture = 'RRF', \
+             RRF_par=RRF_par)
 
     
 def Spectrum_Perturbed_Quadrupole_Half_Integer_Spin():
@@ -166,11 +192,16 @@ def Spectrum_Perturbed_Quadrupole_Half_Integer_Spin():
                 'gamma_q' : 0}
     mode = pd.DataFrame([(10, 1., 0., math.pi/2, 0.)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
+    RRF_par = {'omega_RRF': 10,
+               'theta_RRF': 0,
+               'phi_RRF': 0}
     Simulate(spin_par, \
              zeem_par, \
              quad_par, \
              mode=mode, \
              temperature=300, \
-             pulse_time=20)
+             pulse_time=20, \
+             picture = 'RRF', \
+             RRF_par=RRF_par)
 
     

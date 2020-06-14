@@ -23,7 +23,7 @@ from Hamiltonians import H_Zeeman, H_Quadrupole, \
                          V0, V1, V2
 
 # Function that runs the simulation
-def Simulate(spin_par, zeem_par, quad_par, mode, temperature, pulse_time, picture='RRF', RRF_frequency=0):
+def Simulate(spin_par, zeem_par, quad_par, mode, temperature, pulse_time, picture='RRF', RRF_par=0):
     
     # Nuclear spin under study
     spin = Nuclear_Spin(spin_par['quantum number'], \
@@ -60,16 +60,14 @@ def Simulate(spin_par, zeem_par, quad_par, mode, temperature, pulse_time, pictur
     if picture == 'IP':
         o_change_of_picture = h_unperturbed
     else:
-        o_change_of_picture = RRF_Operator(spin, RRF_frequency)
+        o_change_of_picture = RRF_Operator(spin, RRF_par)
     
     # Evolves the density matrix under the action of the specified pulse through the time interval
     # pulse_time, performing the evolution in the specified picture
     dm_evolved = Evolve(spin, dm_initial, h_unperturbed, mode, pulse_time, o_change_of_picture)
     
     Plot_Real_Density_Matrix(dm_evolved)
-    
-    print((dm_evolved-dm_initial).matrix)
-    
+        
     return t_frequencies, t_probabilities, dm_evolved
 
 
@@ -116,8 +114,13 @@ def Plot_Transition_Spectrum(frequencies, probabilities):
 
 # Operator which generates a change of picture equivalent to moving to the rotating reference frame
 # (RRF)
-def RRF_Operator(spin, omega):
-    RRF_operator = omega*spin.I['z']
+def RRF_Operator(spin, RRF_par):
+    omega = RRF_par['omega_RRF']
+    theta = RRF_par['theta_RRF']
+    phi = RRF_par['phi_RRF']
+    RRF_operator = omega*(spin.I['z']*math.cos(theta) + \
+                          spin.I['x']*math.sin(theta)*math.cos(phi) + \
+                          spin.I['y']*math.sin(theta)*math.sin(phi))
     return Observable(RRF_operator.matrix)
 
 
