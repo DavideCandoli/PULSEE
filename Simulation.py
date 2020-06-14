@@ -23,7 +23,11 @@ from Hamiltonians import H_Zeeman, H_Quadrupole, \
                          V0, V1, V2
 
 # Function that runs the simulation
-def Simulate(spin_par, zeem_par, quad_par, mode, temperature, pulse_time, picture='RRF', RRF_par=0):
+def Simulate(spin_par, zeem_par, quad_par, mode, \
+             temperature, pulse_time, \
+             picture='RRF', RRF_par={'omega_RRF': 0,
+                                     'theta_RRF': 0,
+                                     'phi_RRF': 0}):
     
     # Nuclear spin under study
     spin = Nuclear_Spin(spin_par['quantum number'], \
