@@ -3,6 +3,8 @@ import pandas as pd
 import math
 
 import matplotlib.pylab as plt
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.pyplot import xticks, yticks
 
 from Operators import Operator, Density_Matrix, \
                       Observable, Random_Operator, \
@@ -52,9 +54,15 @@ def Simulate(spin_par, zeem_par, quad_par, mode, temperature, pulse_time):
     # Density matrix of the system at time t=0, when the ensemble of spins is at equilibrium
     dm_initial = Canonical_Density_Matrix(h_unperturbed, temperature)
         
+    print(dm_initial.matrix)
+    
     # Evolves the density matrix under the action of the specified pulse through the time interval
     # pulse_time
-    return Evolve(spin, dm_initial, h_unperturbed, mode, pulse_time, h_unperturbed)
+    dm_evolved = Evolve(spin, dm_initial, h_unperturbed, mode, pulse_time, h_unperturbed)
+    
+    Plot_Real_Density_Matrix(dm_evolved)
+    
+    return t_frequencies, t_probabilities, dm_evolved
 
 
 # Computes the spectrum of the transitions induced by the pulse specified by 'mode' between the
@@ -124,3 +132,53 @@ def Evolve(spin, dm_0, h_0, mode, T, o_change_of_picture, n_points=10):
     dm_T = dm_T_ip.change_picture(h_0, T, invert=True)
     
     return Density_Matrix(dm_T.matrix)
+
+
+# Generates a 3D histogram of the real part of the passed density matrix
+def Plot_Real_Density_Matrix(dm):
+    
+    # Retain only the real part of the density matrix elements
+    real_part = np.vectorize(np.real)
+    data_array = real_part(dm.matrix)
+    
+    # Create a figure for plotting the data as a 3D histogram.
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    # Create an X-Y mesh of the same dimension as the 2D data. You can think of this as the floor of the
+    # plot.
+    x_data, y_data = np.meshgrid(np.arange(data_array.shape[1])+0.25,
+                                 np.arange(data_array.shape[0])+0.25)
+    
+    
+    # Set width of the vertical bars
+    dx = dy = 0.5
+
+    # Flatten out the arrays so that they may be passed to "ax.bar3d".
+    # Basically, ax.bar3d expects three one-dimensional arrays:
+    # x_data, y_data, z_data. The following call boils down to picking
+    # one entry from each array and plotting a bar to from
+    # (x_data[i], y_data[i], 0) to (x_data[i], y_data[i], z_data[i]).
+    x_data = x_data.flatten()
+    y_data = y_data.flatten()
+    z_data = data_array.flatten()
+    ax.bar3d(x_data,
+             y_data,
+             np.zeros(len(z_data)),
+             dx, dy, z_data)
+    
+    # Labels of the plot
+    
+    s = (data_array.shape[0]-1)/2
+
+    xticks(np.arange(start=0.5, stop=data_array.shape[0]+0.5), np.arange(start=s, stop=-s-1, step=-1))
+    yticks(np.arange(start=0.5, stop=data_array.shape[0]+0.5), np.arange(start=s, stop=-s-1, step=-1))
+    
+    ax.set_xlabel("m")    
+    ax.set_ylabel("m")
+    ax.set_zlabel("Re(\N{GREEK SMALL LETTER RHO})")
+
+    # Finally, display the plot.
+    
+    plt.show()
+    
