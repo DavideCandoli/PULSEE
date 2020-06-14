@@ -40,8 +40,10 @@ def Spectrum_Pure_Zeeman():
              zeem_par, \
              quad_par, \
              mode=mode, \
-             temperature=300, \
-             pulse_time=20)
+             temperature=1e-10, \
+             pulse_time=20, \
+             picture = 'RRF',
+             RRF_frequency = -10.)
     
 
 def Spectrum_Perturbed_Zeeman():
@@ -61,8 +63,10 @@ def Spectrum_Perturbed_Zeeman():
              zeem_par, \
              quad_par, \
              mode=mode, \
-             temperature=300, \
-             pulse_time=20)
+             temperature= 1e-10, \
+             pulse_time=20, \
+             picture='RRF', \
+             RRF_frequency=-10)
 
 
 def Spectrum_Pure_Symmetric_Quadrupole():
