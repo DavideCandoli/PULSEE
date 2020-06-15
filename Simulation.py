@@ -22,12 +22,59 @@ from Hamiltonians import H_Zeeman, H_Quadrupole, \
                          H_Changed_Picture, \
                          V0, V1, V2
 
-# Function that runs the simulation
-def Simulate(spin_par, zeem_par, quad_par, mode, \
-             temperature, pulse_time, \
-             picture='RRF', RRF_par={'omega_RRF': 0,
-                                     'theta_RRF': 0,
-                                     'phi_RRF': 0}):
+# Sets the following elements of the system under study:
+# - Nuclear spin
+# - Unperturbed Hamiltonian
+# - Initial density matrix (canonical)
+# and returns the density matrix of the system after a time pulse_time.
+def Simulate_Evolution(spin_par, zeem_par, quad_par, mode, \
+                       temperature, pulse_time, \
+                       picture='RRF', RRF_par={'omega_RRF': 0,
+                                               'theta_RRF': 0,
+                                               'phi_RRF': 0}):
+    
+    # Nuclear spin under study
+    spin = Nuclear_Spin(spin_par['quantum number'], \
+                        spin_par['gyromagnetic ratio'])
+    
+    # Zeeman term of the Hamiltonian
+    h_zeeman = H_Zeeman(spin, zeem_par['theta_z'], \
+                              zeem_par['phi_z'], \
+                              zeem_par['field magnitude'])
+    
+    # Quadrupole term of the Hamiltonian
+    h_quadrupole = H_Quadrupole(spin, quad_par['coupling constant'], \
+                                      quad_par['asymmetry parameter'], \
+                                      quad_par['alpha_q'], \
+                                      quad_par['beta_q'], \
+                                      quad_par['gamma_q'])
+    
+    # Computes the unperturbed Hamiltonian of the system, namely the sum of the Zeeman and quadrupole
+    # contributions
+    h_unperturbed = Observable(h_zeeman.matrix + h_quadrupole.matrix)
+    
+    # Density matrix of the system at time t=0, when the ensemble of spins is at equilibrium
+    dm_initial = Canonical_Density_Matrix(h_unperturbed, temperature)
+            
+    # Selects the operator for the change of picture, according to the value of parameter 'picture'
+    if picture == 'IP':
+        o_change_of_picture = h_unperturbed
+    else:
+        o_change_of_picture = RRF_Operator(spin, RRF_par)
+    
+    # Evolves the density matrix under the action of the specified pulse through the time interval
+    # pulse_time, performing the evolution in the specified picture
+    dm_evolved = Evolve(spin, dm_initial, h_unperturbed, mode, pulse_time, o_change_of_picture)
+            
+    return dm_evolved
+
+
+# Sets the following elements of the system under study:
+# - Nuclear spin
+# - Unperturbed Hamiltonian
+# and returns the spectrum of the transitions induced between the energy eigenstates of the system
+# through a time pulse_time
+def Simulate_Transition_Spectrum(spin_par, zeem_par, quad_par, mode, pulse_time):
     
     # Nuclear spin under study
     spin = Nuclear_Spin(spin_par['quantum number'], \
@@ -53,26 +100,7 @@ def Simulate(spin_par, zeem_par, quad_par, mode, \
     # between the eigenstates of h_unperturbed
     t_frequencies, t_probabilities = Transition_Spectrum(spin, h_unperturbed, mode, pulse_time)
     
-    Plot_Transition_Spectrum(t_frequencies, t_probabilities)
-    
-    # Density matrix of the system at time t=0, when the ensemble of spins is at equilibrium
-    dm_initial = Canonical_Density_Matrix(h_unperturbed, temperature)
-    
-    Plot_Real_Density_Matrix(dm_initial)
-        
-    # Selects the operator for the change of picture, according on the value of parameter 'picture'
-    if picture == 'IP':
-        o_change_of_picture = h_unperturbed
-    else:
-        o_change_of_picture = RRF_Operator(spin, RRF_par)
-    
-    # Evolves the density matrix under the action of the specified pulse through the time interval
-    # pulse_time, performing the evolution in the specified picture
-    dm_evolved = Evolve(spin, dm_initial, h_unperturbed, mode, pulse_time, o_change_of_picture)
-    
-    Plot_Real_Density_Matrix(dm_evolved)
-        
-    return t_frequencies, t_probabilities, dm_evolved
+    return t_frequencies, t_probabilities
 
 
 # Computes the spectrum of the transitions induced by the pulse specified by 'mode' between the
