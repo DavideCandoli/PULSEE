@@ -185,7 +185,7 @@ def Evolve(spin, dm_0, h_0, mode, T, o_change_of_picture, n_points=10):
 
 
 # Generates a 3D histogram of the real part of the passed density matrix
-def Plot_Real_Density_Matrix(dm):
+def Plot_Real_Density_Matrix(dm, name='RealPartDensityMatrix', destination='Data/DensityMatrices'):
     
     # Retain only the real part of the density matrix elements
     real_part = np.vectorize(np.real)
@@ -227,6 +227,10 @@ def Plot_Real_Density_Matrix(dm):
     ax.set_xlabel("m")    
     ax.set_ylabel("m")
     ax.set_zlabel("Re(\N{GREEK SMALL LETTER RHO})")
+    
+    # Save the plot
+    
+    plt.savefig(destination + '/' + name)
 
     # Finally, display the plot.
     
