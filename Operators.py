@@ -276,6 +276,7 @@ def Magnus_Expansion_2nd_Term(h, time_step):
     integral = (h[0]*0).matrix
     for t1 in range(len(h)-1):
         for t2 in range(len(h)-1):
+            if t2 > t1: break
             integral = integral + (Commutator(h[t1], h[t2]).matrix)*(time_step**2)
     magnus_2nd_term = Operator(-(1/2)*integral)
     return magnus_2nd_term
