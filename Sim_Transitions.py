@@ -20,7 +20,10 @@ from Hamiltonians import H_Zeeman, H_Quadrupole, \
                          H_Changed_Picture, \
                          V0, V1, V2
 
-from Simulation import Evolve, Transition_Spectrum, Simulate
+from Simulation import Simulate_Evolution, \
+                       Simulate_Transition_Spectrum, \
+                       Plot_Real_Density_Matrix, \
+                       Plot_Transition_Spectrum
 
 
 def Spectrum_Pure_Zeeman():
@@ -39,14 +42,21 @@ def Spectrum_Pure_Zeeman():
     RRF_par = {'omega_RRF': 10,
                'theta_RRF': math.pi,
                'phi_RRF': 0}
-    Simulate(spin_par, \
-             zeem_par, \
-             quad_par, \
-             mode=mode, \
-             temperature=1e-10, \
-             pulse_time=20, \
-             picture = 'RRF', \
-             RRF_par=RRF_par)
+    dm_evolved = Simulate_Evolution(spin_par, \
+                                    zeem_par, \
+                                    quad_par, \
+                                    mode=mode, \
+                                    temperature=1e-10, \
+                                    pulse_time=20, \
+                                    picture = 'RRF', \
+                                    RRF_par=RRF_par)
+    Plot_Real_Density_Matrix(dm_evolved)
+    f, p = Simulate_Transition_Spectrum(spin_par, \
+                                        zeem_par, \
+                                        quad_par, \
+                                        mode=mode, \
+                                        pulse_time=20)
+    Plot_Transition_Spectrum(f, p)
     
 
 def Spectrum_Perturbed_Zeeman():
@@ -65,14 +75,21 @@ def Spectrum_Perturbed_Zeeman():
     RRF_par = {'omega_RRF': 10,
                'theta_RRF': math.pi,
                'phi_RRF': 0}
-    Simulate(spin_par, \
-             zeem_par, \
-             quad_par, \
-             mode=mode, \
-             temperature= 1e-10, \
-             pulse_time=20, \
-             picture='RRF', \
-             RRF_par=RRF_par)
+    dm_evolved = Simulate_Evolution(spin_par, \
+                                    zeem_par, \
+                                    quad_par, \
+                                    mode=mode, \
+                                    temperature=1e-10, \
+                                    pulse_time=20, \
+                                    picture = 'RRF', \
+                                    RRF_par=RRF_par)
+    Plot_Real_Density_Matrix(dm_evolved)
+    f, p = Simulate_Transition_Spectrum(spin_par, \
+                                        zeem_par, \
+                                        quad_par, \
+                                        mode=mode, \
+                                        pulse_time=20)
+    Plot_Transition_Spectrum(f, p)
 
 
 def Spectrum_Pure_Symmetric_Quadrupole():
@@ -91,14 +108,21 @@ def Spectrum_Pure_Symmetric_Quadrupole():
     RRF_par = {'omega_RRF': 1.,
                'theta_RRF': 0,
                'phi_RRF': 0}
-    Simulate(spin_par, \
-             zeem_par, \
-             quad_par, \
-             mode=mode, \
-             temperature=1e-11, \
-             pulse_time=20, \
-             picture = 'RRF', 
-             RRF_par=RRF_par)
+    dm_evolved = Simulate_Evolution(spin_par, \
+                                    zeem_par, \
+                                    quad_par, \
+                                    mode=mode, \
+                                    temperature=1e-11, \
+                                    pulse_time=20, \
+                                    picture = 'RRF', \
+                                    RRF_par=RRF_par)
+    Plot_Real_Density_Matrix(dm_evolved)
+    f, p = Simulate_Transition_Spectrum(spin_par, \
+                                        zeem_par, \
+                                        quad_par, \
+                                        mode=mode, \
+                                        pulse_time=20)
+    Plot_Transition_Spectrum(f, p)
 
 
 def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
@@ -117,14 +141,21 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
     RRF_par = {'omega_RRF': 10,
                'theta_RRF': -math.pi/4,
                'phi_RRF': 0}
-    Simulate(spin_par, \
-             zeem_par, \
-             quad_par, \
-             mode=mode, \
-             temperature=1e-10, \
-             pulse_time=20, \
-             picture = 'RRF',
-             RRF_par=RRF_par)
+    dm_evolved = Simulate_Evolution(spin_par, \
+                                    zeem_par, \
+                                    quad_par, \
+                                    mode=mode, \
+                                    temperature=1e-10, \
+                                    pulse_time=20, \
+                                    picture = 'RRF', \
+                                    RRF_par=RRF_par)
+    Plot_Real_Density_Matrix(dm_evolved)
+    f, p = Simulate_Transition_Spectrum(spin_par, \
+                                        zeem_par, \
+                                        quad_par, \
+                                        mode=mode, \
+                                        pulse_time=20)
+    Plot_Transition_Spectrum(f, p)
     
     
 def Spectrum_Pure_Asymmetric_Quadrupole_Half_Integer_Spin():
@@ -143,14 +174,21 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Half_Integer_Spin():
     RRF_par = {'omega_RRF': 10,
                'theta_RRF': math.pi,
                'phi_RRF': 0}
-    Simulate(spin_par, \
-             zeem_par, \
-             quad_par, \
-             mode=mode, \
-             temperature=1e-11, \
-             pulse_time=20, \
-             picture = 'RRF', \
-             RRF_par=RRF_par)
+    dm_evolved = Simulate_Evolution(spin_par, \
+                                    zeem_par, \
+                                    quad_par, \
+                                    mode=mode, \
+                                    temperature=1e-10, \
+                                    pulse_time=20, \
+                                    picture = 'RRF', \
+                                    RRF_par=RRF_par)
+    Plot_Real_Density_Matrix(dm_evolved)
+    f, p = Simulate_Transition_Spectrum(spin_par, \
+                                        zeem_par, \
+                                        quad_par, \
+                                        mode=mode, \
+                                        pulse_time=20)
+    Plot_Transition_Spectrum(f, p)
 
     
 def Spectrum_Perturbed_Quadrupole_Integer_Spin():
@@ -169,14 +207,21 @@ def Spectrum_Perturbed_Quadrupole_Integer_Spin():
     RRF_par = {'omega_RRF': 10,
                'theta_RRF': 0,
                'phi_RRF': 0}
-    Simulate(spin_par, \
-             zeem_par, \
-             quad_par, \
-             mode=mode, \
-             temperature=1e-10, \
-             pulse_time=20, \
-             picture = 'RRF', \
-             RRF_par=RRF_par)
+    dm_evolved = Simulate_Evolution(spin_par, \
+                                    zeem_par, \
+                                    quad_par, \
+                                    mode=mode, \
+                                    temperature=1e-10, \
+                                    pulse_time=20, \
+                                    picture = 'RRF', \
+                                    RRF_par=RRF_par)
+    Plot_Real_Density_Matrix(dm_evolved)
+    f, p = Simulate_Transition_Spectrum(spin_par, \
+                                        zeem_par, \
+                                        quad_par, \
+                                        mode=mode, \
+                                        pulse_time=20)
+    Plot_Transition_Spectrum(f, p)
 
     
 def Spectrum_Perturbed_Quadrupole_Half_Integer_Spin():
@@ -195,13 +240,20 @@ def Spectrum_Perturbed_Quadrupole_Half_Integer_Spin():
     RRF_par = {'omega_RRF': 10,
                'theta_RRF': 0,
                'phi_RRF': 0}
-    Simulate(spin_par, \
-             zeem_par, \
-             quad_par, \
-             mode=mode, \
-             temperature=1e-12, \
-             pulse_time=20, \
-             picture = 'RRF', \
-             RRF_par=RRF_par)
+    dm_evolved = Simulate_Evolution(spin_par, \
+                                    zeem_par, \
+                                    quad_par, \
+                                    mode=mode, \
+                                    temperature=1e-12, \
+                                    pulse_time=20, \
+                                    picture = 'RRF', \
+                                    RRF_par=RRF_par)
+    Plot_Real_Density_Matrix(dm_evolved)
+    f, p = Simulate_Transition_Spectrum(spin_par, \
+                                        zeem_par, \
+                                        quad_par, \
+                                        mode=mode, \
+                                        pulse_time=20)
+    Plot_Transition_Spectrum(f, p)
 
     
