@@ -17,7 +17,7 @@ from Nuclear_Spin import Nuclear_Spin
 from Hamiltonians import H_Zeeman, H_Quadrupole, \
                          H_Single_Mode_Pulse, \
                          H_Multiple_Mode_Pulse, \
-                         H_Pulse_IP, \
+                         H_Changed_Picture, \
                          V0, V1, V2
 
     
@@ -42,7 +42,7 @@ def Quadrupole_Perturbation_Satellite_Frequency_Shift():
         
         h_unperturbed = Observable(h_zeeman.matrix + h_quadrupole.matrix)
         
-        energy_spectrum = h_unperturbed.eigenvalues()
+        energy_spectrum = h_unperturbed.diagonalise()[0]
         
         energy_spectrum = np.sort(energy_spectrum)
         
@@ -54,16 +54,14 @@ def Quadrupole_Perturbation_Satellite_Frequency_Shift():
         
         y.append(frequency_shift[theta_q])
 
-    plt.plot(x, y)
+    plt.plot(x, np.real(y))
     
     plt.xlabel("\N{GREEK SMALL LETTER THETA} (\N{DEGREE SIGN})")    
     plt.ylabel("\N{GREEK SMALL LETTER NU}3/2 - \N{GREEK SMALL LETTER NU}1/2 (MHz)")
     
-    plt.savefig('Data/')
+    plt.savefig('Data/FrequencyShiftGraphs/SatelliteFrequencyShift')
     
     plt.show()
-    
-    return frequency_shift
     
 
 # Computes the energy spectrum of a spin 5/2 nucleus where the quadrupole interaction is a small
@@ -87,7 +85,7 @@ def Quadrupole_Perturbation_Central_Frequency_Shift():
         
         h_unperturbed = Observable(h_zeeman.matrix + h_quadrupole.matrix)
         
-        energy_spectrum = h_unperturbed.eigenvalues()
+        energy_spectrum = h_unperturbed.diagonalise()[0]
         
         energy_spectrum = np.sort(energy_spectrum)
                 
@@ -95,11 +93,11 @@ def Quadrupole_Perturbation_Central_Frequency_Shift():
         
         y.append(central_frequency[theta_q])
 
-    plt.plot(x, y)
+    plt.plot(x, np.real(y))
     
     plt.xlabel("\N{GREEK SMALL LETTER THETA} (\N{DEGREE SIGN})")    
     plt.ylabel("\N{GREEK SMALL LETTER NU}1/2 (MHz)")
     
+    plt.savefig('Data/FrequencyShiftGraphs/CentralFrequencyShift')
+
     plt.show()
-    
-    return frequency_shift
