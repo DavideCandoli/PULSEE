@@ -133,13 +133,13 @@ def Transition_Spectrum(spin, h_unperturbed, mode, T):
     return transition_frequency, transition_probability
 
 
-def Plot_Transition_Spectrum(frequencies, probabilities, name='TransitionSpectrum', destination='Data/TransitionSpectra'):
+def Plot_Transition_Spectrum(frequencies, probabilities, name='TransitionSpectrum', destination=''):
     plt.vlines(frequencies, 0, probabilities, colors='b')
     
     plt.xlabel("\N{GREEK SMALL LETTER OMEGA} (MHz)")    
     plt.ylabel("Probability (a. u.)")
     
-    plt.savefig(destination + '/' + name)
+    plt.savefig(destination + name)
     
     plt.show()
 
@@ -185,7 +185,7 @@ def Evolve(spin, dm_0, h_0, mode, T, o_change_of_picture, n_points=10):
 
 
 # Generates a 3D histogram of the real part of the passed density matrix
-def Plot_Real_Density_Matrix(dm, name='RealPartDensityMatrix', destination='Data/DensityMatrices'):
+def Plot_Real_Density_Matrix(dm, name='RealPartDensityMatrix', destination=''):
     
     # Retain only the real part of the density matrix elements
     real_part = np.vectorize(np.real)
@@ -230,7 +230,7 @@ def Plot_Real_Density_Matrix(dm, name='RealPartDensityMatrix', destination='Data
     
     # Save the plot
     
-    plt.savefig(destination + '/' + name)
+    plt.savefig(destination + name)
 
     # Finally, display the plot.
     
