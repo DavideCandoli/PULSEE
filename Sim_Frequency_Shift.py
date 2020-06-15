@@ -19,7 +19,6 @@ from Hamiltonians import H_Zeeman, H_Quadrupole, \
                          H_Multiple_Mode_Pulse, \
                          H_Changed_Picture, \
                          V0, V1, V2
-
     
 # Computes the energy spectrum of a spin 3/2 nucleus where the quadrupole interaction is a small
 # perturbation of the Zeeman energy levels, and plots the difference between the satellite and central
@@ -59,7 +58,7 @@ def Quadrupole_Perturbation_Satellite_Frequency_Shift():
     plt.xlabel("\N{GREEK SMALL LETTER THETA} (\N{DEGREE SIGN})")    
     plt.ylabel("\N{GREEK SMALL LETTER NU}3/2 - \N{GREEK SMALL LETTER NU}1/2 (MHz)")
     
-    plt.savefig('Data/FrequencyShiftGraphs/SatelliteFrequencyShift')
+    plt.savefig('SatelliteFrequencyShift')
     
     plt.show()
     
@@ -98,6 +97,6 @@ def Quadrupole_Perturbation_Central_Frequency_Shift():
     plt.xlabel("\N{GREEK SMALL LETTER THETA} (\N{DEGREE SIGN})")    
     plt.ylabel("\N{GREEK SMALL LETTER NU}1/2 (MHz)")
     
-    plt.savefig('Data/FrequencyShiftGraphs/CentralFrequencyShift')
+    plt.savefig('CentralFrequencyShift')
 
     plt.show()
