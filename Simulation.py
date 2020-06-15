@@ -133,13 +133,13 @@ def Transition_Spectrum(spin, h_unperturbed, mode, T):
     return transition_frequency, transition_probability
 
 
-def Plot_Transition_Spectrum(frequencies, probabilities):
+def Plot_Transition_Spectrum(frequencies, probabilities, name='TransitionSpectrum', destination='Data/TransitionSpectra'):
     plt.vlines(frequencies, 0, probabilities, colors='b')
     
     plt.xlabel("\N{GREEK SMALL LETTER OMEGA} (MHz)")    
     plt.ylabel("Probability (a. u.)")
     
-    plt.savefig('Data/TransitionSpectra/TransitionSpectrum.png')
+    plt.savefig(destination + '/' + name)
     
     plt.show()
 
