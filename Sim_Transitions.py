@@ -25,7 +25,7 @@ from Simulation import Simulate_Evolution, \
                        Plot_Real_Density_Matrix, \
                        Plot_Transition_Spectrum
 
-
+# Plots the transition spectrum for a pure Zeeman Hamiltonian
 def Spectrum_Pure_Zeeman():
     spin_par = {'quantum number' : 3/2,
                 'gyromagnetic ratio' : 1.}
@@ -50,15 +50,17 @@ def Spectrum_Pure_Zeeman():
                                     pulse_time=20, \
                                     picture = 'RRF', \
                                     RRF_par=RRF_par)
-    Plot_Real_Density_Matrix(dm_evolved)
+    Plot_Real_Density_Matrix(dm_evolved, name='DMPureZeeman')
     f, p = Simulate_Transition_Spectrum(spin_par, \
                                         zeem_par, \
                                         quad_par, \
                                         mode=mode, \
                                         pulse_time=20)
-    Plot_Transition_Spectrum(f, p)
+    Plot_Transition_Spectrum(f, p, name='SpectrumPureZeeman')
     
 
+# Plots the transition spectrum for a Hamiltonian where the quadrupole term is a perturbation of the
+# Zeeman one
 def Spectrum_Perturbed_Zeeman():
     spin_par = {'quantum number' : 5/2,
                 'gyromagnetic ratio' : 1.}
@@ -83,15 +85,16 @@ def Spectrum_Perturbed_Zeeman():
                                     pulse_time=20, \
                                     picture = 'RRF', \
                                     RRF_par=RRF_par)
-    Plot_Real_Density_Matrix(dm_evolved)
+    Plot_Real_Density_Matrix(dm_evolved, name='DMPerturbedZeeman')
     f, p = Simulate_Transition_Spectrum(spin_par, \
                                         zeem_par, \
                                         quad_par, \
                                         mode=mode, \
                                         pulse_time=20)
-    Plot_Transition_Spectrum(f, p)
+    Plot_Transition_Spectrum(f, p, name='SpectrumPerturbedZeeman')
 
 
+# Plots the transition spectrum for a pure quadrupole Hamiltonian, where the EFG is axially symmetric
 def Spectrum_Pure_Symmetric_Quadrupole():
     spin_par = {'quantum number' : 2,
                 'gyromagnetic ratio' : 1.}
@@ -116,15 +119,17 @@ def Spectrum_Pure_Symmetric_Quadrupole():
                                     pulse_time=20, \
                                     picture = 'RRF', \
                                     RRF_par=RRF_par)
-    Plot_Real_Density_Matrix(dm_evolved)
+    Plot_Real_Density_Matrix(dm_evolved, name='DMPureSymmetricQuadrupole')
     f, p = Simulate_Transition_Spectrum(spin_par, \
                                         zeem_par, \
                                         quad_par, \
                                         mode=mode, \
                                         pulse_time=20)
-    Plot_Transition_Spectrum(f, p)
+    Plot_Transition_Spectrum(f, p, name='SpectrumPureSymmetricQuadrupole')
 
 
+# Plots the transition spectrum of an integer spin nucleus with a pure quadrupole Hamiltonian where the
+# EFG is axially asymmetric
 def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
     spin_par = {'quantum number' : 1,
                 'gyromagnetic ratio' : 1.}
@@ -149,15 +154,17 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
                                     pulse_time=20, \
                                     picture = 'RRF', \
                                     RRF_par=RRF_par)
-    Plot_Real_Density_Matrix(dm_evolved)
+    Plot_Real_Density_Matrix(dm_evolved, 'DMPureAsymmetricQuadrupoleInt')
     f, p = Simulate_Transition_Spectrum(spin_par, \
                                         zeem_par, \
                                         quad_par, \
                                         mode=mode, \
                                         pulse_time=20)
-    Plot_Transition_Spectrum(f, p)
+    Plot_Transition_Spectrum(f, p, name='SpectrumPureAsymmetricQuadrupoleInt')
     
-    
+
+# Plots the transition spectrum of a half-integer spin nucleus with a pure quadrupole Hamiltonian where
+# the EFG is axially asymmetric
 def Spectrum_Pure_Asymmetric_Quadrupole_Half_Integer_Spin():
     spin_par = {'quantum number' : 3/2,
                 'gyromagnetic ratio' : 1.}
@@ -182,15 +189,17 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Half_Integer_Spin():
                                     pulse_time=20, \
                                     picture = 'RRF', \
                                     RRF_par=RRF_par)
-    Plot_Real_Density_Matrix(dm_evolved)
+    Plot_Real_Density_Matrix(dm_evolved, name='DMPureAsymmetricQuadrupoleHalfInt')
     f, p = Simulate_Transition_Spectrum(spin_par, \
                                         zeem_par, \
                                         quad_par, \
                                         mode=mode, \
                                         pulse_time=20)
-    Plot_Transition_Spectrum(f, p)
+    Plot_Transition_Spectrum(f, p, name='SpectrumPureAsymmetricQuadrupoleHalfInt')
 
     
+# Plots the transition spectrum of an integer spin nucleus with a Zeeman perturbed quadrupole
+# Hamiltonian where the EFG is axially symmetric
 def Spectrum_Perturbed_Quadrupole_Integer_Spin():
     spin_par = {'quantum number' : 1,
                 'gyromagnetic ratio' : 1.}
@@ -215,15 +224,17 @@ def Spectrum_Perturbed_Quadrupole_Integer_Spin():
                                     pulse_time=20, \
                                     picture = 'RRF', \
                                     RRF_par=RRF_par)
-    Plot_Real_Density_Matrix(dm_evolved)
+    Plot_Real_Density_Matrix(dm_evolved, name='DMSpectrumPerturbedQuadrupoleInt')
     f, p = Simulate_Transition_Spectrum(spin_par, \
                                         zeem_par, \
                                         quad_par, \
                                         mode=mode, \
                                         pulse_time=20)
-    Plot_Transition_Spectrum(f, p)
+    Plot_Transition_Spectrum(f, p, name='SpectrumPerturbedQuadrupoleInt')
 
-    
+
+# Plots the transition spectrum of a half-integer spin nucleus with a Zeeman perturbed quadrupole
+# Hamiltonian where the EFG is axially symmetric
 def Spectrum_Perturbed_Quadrupole_Half_Integer_Spin():
     spin_par = {'quantum number' : 3/2,
                 'gyromagnetic ratio' : 1.}
@@ -248,12 +259,12 @@ def Spectrum_Perturbed_Quadrupole_Half_Integer_Spin():
                                     pulse_time=20, \
                                     picture = 'RRF', \
                                     RRF_par=RRF_par)
-    Plot_Real_Density_Matrix(dm_evolved)
+    Plot_Real_Density_Matrix(dm_evolved, name='DMSpectrumPerturbedQuadrupoleHalfInt')
     f, p = Simulate_Transition_Spectrum(spin_par, \
                                         zeem_par, \
                                         quad_par, \
                                         mode=mode, \
                                         pulse_time=20)
-    Plot_Transition_Spectrum(f, p)
+    Plot_Transition_Spectrum(f, p, name='SpectrumPerturbedQuadrupoleHalfInt')
 
     
