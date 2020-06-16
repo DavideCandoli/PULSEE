@@ -46,7 +46,7 @@ def Spectrum_Pure_Zeeman():
                                     zeem_par, \
                                     quad_par, \
                                     mode=mode, \
-                                    temperature=1e-10, \
+                                    temperature=1e-4, \
                                     pulse_time=20, \
                                     picture = 'RRF', \
                                     RRF_par=RRF_par)
@@ -81,7 +81,7 @@ def Spectrum_Perturbed_Zeeman():
                                     zeem_par, \
                                     quad_par, \
                                     mode=mode, \
-                                    temperature=1e-10, \
+                                    temperature=1e-4, \
                                     pulse_time=20, \
                                     picture = 'RRF', \
                                     RRF_par=RRF_par)
@@ -115,7 +115,7 @@ def Spectrum_Pure_Symmetric_Quadrupole():
                                     zeem_par, \
                                     quad_par, \
                                     mode=mode, \
-                                    temperature=1e-11, \
+                                    temperature=1e-5, \
                                     pulse_time=20, \
                                     picture = 'RRF', \
                                     RRF_par=RRF_par)
@@ -150,7 +150,7 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
                                     zeem_par, \
                                     quad_par, \
                                     mode=mode, \
-                                    temperature=1e-10, \
+                                    temperature=1e-6, \
                                     pulse_time=20, \
                                     picture = 'RRF', \
                                     RRF_par=RRF_par)
@@ -185,7 +185,7 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Half_Integer_Spin():
                                     zeem_par, \
                                     quad_par, \
                                     mode=mode, \
-                                    temperature=1e-10, \
+                                    temperature=1e-6, \
                                     pulse_time=20, \
                                     picture = 'RRF', \
                                     RRF_par=RRF_par)
@@ -220,7 +220,7 @@ def Spectrum_Perturbed_Quadrupole_Integer_Spin():
                                     zeem_par, \
                                     quad_par, \
                                     mode=mode, \
-                                    temperature=1e-10, \
+                                    temperature=1e-6, \
                                     pulse_time=20, \
                                     picture = 'RRF', \
                                     RRF_par=RRF_par)
@@ -255,7 +255,7 @@ def Spectrum_Perturbed_Quadrupole_Half_Integer_Spin():
                                     zeem_par, \
                                     quad_par, \
                                     mode=mode, \
-                                    temperature=1e-12, \
+                                    temperature=1e-7, \
                                     pulse_time=20, \
                                     picture = 'RRF', \
                                     RRF_par=RRF_par)

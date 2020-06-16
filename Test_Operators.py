@@ -406,7 +406,7 @@ def test_AntiHermitianity_Magnus_2nd():
 def test_Canonical_Density_Matrix_Large_T_Approximation(d):
     h0 = Random_Observable(d)
     can_dm = Canonical_Density_Matrix(h0, 300)
-    exp = -(hbar*h0)/(Boltzmann*300)
+    exp = -(hbar*h0*1e6)/(Boltzmann*300)
     num = exp.exp()
     can_p_f = num.trace()   
     can_dm_apx = (Operator(d)+exp)/can_p_f

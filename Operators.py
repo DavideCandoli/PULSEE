@@ -283,7 +283,7 @@ def Magnus_Expansion_2nd_Term(h, time_step):
 
 # Returns the Density_Matrix associated with a canonically distributed ensemble of nuclear spins
 def Canonical_Density_Matrix(hamiltonian, temperature):
-    exponent = -(hbar*hamiltonian)/(Boltzmann*temperature)
+    exponent = -(hbar*hamiltonian*1e6)/(Boltzmann*temperature)
     numerator = exponent.exp()
     canonical_partition_function = numerator.trace()
     canonical_dm = numerator/canonical_partition_function
