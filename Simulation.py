@@ -32,6 +32,7 @@ def Simulate_Evolution(spin_par, zeem_par, quad_par, mode, \
                        picture='RRF', RRF_par={'omega_RRF': 0,
                                                'theta_RRF': 0,
                                                'phi_RRF': 0}, \
+                       initial_state = 'canonical', \
                        n_sample_points=10):
     
     # Nuclear spin under study
@@ -55,8 +56,9 @@ def Simulate_Evolution(spin_par, zeem_par, quad_par, mode, \
     h_unperturbed = Observable(h_zeeman.matrix + h_quadrupole.matrix)
     
     # Density matrix of the system at time t=0, when the ensemble of spins is at equilibrium
-    dm_initial = Canonical_Density_Matrix(h_unperturbed, temperature)
-            
+    if initial_state == 'canonical': dm_initial = Canonical_Density_Matrix(h_unperturbed, temperature)
+    else: dm_initial = initial_state
+    
     # Selects the operator for the change of picture, according to the value of parameter 'picture'
     if picture == 'IP':
         o_change_of_picture = h_unperturbed
