@@ -31,7 +31,8 @@ def Simulate_Evolution(spin_par, zeem_par, quad_par, mode, \
                        temperature, pulse_time, \
                        picture='RRF', RRF_par={'omega_RRF': 0,
                                                'theta_RRF': 0,
-                                               'phi_RRF': 0}):
+                                               'phi_RRF': 0}, \
+                       n_sample_points=10):
     
     # Nuclear spin under study
     spin = Nuclear_Spin(spin_par['quantum number'], \
@@ -64,7 +65,7 @@ def Simulate_Evolution(spin_par, zeem_par, quad_par, mode, \
     
     # Evolves the density matrix under the action of the specified pulse through the time interval
     # pulse_time, performing the evolution in the specified picture
-    dm_evolved = Evolve(spin, dm_initial, h_unperturbed, mode, pulse_time, o_change_of_picture)
+    dm_evolved = Evolve(spin, dm_initial, h_unperturbed, mode, pulse_time, o_change_of_picture, n_sample_points)
             
     return dm_evolved
 
@@ -133,13 +134,13 @@ def Transition_Spectrum(spin, h_unperturbed, mode, T):
     return transition_frequency, transition_probability
 
 
-def Plot_Transition_Spectrum(frequencies, probabilities, name='TransitionSpectrum', destination=''):
+def Plot_Transition_Spectrum(frequencies, probabilities, save=False, name='TransitionSpectrum', destination=''):
     plt.vlines(frequencies, 0, probabilities, colors='b')
     
     plt.xlabel("\N{GREEK SMALL LETTER OMEGA} (MHz)")    
     plt.ylabel("Probability (a. u.)")
     
-    plt.savefig(destination + name)
+    if save: plt.savefig(destination + name)
     
     plt.show()
 
@@ -185,7 +186,7 @@ def Evolve(spin, dm_0, h_0, mode, T, o_change_of_picture, n_points=10):
 
 
 # Generates a 3D histogram of the real part of the passed density matrix
-def Plot_Real_Density_Matrix(dm, name='RealPartDensityMatrix', destination=''):
+def Plot_Real_Density_Matrix(dm, save=False, name='RealPartDensityMatrix', destination=''):
     
     # Retain only the real part of the density matrix elements
     real_part = np.vectorize(np.real)
@@ -230,7 +231,7 @@ def Plot_Real_Density_Matrix(dm, name='RealPartDensityMatrix', destination=''):
     
     # Save the plot
     
-    plt.savefig(destination + name)
+    if save: plt.savefig(destination + name)
 
     # Finally, display the plot.
     

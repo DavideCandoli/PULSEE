@@ -50,13 +50,13 @@ def Spectrum_Pure_Zeeman():
                                     pulse_time=20, \
                                     picture = 'RRF', \
                                     RRF_par=RRF_par)
-    Plot_Real_Density_Matrix(dm_evolved, name='DMPureZeeman')
+    Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMPureZeeman')
     f, p = Simulate_Transition_Spectrum(spin_par, \
                                         zeem_par, \
                                         quad_par, \
                                         mode=mode, \
                                         pulse_time=20)
-    Plot_Transition_Spectrum(f, p, name='SpectrumPureZeeman')
+    Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPureZeeman')
     
 
 # Plots the transition spectrum for a Hamiltonian where the quadrupole term is a perturbation of the
@@ -85,13 +85,13 @@ def Spectrum_Perturbed_Zeeman():
                                     pulse_time=20, \
                                     picture = 'RRF', \
                                     RRF_par=RRF_par)
-    Plot_Real_Density_Matrix(dm_evolved, name='DMPerturbedZeeman')
+    Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMPerturbedZeeman')
     f, p = Simulate_Transition_Spectrum(spin_par, \
                                         zeem_par, \
                                         quad_par, \
                                         mode=mode, \
                                         pulse_time=20)
-    Plot_Transition_Spectrum(f, p, name='SpectrumPerturbedZeeman')
+    Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPerturbedZeeman')
 
 
 # Plots the transition spectrum for a pure quadrupole Hamiltonian, where the EFG is axially symmetric
@@ -119,13 +119,13 @@ def Spectrum_Pure_Symmetric_Quadrupole():
                                     pulse_time=20, \
                                     picture = 'RRF', \
                                     RRF_par=RRF_par)
-    Plot_Real_Density_Matrix(dm_evolved, name='DMPureSymmetricQuadrupole')
+    Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMPureSymmetricQuadrupole')
     f, p = Simulate_Transition_Spectrum(spin_par, \
                                         zeem_par, \
                                         quad_par, \
                                         mode=mode, \
                                         pulse_time=20)
-    Plot_Transition_Spectrum(f, p, name='SpectrumPureSymmetricQuadrupole')
+    Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPureSymmetricQuadrupole')
 
 
 # Plots the transition spectrum of an integer spin nucleus with a pure quadrupole Hamiltonian where the
@@ -154,13 +154,13 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
                                     pulse_time=20, \
                                     picture = 'RRF', \
                                     RRF_par=RRF_par)
-    Plot_Real_Density_Matrix(dm_evolved, 'DMPureAsymmetricQuadrupoleInt')
+    Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMPureAsymmetricQuadrupoleInt')
     f, p = Simulate_Transition_Spectrum(spin_par, \
                                         zeem_par, \
                                         quad_par, \
                                         mode=mode, \
                                         pulse_time=20)
-    Plot_Transition_Spectrum(f, p, name='SpectrumPureAsymmetricQuadrupoleInt')
+    Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPureAsymmetricQuadrupoleInt')
     
 
 # Plots the transition spectrum of a half-integer spin nucleus with a pure quadrupole Hamiltonian where
@@ -189,13 +189,13 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Half_Integer_Spin():
                                     pulse_time=20, \
                                     picture = 'RRF', \
                                     RRF_par=RRF_par)
-    Plot_Real_Density_Matrix(dm_evolved, name='DMPureAsymmetricQuadrupoleHalfInt')
+    Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMPureAsymmetricQuadrupoleHalfInt')
     f, p = Simulate_Transition_Spectrum(spin_par, \
                                         zeem_par, \
                                         quad_par, \
                                         mode=mode, \
                                         pulse_time=20)
-    Plot_Transition_Spectrum(f, p, name='SpectrumPureAsymmetricQuadrupoleHalfInt')
+    Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPureAsymmetricQuadrupoleHalfInt')
 
     
 # Plots the transition spectrum of an integer spin nucleus with a Zeeman perturbed quadrupole
@@ -224,13 +224,13 @@ def Spectrum_Perturbed_Quadrupole_Integer_Spin():
                                     pulse_time=20, \
                                     picture = 'RRF', \
                                     RRF_par=RRF_par)
-    Plot_Real_Density_Matrix(dm_evolved, name='DMSpectrumPerturbedQuadrupoleInt')
+    Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMSpectrumPerturbedQuadrupoleInt')
     f, p = Simulate_Transition_Spectrum(spin_par, \
                                         zeem_par, \
                                         quad_par, \
                                         mode=mode, \
                                         pulse_time=20)
-    Plot_Transition_Spectrum(f, p, name='SpectrumPerturbedQuadrupoleInt')
+    Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPerturbedQuadrupoleInt')
 
 
 # Plots the transition spectrum of a half-integer spin nucleus with a Zeeman perturbed quadrupole
@@ -259,12 +259,12 @@ def Spectrum_Perturbed_Quadrupole_Half_Integer_Spin():
                                     pulse_time=20, \
                                     picture = 'RRF', \
                                     RRF_par=RRF_par)
-    Plot_Real_Density_Matrix(dm_evolved, name='DMSpectrumPerturbedQuadrupoleHalfInt')
+    Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMSpectrumPerturbedQuadrupoleHalfInt')
     f, p = Simulate_Transition_Spectrum(spin_par, \
                                         zeem_par, \
                                         quad_par, \
                                         mode=mode, \
                                         pulse_time=20)
-    Plot_Transition_Spectrum(f, p, name='SpectrumPerturbedQuadrupoleHalfInt')
+    Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPerturbedQuadrupoleHalfInt')
 
     
