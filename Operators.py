@@ -30,7 +30,7 @@ class Operator:
                 # Matrix representation of the operator (in the desired basis)
                 self.matrix = np.identity(d, dtype=complex)
             except ValueError:
-                raise ValueError("The value of the scalar argument cannot be interpreted as an integer")
+                raise TypeError("The value of the scalar argument cannot be interpreted as an integer")
             except TypeError:
                 raise TypeError("The type of the argument is not valid. An Operator must be initialised either with an integer number or an array.")
 

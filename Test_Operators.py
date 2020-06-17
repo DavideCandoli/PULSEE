@@ -45,10 +45,10 @@ def test_Operator_Initialisation_with_Wrong_Scalar_Value():
     try:
         o = Operator(wrong_input)
         raise AssertionError
-    except ValueError:
+    except TypeError:
         pass
     except AssertionError:
-        raise AssertionError("No ValueError caused by the initialisation with a string")
+        raise AssertionError("No TypeError caused by the initialisation with a string")
 
 # Checks that the constructor of the class Operator raises error when it receives an argument of invalid type (e.g. a list)
 def test_Operator_Initialisation_with_Wrong_Argument_Type():
