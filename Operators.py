@@ -248,7 +248,7 @@ def Random_Observable(d):
 
 # Generates a random Density_Matrix object, whose eigenvalues belong to the interval [0, 10.)
 def Random_Density_Matrix(d):
-    spectrum = 10*np.random.random(d)
+    spectrum = np.random.random(d)
     spectrum_norm = spectrum/(spectrum.sum())
     dm_diag = Density_Matrix(np.diag(spectrum_norm))
     cob = (1j*Random_Observable(d))  # The exponential of this matrix is a generic unitary transformation
