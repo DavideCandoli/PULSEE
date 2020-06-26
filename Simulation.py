@@ -229,6 +229,18 @@ def FID_Signal(spin_par, dm, zeem_par, quad_par, final_time):
     return times, FID
 
 
+# Plots the the real part of the FID signal as a function of time
+def Plot_FID_Signal(times, FID, save=False, name='FIDSignal', destination=''):
+    plt.plot(times, np.real(FID))
+    
+    plt.xlabel("time (\N{GREEK SMALL LETTER MU}s)")    
+    plt.ylabel("FID (a. u.)")
+    
+    if save: plt.savefig(destination + name)
+    
+    plt.show()
+    
+
 # Generates a 3D histogram of the real part of the passed density matrix
 def Plot_Real_Density_Matrix(dm, save=False, name='RealPartDensityMatrix', destination=''):
     
