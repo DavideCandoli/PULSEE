@@ -23,7 +23,8 @@ from Hamiltonians import H_Zeeman, H_Quadrupole, \
 from Simulation import Simulate_Evolution, \
                        Simulate_Transition_Spectrum, \
                        Plot_Real_Density_Matrix, \
-                       Plot_Transition_Spectrum
+                       Plot_Transition_Spectrum, \
+                       FID_Signal, Plot_FID_Signal
 
 # Plots the transition spectrum for a pure Zeeman Hamiltonian
 def Spectrum_Pure_Zeeman():
@@ -57,6 +58,8 @@ def Spectrum_Pure_Zeeman():
                                         mode=mode, \
                                         pulse_time=20)
     Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPureZeeman')
+    
+    t, FID = FID_Signal(spin_par, dm_evolved, zeem_par, quad_par, final_time=100)
     
 
 # Plots the transition spectrum for a Hamiltonian where the quadrupole term is a perturbation of the
@@ -93,6 +96,8 @@ def Spectrum_Perturbed_Zeeman():
                                         pulse_time=20)
     Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPerturbedZeeman')
 
+    t, FID = FID_Signal(spin_par, dm_evolved, zeem_par, quad_par, final_time=1000)
+    
 
 # Plots the transition spectrum for a pure quadrupole Hamiltonian, where the EFG is axially symmetric
 def Spectrum_Pure_Symmetric_Quadrupole():
@@ -126,6 +131,8 @@ def Spectrum_Pure_Symmetric_Quadrupole():
                                         mode=mode, \
                                         pulse_time=20)
     Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPureSymmetricQuadrupole')
+    
+    t, FID = FID_Signal(spin_par, dm_evolved, zeem_par, quad_par, final_time=100)
 
 
 # Plots the transition spectrum of an integer spin nucleus with a pure quadrupole Hamiltonian where the
@@ -162,6 +169,9 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
                                         pulse_time=20)
     Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPureAsymmetricQuadrupoleInt')
     
+    t, FID = FID_Signal(spin_par, dm_evolved, zeem_par, quad_par, final_time=100)
+
+
 
 # Plots the transition spectrum of a half-integer spin nucleus with a pure quadrupole Hamiltonian where
 # the EFG is axially asymmetric
@@ -196,6 +206,9 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Half_Integer_Spin():
                                         mode=mode, \
                                         pulse_time=20)
     Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPureAsymmetricQuadrupoleHalfInt')
+    
+    t, FID = FID_Signal(spin_par, dm_evolved, zeem_par, quad_par, final_time=100)
+
 
     
 # Plots the transition spectrum of an integer spin nucleus with a Zeeman perturbed quadrupole
@@ -231,6 +244,8 @@ def Spectrum_Perturbed_Quadrupole_Integer_Spin():
                                         mode=mode, \
                                         pulse_time=20)
     Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPerturbedQuadrupoleInt')
+    
+    t, FID = FID_Signal(spin_par, dm_evolved, zeem_par, quad_par, final_time=100)
 
 
 # Plots the transition spectrum of a half-integer spin nucleus with a Zeeman perturbed quadrupole
@@ -266,5 +281,7 @@ def Spectrum_Perturbed_Quadrupole_Half_Integer_Spin():
                                         mode=mode, \
                                         pulse_time=20)
     Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPerturbedQuadrupoleHalfInt')
+    
+    t, FID = FID_Signal(spin_par, dm_evolved, zeem_par, quad_par, final_time=1000)
 
     
