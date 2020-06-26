@@ -240,6 +240,32 @@ def Plot_FID_Signal(times, FID, save=False, name='FIDSignal', destination=''):
     
     plt.show()
     
+    
+# Computes the complex Fourier transform of the given signal originally expressed in the time domain
+def Fourier_Transform_Signal(signal, times, frequency_start, frequency_stop):
+    
+    # Whole duration of the signal
+    T = times[-1]
+    
+    # Step between the sampled instants of time
+    dt = times[1]-times[0]
+    
+    # Values of frequency at which the Fourier transform is to be evaluated
+    frequencies = np.linspace(start=frequency_start, stop=frequency_stop, num=1000)
+    
+    # Fourier transform to be sampled
+    fourier = []
+    
+    # The Fourier transform is evaluated throug the conventional formula
+    # F = (1/T)*int_0^T{e^(-i omega t) S(t) dt}
+    for omega in frequencies:
+        integral = 0
+        for i in range(len(times)):
+            integral = integral + np.exp(-1j*omega*times[i])*signal[i]*dt
+        fourier.append((1/T)*integral)
+    
+    return frequencies, fourier
+    
 
 # Generates a 3D histogram of the real part of the passed density matrix
 def Plot_Real_Density_Matrix(dm, save=False, name='RealPartDensityMatrix', destination=''):
