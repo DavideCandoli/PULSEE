@@ -47,7 +47,7 @@ def Nuclear_System_Setup(spin_par, zeem_par, quad_par):
     h_unperturbed = Observable(h_zeeman.matrix + h_quadrupole.matrix)
     
     return spin, h_unperturbed
-    
+
 
 # Computes the density matrix of the system after the application of a desired pulse for a given time, 
 # given the initial preparation of the ensemble. The evolution is performed in the picture specified by
@@ -161,8 +161,8 @@ def Plot_Real_Density_Matrix(dm, save=False, name='RealPartDensityMatrix', desti
 
 
 # Computes the spectrum of the transitions induced by the pulse specified by 'mode' between the
-# eigenstates of h_unperturbed after a time pulse_time. The probabilities of transition are computed appealing to
-# Fermi golden rule
+# eigenstates of h_unperturbed after a time pulse_time. The probabilities of transition are computed
+# appealing to Fermi golden rule
 def Transition_Spectrum(spin, h_unperturbed, mode, pulse_time):
     
     # Energy levels and eigenstates of the unperturbed Hamiltonian
@@ -204,12 +204,12 @@ def Plot_Transition_Spectrum(frequencies, probabilities, save=False, name='Trans
 
 # Returns the free induction decay (FID) signal resulting from the free evolution of the component
 # of the magnetization on the x-y plane of the LAB system. The initial state of the system is given by
-# the parameter dm, and the dynamics of the magnetization is recorded for a time final_time. Relaxation
+# the parameter dm, and the dynamics of the magnetization is recorded for a time time_window. Relaxation
 # effects are not taken into account.
-def FID_Signal(spin, h_unperturbed, dm, final_time):
+def FID_Signal(spin, h_unperturbed, dm, time_window):
     
-    # Sampling of the time window [0, final_time] (microseconds) where the free evolution takes place
-    times = np.linspace(start=0, stop=final_time, num=final_time*10)
+    # Sampling of the time window [0, time_window] (microseconds) where the free evolution takes place
+    times = np.linspace(start=0, stop=time_window, num=time_window*10)
     
     # FID signal to be sampled
     FID = []
