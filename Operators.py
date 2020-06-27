@@ -281,6 +281,19 @@ def Magnus_Expansion_2nd_Term(h, time_step):
     return magnus_2nd_term
 
 
+# Computes the 3rd order term of the Magnus expansion of the passed time-dependent Hamiltonian
+def Magnus_Expansion_3rd_Term(h, time_step):
+    integral = (h[0]*0).matrix
+    for t1 in range(len(h)-1):
+        for t2 in range(t1+1):
+            for t3 in range(t2+1):
+                integral = integral + \
+                           ((Commutator(h[t1], Commutator(h[t2], h[t3])) + \
+                             Commutator(h[t3], Commutator(h[t2], h[t1]))).matrix)*(time_step**3)
+    magnus_3rd_term = Operator((1j/6)*integral)
+    return magnus_3rd_term
+
+
 # Returns the Density_Matrix associated with a canonically distributed ensemble of nuclear spins
 def Canonical_Density_Matrix(hamiltonian, temperature):
     exponent = -(hbar*hamiltonian*1e6)/(Boltzmann*temperature)
