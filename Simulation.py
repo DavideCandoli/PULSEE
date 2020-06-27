@@ -22,6 +22,33 @@ from Hamiltonians import H_Zeeman, H_Quadrupole, \
                          H_Changed_Picture, \
                          V0, V1, V2
 
+# Sets up and returns the following elements of the system under study:
+# - Nuclear spin
+# - Unperturbed Hamiltonian
+def Nuclear_System_Setup(spin_par, zeem_par, quad_par):
+    # Nuclear spin under study
+    spin = Nuclear_Spin(spin_par['quantum number'], \
+                        spin_par['gyromagnetic ratio'])
+    
+    # Zeeman term of the Hamiltonian
+    h_zeeman = H_Zeeman(spin, zeem_par['theta_z'], \
+                              zeem_par['phi_z'], \
+                              zeem_par['field magnitude'])
+    
+    # Quadrupole term of the Hamiltonian
+    h_quadrupole = H_Quadrupole(spin, quad_par['coupling constant'], \
+                                      quad_par['asymmetry parameter'], \
+                                      quad_par['alpha_q'], \
+                                      quad_par['beta_q'], \
+                                      quad_par['gamma_q'])
+    
+    # Computes the unperturbed Hamiltonian of the system, namely the sum of the Zeeman and quadrupole
+    # contributions
+    h_unperturbed = Observable(h_zeeman.matrix + h_quadrupole.matrix)
+    
+    return spin, h_unperturbed
+    
+
 # Sets the following elements of the system under study:
 # - Nuclear spin
 # - Unperturbed Hamiltonian
