@@ -49,54 +49,51 @@ def Nuclear_System_Setup(spin_par, zeem_par, quad_par):
     return spin, h_unperturbed
     
 
-# Sets the following elements of the system under study:
-# - Nuclear spin
-# - Unperturbed Hamiltonian
-# - Initial density matrix (canonical)
-# and returns the density matrix of the system after a time pulse_time.
-def Simulate_Evolution(spin_par, zeem_par, quad_par, mode, \
-                       temperature, pulse_time, \
-                       picture='RRF', RRF_par={'omega_RRF': 0,
-                                               'theta_RRF': 0,
-                                               'phi_RRF': 0}, \
-                       initial_state = 'canonical', \
-                       n_sample_points=10):
+# Computes the density matrix of the system after the application of a desired pulse for a given time, 
+# given the initial preparation of the ensemble. The evolution is performed in the picture specified by
+# the argument
+def Evolve(spin, h_unperturbed, \
+           mode, pulse_time, \
+           initial_state = 'canonical', temperature=1e-4, \
+           picture='RRF', RRF_par={'omega_RRF': 0,
+                                   'theta_RRF': 0,
+                                   'phi_RRF': 0}, \
+           n_points=10):
     
-    # Nuclear spin under study
-    spin = Nuclear_Spin(spin_par['quantum number'], \
-                        spin_par['gyromagnetic ratio'])
+    # Sets the density matrix of the system at time t=0, according to the value of 'initial_state'
+    if initial_state == 'canonical':
+        dm_initial = Canonical_Density_Matrix(h_unperturbed, temperature)
+    else:
+        dm_initial = initial_state
     
-    # Zeeman term of the Hamiltonian
-    h_zeeman = H_Zeeman(spin, zeem_par['theta_z'], \
-                              zeem_par['phi_z'], \
-                              zeem_par['field magnitude'])
-    
-    # Quadrupole term of the Hamiltonian
-    h_quadrupole = H_Quadrupole(spin, quad_par['coupling constant'], \
-                                      quad_par['asymmetry parameter'], \
-                                      quad_par['alpha_q'], \
-                                      quad_par['beta_q'], \
-                                      quad_par['gamma_q'])
-    
-    # Computes the unperturbed Hamiltonian of the system, namely the sum of the Zeeman and quadrupole
-    # contributions
-    h_unperturbed = Observable(h_zeeman.matrix + h_quadrupole.matrix)
-    
-    # Density matrix of the system at time t=0, when the ensemble of spins is at equilibrium
-    if initial_state == 'canonical': dm_initial = Canonical_Density_Matrix(h_unperturbed, temperature)
-    else: dm_initial = initial_state
-    
-    # Selects the operator for the change of picture, according to the value of parameter 'picture'
+    # Selects the operator for the change of picture, according to the value of 'picture'
     if picture == 'IP':
         o_change_of_picture = h_unperturbed
     else:
         o_change_of_picture = RRF_Operator(spin, RRF_par)
     
-    # Evolves the density matrix under the action of the specified pulse through the time interval
-    # pulse_time, performing the evolution in the specified picture
-    dm_evolved = Evolve(spin, dm_initial, h_unperturbed, mode, pulse_time, o_change_of_picture, n_sample_points)
-            
-    return dm_evolved
+    # Returns the same density matrix as the initial one when the passed pulse time is exactly 0
+    if pulse_time == 0:
+        return dm_initial
+    
+    # Sampling of the Hamiltonian in the desired picture over the time window [0, pulse_time]
+    times, time_step = np.linspace(0, pulse_time, num=int(pulse_time*n_points), retstep=True)
+    h_ip = []
+    for t in times:
+        h_ip.append(H_Changed_Picture(spin, mode, h_unperturbed, o_change_of_picture, t))
+    
+    # Evaluation of the 1st and 2nd terms of the Magnus expansion for the Hamiltonian in the new picture
+    magnus_1st = Magnus_Expansion_1st_Term(h_ip, time_step)
+    magnus_2nd = Magnus_Expansion_2nd_Term(h_ip, time_step)
+
+    # Density matrix of the system after evolution under the action of the pulse, expressed
+    # in the new picture
+    dm_evolved_ip = dm_initial.sim_trans(-(magnus_1st+magnus_2nd), exp=True)
+
+    # Evolved density matrix cast back in the Schroedinger picture
+    dm_evolved = dm_evolved_ip.change_picture(o_change_of_picture, pulse_time, invert=True)
+    
+    return Density_Matrix(dm_evolved.matrix)
 
 
 # Sets the following elements of the system under study:
@@ -184,34 +181,6 @@ def RRF_Operator(spin, RRF_par):
                           spin.I['x']*math.sin(theta)*math.cos(phi) + \
                           spin.I['y']*math.sin(theta)*math.sin(phi))
     return Observable(RRF_operator.matrix)
-
-
-# Computes the density matrix of the system after the application of a desired pulse for a given time, 
-# given the initial preparation of the ensemble. The evolution is performed in the picture generated by
-# o_change_of_picture
-def Evolve(spin, dm_0, h_0, mode, T, o_change_of_picture, n_points=10):
-    
-    if T == 0:
-        return dm_0
-    
-    # Sampling of the Hamiltonian in the desired picture over the time window [0, T]
-    times, time_step = np.linspace(0, T, num=int(T*n_points), retstep=True)
-    h_ip = []
-    for t in times:
-        h_ip.append(H_Changed_Picture(spin, mode, h_0, o_change_of_picture, t))
-    
-    # Evaluation of the 1st and 2nd terms of the Magnus expansion for the Hamiltonian in the new picture
-    magnus_1st = Magnus_Expansion_1st_Term(h_ip, time_step)
-    magnus_2nd = Magnus_Expansion_2nd_Term(h_ip, time_step)
-
-    # Density matrix of the system after evolution under the action of the pulse, expressed
-    # in the new picture
-    dm_T_ip = dm_0.sim_trans(-(magnus_1st+magnus_2nd), exp=True)
-
-    # Evolved density matrix cast back in the Schroedinger picture
-    dm_T = dm_T_ip.change_picture(o_change_of_picture, T, invert=True)
-    
-    return Density_Matrix(dm_T.matrix)
 
 
 # Returns the free induction decay (FID) signal resulting from the free evolution of the component
