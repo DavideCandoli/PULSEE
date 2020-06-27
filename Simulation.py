@@ -96,6 +96,18 @@ def Evolve(spin, h_unperturbed, \
     return Density_Matrix(dm_evolved.matrix)
 
 
+# Operator which generates a change of picture equivalent to moving to the rotating reference frame
+# (RRF)
+def RRF_Operator(spin, RRF_par):
+    omega = RRF_par['omega_RRF']
+    theta = RRF_par['theta_RRF']
+    phi = RRF_par['phi_RRF']
+    RRF_operator = omega*(spin.I['z']*math.cos(theta) + \
+                          spin.I['x']*math.sin(theta)*math.cos(phi) + \
+                          spin.I['y']*math.sin(theta)*math.sin(phi))
+    return Observable(RRF_operator.matrix)
+
+
 # Computes the spectrum of the transitions induced by the pulse specified by 'mode' between the
 # eigenstates of h_unperturbed after a time T. The probabilities of transition are computed appealing to
 # Fermi golden rule
@@ -138,43 +150,11 @@ def Plot_Transition_Spectrum(frequencies, probabilities, save=False, name='Trans
     plt.show()
 
 
-# Operator which generates a change of picture equivalent to moving to the rotating reference frame
-# (RRF)
-def RRF_Operator(spin, RRF_par):
-    omega = RRF_par['omega_RRF']
-    theta = RRF_par['theta_RRF']
-    phi = RRF_par['phi_RRF']
-    RRF_operator = omega*(spin.I['z']*math.cos(theta) + \
-                          spin.I['x']*math.sin(theta)*math.cos(phi) + \
-                          spin.I['y']*math.sin(theta)*math.sin(phi))
-    return Observable(RRF_operator.matrix)
-
-
 # Returns the free induction decay (FID) signal resulting from the free evolution of the component
 # of the magnetization on the x-y plane of the LAB system. The initial state of the system is given by
 # the parameter dm, and the dynamics of the magnetization is recorded for a time final_time. Relaxation
 # effects are not taken into account.
-def FID_Signal(spin_par, dm, zeem_par, quad_par, final_time):
-    
-    # Nuclear spin under study
-    spin = Nuclear_Spin(spin_par['quantum number'], \
-                        spin_par['gyromagnetic ratio'])
-    
-    # Zeeman term of the Hamiltonian
-    h_zeeman = H_Zeeman(spin, zeem_par['theta_z'], \
-                              zeem_par['phi_z'], \
-                              zeem_par['field magnitude'])
-    
-    # Quadrupole term of the Hamiltonian
-    h_quadrupole = H_Quadrupole(spin, quad_par['coupling constant'], \
-                                      quad_par['asymmetry parameter'], \
-                                      quad_par['alpha_q'], \
-                                      quad_par['beta_q'], \
-                                      quad_par['gamma_q'])
-    
-    # Computes the unperturbed Hamiltonian of the system, namely the sum of the Zeeman and quadrupole
-    # contributions
-    h_unperturbed = Observable(h_zeeman.matrix + h_quadrupole.matrix)
+def FID_Signal(spin, h_unperturbed, dm, final_time):
     
     # Sampling of the time window [0, final_time] (microseconds) where the free evolution takes place
     times = np.linspace(start=0, stop=final_time, num=final_time*10)
