@@ -96,42 +96,9 @@ def Evolve(spin, h_unperturbed, \
     return Density_Matrix(dm_evolved.matrix)
 
 
-# Sets the following elements of the system under study:
-# - Nuclear spin
-# - Unperturbed Hamiltonian
-# and returns the spectrum of the transitions induced between the energy eigenstates of the system
-# through a time pulse_time
-def Simulate_Transition_Spectrum(spin_par, zeem_par, quad_par, mode, pulse_time):
-    
-    # Nuclear spin under study
-    spin = Nuclear_Spin(spin_par['quantum number'], \
-                        spin_par['gyromagnetic ratio'])
-    
-    # Zeeman term of the Hamiltonian
-    h_zeeman = H_Zeeman(spin, zeem_par['theta_z'], \
-                              zeem_par['phi_z'], \
-                              zeem_par['field magnitude'])
-    
-    # Quadrupole term of the Hamiltonian
-    h_quadrupole = H_Quadrupole(spin, quad_par['coupling constant'], \
-                                      quad_par['asymmetry parameter'], \
-                                      quad_par['alpha_q'], \
-                                      quad_par['beta_q'], \
-                                      quad_par['gamma_q'])
-    
-    # Computes the unperturbed Hamiltonian of the system, namely the sum of the Zeeman and quadrupole
-    # contributions
-    h_unperturbed = Observable(h_zeeman.matrix + h_quadrupole.matrix)
-    
-    # Computes the frequencies and probabilities of transition induced by the pulse under consideration
-    # between the eigenstates of h_unperturbed
-    t_frequencies, t_probabilities = Transition_Spectrum(spin, h_unperturbed, mode, pulse_time)
-    
-    return t_frequencies, t_probabilities
-
-
 # Computes the spectrum of the transitions induced by the pulse specified by 'mode' between the
-# eigenstates of h_unperturbed after a time T
+# eigenstates of h_unperturbed after a time T. The probabilities of transition are computed appealing to
+# Fermi golden rule
 def Transition_Spectrum(spin, h_unperturbed, mode, T):
     
     # Energy levels and eigenstates of the unperturbed Hamiltonian
