@@ -16,7 +16,7 @@ from Nuclear_Spin import Nuclear_Spin
 
 from Hamiltonians import H_Zeeman, H_Quadrupole, H_Changed_Picture
 
-from Simulation import Simulate_Evolution
+from Simulation import Nuclear_System_Setup, Evolve
 
 # Checks if the simulation works, doesn't check if there is wrong output
 def test_Generic_Simulation():
@@ -32,9 +32,9 @@ def test_Generic_Simulation():
                 'gamma_q' : 0}
     mode = pd.DataFrame([(5., 10., 0., math.pi/2, 0.)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
-    Simulate_Evolution(spin_par, \
-                       zeem_par, \
-                       quad_par, \
-                       mode=mode, \
-                       temperature=300, \
-                       pulse_time=5.)
+    
+    spin, h_unperturbed = Nuclear_System_Setup(spin_par, zeem_par, quad_par)
+    
+    Evolve(spin, h_unperturbed, \
+           mode, pulse_time=5., \
+           temperature=1e-4)
