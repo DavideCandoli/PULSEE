@@ -108,16 +108,68 @@ def RRF_Operator(spin, RRF_par):
     return Observable(RRF_operator.matrix)
 
 
+# Generates a 3D histogram of the real part of the passed density matrix
+def Plot_Real_Density_Matrix(dm, save=False, name='RealPartDensityMatrix', destination=''):
+    
+    # Retain only the real part of the density matrix elements
+    real_part = np.vectorize(np.real)
+    data_array = real_part(dm.matrix)
+    
+    # Create a figure for plotting the data as a 3D histogram.
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    # Create an X-Y mesh of the same dimension as the 2D data. You can think of this as the floor of the
+    # plot.
+    x_data, y_data = np.meshgrid(np.arange(data_array.shape[1])+0.25,
+                                 np.arange(data_array.shape[0])+0.25)
+    
+    # Set width of the vertical bars
+    dx = dy = 0.5
+
+    # Flatten out the arrays so that they may be passed to "ax.bar3d".
+    # Basically, ax.bar3d expects three one-dimensional arrays:
+    # x_data, y_data, z_data. The following call boils down to picking
+    # one entry from each array and plotting a bar to from
+    # (x_data[i], y_data[i], 0) to (x_data[i], y_data[i], z_data[i]).
+    x_data = x_data.flatten()
+    y_data = y_data.flatten()
+    z_data = data_array.flatten()
+    ax.bar3d(x_data,
+             y_data,
+             np.zeros(len(z_data)),
+             dx, dy, z_data)
+    
+    # Labels of the plot
+    
+    s = (data_array.shape[0]-1)/2
+
+    xticks(np.arange(start=0.5, stop=data_array.shape[0]+0.5), np.arange(start=s, stop=-s-1, step=-1))
+    yticks(np.arange(start=0.5, stop=data_array.shape[0]+0.5), np.arange(start=s, stop=-s-1, step=-1))
+    
+    ax.set_xlabel("m")    
+    ax.set_ylabel("m")
+    ax.set_zlabel("Re(\N{GREEK SMALL LETTER RHO})")
+    
+    # Save the plot
+    
+    if save: plt.savefig(destination + name)
+
+    # Finally, display the plot.
+    
+    plt.show()
+
+
 # Computes the spectrum of the transitions induced by the pulse specified by 'mode' between the
-# eigenstates of h_unperturbed after a time T. The probabilities of transition are computed appealing to
+# eigenstates of h_unperturbed after a time pulse_time. The probabilities of transition are computed appealing to
 # Fermi golden rule
-def Transition_Spectrum(spin, h_unperturbed, mode, T):
+def Transition_Spectrum(spin, h_unperturbed, mode, pulse_time):
     
     # Energy levels and eigenstates of the unperturbed Hamiltonian
     energies, o_change_of_basis = h_unperturbed.diagonalise()
     
-    # Hamiltonian of the pulse evaluated at time T
-    h_pulse_T = H_Multiple_Mode_Pulse(spin, mode, T)
+    # Hamiltonian of the pulse evaluated at time pulse_time
+    h_pulse = H_Multiple_Mode_Pulse(spin, mode, pulse_time)
     
     transition_frequency = []
     
@@ -131,8 +183,8 @@ def Transition_Spectrum(spin, h_unperturbed, mode, T):
         for j in range(d):
             if i < j:
                 transition_frequency.append(np.absolute(energies[j] - energies[i]))
-                h_pulse_T_eig = h_pulse_T.sim_trans(o_change_of_basis)
-                transition_probability.append((np.absolute(h_pulse_T_eig.matrix[j][i]))**2)
+                h_pulse_eig = h_pulse.sim_trans(o_change_of_basis)
+                transition_probability.append((np.absolute(h_pulse_eig.matrix[j][i]))**2)
             else:
                 pass
     
@@ -222,58 +274,5 @@ def Plot_Fourier_Transform(frequencies, fourier, save=False, name='FTSignal', de
     plt.ylabel("FT signal (a. u.)")    
     
     if save: plt.savefig(destination + name)
-    
-    plt.show()
-    
-
-# Generates a 3D histogram of the real part of the passed density matrix
-def Plot_Real_Density_Matrix(dm, save=False, name='RealPartDensityMatrix', destination=''):
-    
-    # Retain only the real part of the density matrix elements
-    real_part = np.vectorize(np.real)
-    data_array = real_part(dm.matrix)
-    
-    # Create a figure for plotting the data as a 3D histogram.
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-
-    # Create an X-Y mesh of the same dimension as the 2D data. You can think of this as the floor of the
-    # plot.
-    x_data, y_data = np.meshgrid(np.arange(data_array.shape[1])+0.25,
-                                 np.arange(data_array.shape[0])+0.25)
-    
-    
-    # Set width of the vertical bars
-    dx = dy = 0.5
-
-    # Flatten out the arrays so that they may be passed to "ax.bar3d".
-    # Basically, ax.bar3d expects three one-dimensional arrays:
-    # x_data, y_data, z_data. The following call boils down to picking
-    # one entry from each array and plotting a bar to from
-    # (x_data[i], y_data[i], 0) to (x_data[i], y_data[i], z_data[i]).
-    x_data = x_data.flatten()
-    y_data = y_data.flatten()
-    z_data = data_array.flatten()
-    ax.bar3d(x_data,
-             y_data,
-             np.zeros(len(z_data)),
-             dx, dy, z_data)
-    
-    # Labels of the plot
-    
-    s = (data_array.shape[0]-1)/2
-
-    xticks(np.arange(start=0.5, stop=data_array.shape[0]+0.5), np.arange(start=s, stop=-s-1, step=-1))
-    yticks(np.arange(start=0.5, stop=data_array.shape[0]+0.5), np.arange(start=s, stop=-s-1, step=-1))
-    
-    ax.set_xlabel("m")    
-    ax.set_ylabel("m")
-    ax.set_zlabel("Re(\N{GREEK SMALL LETTER RHO})")
-    
-    # Save the plot
-    
-    if save: plt.savefig(destination + name)
-
-    # Finally, display the plot.
     
     plt.show()
