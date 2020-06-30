@@ -71,7 +71,7 @@ def Spectrum_Pure_Zeeman():
     
     t, FID = FID_Signal(spin, h_unperturbed, dm_evolved, time_window=100)
     
-    f, ft = Fourier_Transform_Signal(FID, t, -12, -8)
+    f, ft = Fourier_Transform_Signal(FID, t, 8, 12)
     
     Plot_Fourier_Transform(f, ft)
     
@@ -118,7 +118,7 @@ def Spectrum_Perturbed_Zeeman():
     
     t, FID = FID_Signal(spin, h_unperturbed, dm_evolved, time_window=1000)
     
-    f, ft = Fourier_Transform_Signal(FID, t, -10.5, -9.5)
+    f, ft = Fourier_Transform_Signal(FID, t, 9.9, 10.1)
     
     Plot_Fourier_Transform(f, ft)
         
@@ -160,8 +160,8 @@ def Spectrum_Pure_Symmetric_Quadrupole():
     Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPureSymmetricQuadrupole')
     
     t, FID = FID_Signal(spin, h_unperturbed, dm_evolved, time_window=100)
-    
-    f, ft = Fourier_Transform_Signal(FID, t, -4, 0)
+        
+    f, ft = Fourier_Transform_Signal(FID, t, 0, 4)
     
     Plot_Fourier_Transform(f, ft)
 
@@ -205,7 +205,7 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
     
     t, FID = FID_Signal(spin, h_unperturbed, dm_evolved, time_window=100)
     
-    f, ft = Fourier_Transform_Signal(FID, t, -10, 0)
+    f, ft = Fourier_Transform_Signal(FID, t, 0, 10)
     
     Plot_Fourier_Transform(f, ft)
     
@@ -249,7 +249,7 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Half_Integer_Spin():
     
     t, FID = FID_Signal(spin, h_unperturbed, dm_evolved, time_window=100)
     
-    f, ft = Fourier_Transform_Signal(FID, t, -11, -9)
+    f, ft = Fourier_Transform_Signal(FID, t, 9, 11)
     
     Plot_Fourier_Transform(f, ft)
 
@@ -292,8 +292,8 @@ def Spectrum_Perturbed_Quadrupole_Integer_Spin():
     Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPerturbedQuadrupoleInt')
     
     t, FID = FID_Signal(spin, h_unperturbed, dm_evolved, time_window=100)
-    
-    f, ft = Fourier_Transform_Signal(FID, t, -8, -1)
+        
+    f, ft = Fourier_Transform_Signal(FID, t, 1, 8)
     
     Plot_Fourier_Transform(f, ft)
 
@@ -337,6 +337,6 @@ def Spectrum_Perturbed_Quadrupole_Half_Integer_Spin():
     
     t, FID = FID_Signal(spin, h_unperturbed, dm_evolved, time_window=1000)
     
-    f, ft = Fourier_Transform_Signal(FID, t, -10, -1)
+    f, ft = Fourier_Transform_Signal(FID, t, 1, 10)
     
     Plot_Fourier_Transform(f, ft)
