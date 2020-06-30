@@ -65,7 +65,7 @@ def Evolve(spin, h_unperturbed, \
         dm_initial = Canonical_Density_Matrix(h_unperturbed, temperature)
     else:
         dm_initial = initial_state
-    
+        
     # Selects the operator for the change of picture, according to the value of 'picture'
     if picture == 'IP':
         o_change_of_picture = h_unperturbed
@@ -216,7 +216,7 @@ def FID_Signal(spin, h_unperturbed, dm, time_window):
     
     # Computes the FID assuming that the detection coil records the time-dependence of the magnetization
     # on the x-y plane, given by
-    # S = Tr[dm(t)*I-]
+    # FID = Tr[dm(t)*I-]
     for t in times:
         dm_t = dm.free_evolution(h_unperturbed, t)
         FID.append((dm_t*spin.I['-']).trace())
@@ -234,8 +234,8 @@ def Plot_FID_Signal(times, FID, save=False, name='FIDSignal', destination=''):
     if save: plt.savefig(destination + name)
     
     plt.show()
-    
-    
+
+
 # Computes the complex Fourier transform of the given signal originally expressed in the time domain
 def Fourier_Transform_Signal(signal, times, frequency_start, frequency_stop):
     
@@ -245,18 +245,18 @@ def Fourier_Transform_Signal(signal, times, frequency_start, frequency_stop):
     # Step between the sampled instants of time
     dt = times[1]-times[0]
     
-    # Values of frequency at which the Fourier transform is to be evaluated
+    # Values of frequency at which the Fourier transform is to be evaluated (one-signed)
     frequencies = np.linspace(start=frequency_start, stop=frequency_stop, num=1000)
     
     # Fourier transform to be sampled
     fourier = []
     
-    # The Fourier transform is evaluated throug the conventional formula
-    # F = (1/T)*int_0^T{e^(-i omega t) S(t) dt}
+    # The Fourier transform is evaluated through the conventional formula
+    # F = (1/T)*int_0^T{-sin(omega t) S(t) dt}
     for omega in frequencies:
         integral = 0
         for i in range(len(times)):
-            integral = integral + np.exp(-1j*omega*times[i])*signal[i]*dt
+            integral = integral - math.sin(omega*times[i])*signal[i]*dt
         fourier.append((1/T)*integral)
     
     return frequencies, fourier
