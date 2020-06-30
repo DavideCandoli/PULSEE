@@ -221,7 +221,7 @@ def FID_Signal(spin, h_unperturbed, dm, time_window):
         dm_t = dm.free_evolution(h_unperturbed, t)
         FID.append((dm_t*spin.I['-']).trace())
     
-    return times, FID
+    return times, np.array(FID)
 
 
 # Plots the the real part of the FID signal as a function of time
@@ -252,14 +252,14 @@ def Fourier_Transform_Signal(signal, times, frequency_start, frequency_stop):
     fourier = []
     
     # The Fourier transform is evaluated through the conventional formula
-    # F = (1/T)*int_0^T{-sin(omega t) S(t) dt}
+    # F = -(1/T)*int_0^T{sin(omega t) S(t) dt}
     for omega in frequencies:
         integral = 0
         for i in range(len(times)):
             integral = integral - math.sin(omega*times[i])*signal[i]*dt
         fourier.append((1/T)*integral)
     
-    return frequencies, fourier
+    return frequencies, np.array(fourier)
 
 
 # Plots the Fourier transform of the signal
