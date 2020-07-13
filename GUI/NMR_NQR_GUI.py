@@ -32,7 +32,7 @@ class MainScreen(FloatLayout):
         self.parameters = Label(text='Parameters', size_hint=(0.2, 0.15), pos=(50, 500), font_size='30sp')
         self.add_widget(self.parameters)
         
-        # Control of the nuclear spin parameters
+        # Controls of the nuclear spin parameters
         # Nuclear species dropdown list
         self.nuclear_species = Button(text='Nuclear species', size_hint=(0.15, 0.075), pos=(50, 450))
         self.add_widget(self.nuclear_species)
@@ -52,28 +52,39 @@ class MainScreen(FloatLayout):
         self.spin_qn_label = Label(text='Spin quantum number', size_hint=(0.1, 0.05), pos=(225, 457.5), font_size='15sp')
         self.add_widget(self.spin_qn_label)
         
-        self.spin_qn = TextInput(multiline=False, size_hint=(0.05, 0.05), pos=(350, 457.5))
+        self.spin_qn = TextInput(multiline=False, size_hint=(0.065, 0.05), pos=(350, 457.5))
         self.spin_qn.bind(on_text_validate=on_enter)
         self.add_widget(self.spin_qn)
         self.Cl_btn.bind(on_release=partial(clear_and_write_text, self.spin_qn, '3/2'))
         self.Na_btn.bind(on_release=partial(clear_and_write_text, self.spin_qn, '3/2'))
         
         # Gyromagnetic Ratio
-        self.gyro_label = Label(text='Gyromagnetic ratio', size_hint=(0.1, 0.05), pos=(430, 457.5), font_size='15sp')
+        self.gyro_label = Label(text='Gyromagnetic ratio', size_hint=(0.1, 0.05), pos=(450, 457.5), font_size='15sp')
         self.add_widget(self.gyro_label)
         
-        self.gyro = TextInput(multiline=False, size_hint=(0.065, 0.05), pos=(547.5, 457.5))
+        self.gyro = TextInput(multiline=False, size_hint=(0.065, 0.05), pos=(565, 457.5))
         self.gyro.bind(on_text_validate=on_enter)
         self.add_widget(self.gyro)
         self.Cl_btn.bind(on_release=partial(clear_and_write_text, self.gyro, '4.00'))
         self.Na_btn.bind(on_release=partial(clear_and_write_text, self.gyro, '11.26'))
         
-        self.gyro_unit_label = Label(text='x 10\N{SUPERSCRIPT TWO} 1/Gs', size_hint=(0.1, 0.05), pos=(600, 457.5), font_size='15sp')
+        self.gyro_unit_label = Label(text='x 10\N{SUPERSCRIPT TWO} 1/Gs', size_hint=(0.1, 0.05), pos=(620, 457.5), font_size='15sp')
         self.add_widget(self.gyro_unit_label)
         
         # Label 'Magnetic field'
         self.mag_field = Label(text='Magnetic field', size_hint=(0.165, 0.15), pos=(50, 360), font_size='20sp')
         self.add_widget(self.mag_field)
+        
+        # Controls of the magnetic field parameters
+        self.field_mag_label = Label(text='Field magnitude', size_hint=(0.135, 0.1), pos=(50, 330), font_size='15sp')
+        self.add_widget(self.field_mag_label)
+        
+        self.field_mag = TextInput(multiline=False, size_hint=(0.065, 0.05), pos=(170, 345))
+        self.field_mag.bind(on_text_validate=on_enter)
+        self.add_widget(self.field_mag)
+        
+        self.field_mag_unit = Label(text='G', size_hint=(0.135, 0.1), pos=(180, 330), font_size='15sp')
+        self.add_widget(self.field_mag_unit)
         
         
 # Class of the application
