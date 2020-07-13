@@ -106,6 +106,21 @@ class MainScreen(FloatLayout):
         self.phi_z_unit = Label(text='rad', size_hint=(0.135, 0.1), pos=(450, 330), font_size='15sp')
         self.add_widget(self.phi_z_unit)
         
+        # Label 'Quadrupole interaction'
+        self.quad_int = Label(text='Quadrupole interaction', size_hint=(0.165, 0.15), pos=(87.5, 260), font_size='20sp')
+        self.add_widget(self.quad_int)
+        
+        # Controls of the quadrupole interaction parameters
+        self.coupling_label = Label(text='Coupling constant e\N{SUPERSCRIPT TWO}qQ', size_hint=(0.135, 0.1), pos=(76.5, 230), font_size='15sp')
+        self.add_widget(self.coupling_label)
+        
+        self.coupling = TextInput(multiline=False, size_hint=(0.065, 0.05), pos=(220, 245))
+        self.coupling.bind(on_text_validate=on_enter)
+        self.add_widget(self.coupling)
+        
+        self.coupling = Label(text='MHz', size_hint=(0.135, 0.1), pos=(240, 230), font_size='15sp')
+        self.add_widget(self.coupling)
+        
         
 # Class of the application
 class PulseBit(App):
