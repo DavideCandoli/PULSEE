@@ -121,6 +121,13 @@ class MainScreen(FloatLayout):
         self.coupling = Label(text='MHz', size_hint=(0.135, 0.1), pos=(240, 230), font_size='15sp')
         self.add_widget(self.coupling)
         
+        self.asymmetry_label = Label(text='Asymmetry parameter', size_hint=(0.135, 0.1), pos=(360, 230), font_size='15sp')
+        self.add_widget(self.asymmetry_label)
+        
+        self.asymmetry = TextInput(multiline=False, size_hint=(0.065, 0.05), pos=(500, 245))
+        self.asymmetry.bind(on_text_validate=on_enter)
+        self.add_widget(self.asymmetry)
+        
         
 # Class of the application
 class PulseBit(App):
