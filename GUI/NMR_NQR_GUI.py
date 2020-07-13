@@ -96,6 +96,16 @@ class MainScreen(FloatLayout):
         self.theta_z_unit = Label(text='rad', size_hint=(0.135, 0.1), pos=(310, 330), font_size='15sp')
         self.add_widget(self.theta_z_unit)
         
+        self.phi_z_label = Label(text='\N{GREEK SMALL LETTER PHI}z', size_hint=(0.135, 0.1), pos=(360, 330), font_size='15sp')
+        self.add_widget(self.phi_z_label)
+        
+        self.phi_z = TextInput(multiline=False, size_hint=(0.065, 0.05), pos=(435, 345))
+        self.phi_z.bind(on_text_validate=on_enter)
+        self.add_widget(self.phi_z)
+        
+        self.phi_z_unit = Label(text='rad', size_hint=(0.135, 0.1), pos=(450, 330), font_size='15sp')
+        self.add_widget(self.phi_z_unit)
+        
         
 # Class of the application
 class PulseBit(App):
