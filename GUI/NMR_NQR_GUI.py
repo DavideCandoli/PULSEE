@@ -50,6 +50,18 @@ class MainScreen(FloatLayout):
         self.Cl_btn.bind(on_release=partial(clear_and_write_text, self.spin_qn, '3/2'))
         self.Na_btn.bind(on_release=partial(clear_and_write_text, self.spin_qn, '3/2'))
         
+        self.gyro_label = Label(text='Gyromagnetic ratio', size_hint=(0.1, 0.05), pos=(430, 457.5), font_size='15sp')
+        self.add_widget(self.gyro_label)
+        
+        self.gyro = TextInput(multiline=False, size_hint=(0.065, 0.05), pos=(547.5, 457.5))
+        self.gyro.bind(on_text_validate=on_enter)
+        self.add_widget(self.gyro)
+        self.Cl_btn.bind(on_release=partial(clear_and_write_text, self.gyro, '4.00'))
+        self.Na_btn.bind(on_release=partial(clear_and_write_text, self.gyro, '11.26'))
+        
+        self.gyro_unit_label = Label(text='x 10\N{SUPERSCRIPT TWO} 1/Gs', size_hint=(0.1, 0.05), pos=(600, 457.5), font_size='15sp')
+        self.add_widget(self.gyro_unit_label)
+        
 
 class PulseBit(App):
     def build(self):
