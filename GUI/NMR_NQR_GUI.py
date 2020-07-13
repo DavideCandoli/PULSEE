@@ -20,13 +20,17 @@ def clear_and_write_text(text_object, text, *args):
     text_object.insert_text(text)
 
 
+# Class of the direct interface between the user and the software
 class MainScreen(FloatLayout):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)   
         
+        # Label 'Parameters'
         self.parameters = Label(text='Parameters', size_hint=(0.2, 0.15), pos=(50, 500), font_size='30sp')
         self.add_widget(self.parameters)
         
+        # Control of the nuclear spin parameters
+        # Nuclear species dropdown list
         self.nuclear_species = Button(text='Nuclear species', size_hint=(0.15, 0.075), pos=(50, 450))
         self.add_widget(self.nuclear_species)
 
@@ -41,6 +45,7 @@ class MainScreen(FloatLayout):
         self.nucleus_dd.add_widget(self.Na_btn)
         self.nucleus_dd.bind(on_select=lambda instance, x: setattr(self.nuclear_species, 'text', x))
         
+        # Spin quantum number
         self.spin_qn_label = Label(text='Spin quantum number', size_hint=(0.1, 0.05), pos=(225, 457.5), font_size='15sp')
         self.add_widget(self.spin_qn_label)
         
@@ -50,6 +55,7 @@ class MainScreen(FloatLayout):
         self.Cl_btn.bind(on_release=partial(clear_and_write_text, self.spin_qn, '3/2'))
         self.Na_btn.bind(on_release=partial(clear_and_write_text, self.spin_qn, '3/2'))
         
+        # Gyromagnetic Ratio
         self.gyro_label = Label(text='Gyromagnetic ratio', size_hint=(0.1, 0.05), pos=(430, 457.5), font_size='15sp')
         self.add_widget(self.gyro_label)
         
@@ -62,7 +68,8 @@ class MainScreen(FloatLayout):
         self.gyro_unit_label = Label(text='x 10\N{SUPERSCRIPT TWO} 1/Gs', size_hint=(0.1, 0.05), pos=(600, 457.5), font_size='15sp')
         self.add_widget(self.gyro_unit_label)
         
-
+        
+# Class of the application
 class PulseBit(App):
     def build(self):
         return MainScreen(size=(500, 500))
