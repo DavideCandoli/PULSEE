@@ -86,6 +86,16 @@ class MainScreen(FloatLayout):
         self.field_mag_unit = Label(text='G', size_hint=(0.135, 0.1), pos=(180, 330), font_size='15sp')
         self.add_widget(self.field_mag_unit)
         
+        self.theta_z_label = Label(text='\N{GREEK SMALL LETTER THETA}z', size_hint=(0.135, 0.1), pos=(220, 330), font_size='15sp')
+        self.add_widget(self.theta_z_label)
+        
+        self.theta_z = TextInput(multiline=False, size_hint=(0.065, 0.05), pos=(295, 345))
+        self.theta_z.bind(on_text_validate=on_enter)
+        self.add_widget(self.theta_z)
+        
+        self.theta_z_unit = Label(text='rad', size_hint=(0.135, 0.1), pos=(310, 330), font_size='15sp')
+        self.add_widget(self.theta_z_unit)
+        
         
 # Class of the application
 class PulseBit(App):
