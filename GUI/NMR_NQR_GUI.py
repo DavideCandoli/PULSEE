@@ -1,11 +1,24 @@
+from functools import partial
+
 from kivy.app import App
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.textinput import TextInput
 
+from kivy.uix.textinput import TextInput
 from kivy.uix.dropdown import DropDown
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.base import runTouchApp
+
+
+def on_enter(instance, value):
+    print('User pressed enter in', instance)
+
+
+def clear_and_write_text(text_object, text, *args):
+    text_object.select_all()
+    text_object.delete_selection()
+    text_object.insert_text(text)
+
 
 class MainScreen(FloatLayout):
     def __init__(self, **kwargs):
@@ -22,10 +35,20 @@ class MainScreen(FloatLayout):
         self.Cl_btn = Button(text='Cl', size_hint_y=None, height=25)
         self.Cl_btn.bind(on_release=lambda btn: self.nucleus_dd.select(btn.text))
         self.nucleus_dd.add_widget(self.Cl_btn)
+        
         self.Na_btn = Button(text='Na', size_hint_y=None, height=25)
         self.Na_btn.bind(on_release=lambda btn: self.nucleus_dd.select(btn.text))
         self.nucleus_dd.add_widget(self.Na_btn)
         self.nucleus_dd.bind(on_select=lambda instance, x: setattr(self.nuclear_species, 'text', x))
+        
+        self.spin_qn_label = Label(text='Spin quantum number', size_hint=(0.1, 0.05), pos=(225, 457.5), font_size='15sp')
+        self.add_widget(self.spin_qn_label)
+        
+        self.spin_qn = TextInput(multiline=False, size_hint=(0.05, 0.05), pos=(350, 457.5))
+        self.spin_qn.bind(on_text_validate=on_enter)
+        self.add_widget(self.spin_qn)
+        self.Cl_btn.bind(on_release=partial(clear_and_write_text, self.spin_qn, '3/2'))
+        self.Na_btn.bind(on_release=partial(clear_and_write_text, self.spin_qn, '3/2'))
         
 
 class PulseBit(App):
