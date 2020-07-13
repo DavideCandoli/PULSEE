@@ -6,6 +6,8 @@ from functools import partial
 from kivy.app import App
 from kivy.uix.floatlayout import FloatLayout
 
+from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelItem
+
 from kivy.uix.textinput import TextInput
 from kivy.uix.dropdown import DropDown
 from kivy.uix.button import Button
@@ -23,13 +25,13 @@ def clear_and_write_text(text_object, text, *args):
     text_object.insert_text(text)
 
 
-# Class of the direct interface between the user and the software
-class MainScreen(FloatLayout):
+# Class of the page of the software which lists the parameters of the system
+class System_Parameters(FloatLayout):
     def __init__(self, **kwargs):
-        super(MainScreen, self).__init__(**kwargs)   
+        super(System_Parameters, self).__init__(**kwargs)
         
         # Label 'System parameters'
-        self.parameters = Label(text='System parameters', size_hint=(0.2, 0.15), pos=(100, 500), font_size='30sp')
+        self.parameters = Label(text='System parameters', size_hint=(0.2, 0.15), pos=(100, 485), font_size='30sp')
         self.add_widget(self.parameters)
         
         # Controls of the nuclear spin parameters
@@ -159,9 +161,30 @@ class MainScreen(FloatLayout):
         self.add_widget(self.gamma_q_unit)
         
         
+# Class of the object on top of the individual panels
+class Panels(TabbedPanel):
+    def __init__(self, **kwargs):
+        super(Panels, self).__init__(**kwargs)
+        
+        self.tab_sys_par = TabbedPanelItem(text='System')
+        self.add_widget(self.tab_sys_par)
+        self.tab_sys_par.content = System_Parameters()
+        
+        self.tab_pulse_par = TabbedPanelItem(text='Pulse')
+        self.add_widget(self.tab_pulse_par)
+        
+        self.tab_spectrum = TabbedPanelItem(text='Spectrum')
+        self.add_widget(self.tab_spectrum)
+        
+        self.tab_dm = TabbedPanelItem(text='State')
+        self.add_widget(self.tab_dm)
+        
+        #tab_header = TabbedPanelHeader(text='Tab2')
+        #tp.add_widget(th)
+
 # Class of the application
 class PulseBit(App):
     def build(self):
-        return MainScreen(size=(500, 500))
+        return Panels(size=(500, 500), do_default_tab=False, tab_pos='top_mid')
     
 PulseBit().run()
