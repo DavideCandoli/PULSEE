@@ -28,8 +28,8 @@ class MainScreen(FloatLayout):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)   
         
-        # Label 'Parameters'
-        self.parameters = Label(text='Parameters', size_hint=(0.2, 0.15), pos=(50, 500), font_size='30sp')
+        # Label 'System parameters'
+        self.parameters = Label(text='System parameters', size_hint=(0.2, 0.15), pos=(100, 500), font_size='30sp')
         self.add_widget(self.parameters)
         
         # Controls of the nuclear spin parameters
@@ -127,6 +127,36 @@ class MainScreen(FloatLayout):
         self.asymmetry = TextInput(multiline=False, size_hint=(0.065, 0.05), pos=(500, 245))
         self.asymmetry.bind(on_text_validate=on_enter)
         self.add_widget(self.asymmetry)
+        
+        self.alpha_q_label = Label(text='\N{GREEK SMALL LETTER ALPHA}Q', size_hint=(0.135, 0.1), pos=(5, 180), font_size='15sp')
+        self.add_widget(self.alpha_q_label)
+        
+        self.alpha_q = TextInput(multiline=False, size_hint=(0.065, 0.05), pos=(80, 195))
+        self.alpha_q.bind(on_text_validate=on_enter)
+        self.add_widget(self.alpha_q)
+        
+        self.alpha_q_unit = Label(text='rad', size_hint=(0.135, 0.1), pos=(95, 180), font_size='15sp')
+        self.add_widget(self.alpha_q_unit)
+        
+        self.beta_q_label = Label(text='\N{GREEK SMALL LETTER BETA}Q', size_hint=(0.135, 0.1), pos=(150, 180), font_size='15sp')
+        self.add_widget(self.beta_q_label)
+        
+        self.beta_q = TextInput(multiline=False, size_hint=(0.065, 0.05), pos=(225, 195))
+        self.beta_q.bind(on_text_validate=on_enter)
+        self.add_widget(self.beta_q)
+        
+        self.beta_q_unit = Label(text='rad', size_hint=(0.135, 0.1), pos=(240, 180), font_size='15sp')
+        self.add_widget(self.beta_q_unit)
+        
+        self.gamma_q_label = Label(text='\N{GREEK SMALL LETTER GAMMA}Q', size_hint=(0.135, 0.1), pos=(295, 180), font_size='15sp')
+        self.add_widget(self.gamma_q_label)
+        
+        self.gamma_q = TextInput(multiline=False, size_hint=(0.065, 0.05), pos=(370, 195))
+        self.gamma_q.bind(on_text_validate=on_enter)
+        self.add_widget(self.gamma_q)
+        
+        self.gamma_q_unit = Label(text='rad', size_hint=(0.135, 0.1), pos=(385, 180), font_size='15sp')
+        self.add_widget(self.gamma_q_unit)
         
         
 # Class of the application
