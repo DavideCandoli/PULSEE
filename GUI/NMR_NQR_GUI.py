@@ -1,3 +1,6 @@
+from kivy.config import Config
+Config.set('graphics', 'resizable', False)
+
 from functools import partial
 
 from kivy.app import App
@@ -67,6 +70,10 @@ class MainScreen(FloatLayout):
         
         self.gyro_unit_label = Label(text='x 10\N{SUPERSCRIPT TWO} 1/Gs', size_hint=(0.1, 0.05), pos=(600, 457.5), font_size='15sp')
         self.add_widget(self.gyro_unit_label)
+        
+        # Label 'Magnetic field'
+        self.mag_field = Label(text='Magnetic field', size_hint=(0.165, 0.15), pos=(50, 360), font_size='20sp')
+        self.add_widget(self.mag_field)
         
         
 # Class of the application
