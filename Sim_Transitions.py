@@ -29,6 +29,7 @@ from Simulation import Nuclear_System_Setup, \
                        Fourier_Transform_Signal, \
                        Plot_Fourier_Transform
 
+
 # Plots:
 # - The density matrix evolved under a rf pulse
 # - The spectrum of the transitions induced by the rf pulse according to Fermi golden rule
@@ -55,11 +56,10 @@ def Spectrum_Pure_Zeeman():
                'theta_RRF': math.pi,
                'phi_RRF': 0}
     
-    spin, h_unperturbed = Nuclear_System_Setup(spin_par, zeem_par, quad_par)
+    spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par)
     
-    dm_evolved = Evolve(spin, h_unperturbed, \
+    dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
                         mode=mode, pulse_time=20, \
-                        temperature=1e-4, \
                         picture = 'RRF', RRF_par=RRF_par)
     
     Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMPureZeeman')
@@ -102,11 +102,11 @@ def Spectrum_Perturbed_Zeeman():
                'theta_RRF': math.pi,
                'phi_RRF': 0}
     
-    spin, h_unperturbed = Nuclear_System_Setup(spin_par, zeem_par, quad_par)
+    spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par, \
+                                                     initial_state='canonical', temperature=300)
     
-    dm_evolved = Evolve(spin, h_unperturbed, \
+    dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
                         mode=mode, pulse_time=20, \
-                        temperature=1e-4, \
                         picture = 'RRF', RRF_par=RRF_par)
     
     Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMPerturbedZeeman')
@@ -145,11 +145,11 @@ def Spectrum_Pure_Symmetric_Quadrupole():
                'theta_RRF': 0,
                'phi_RRF': 0}
     
-    spin, h_unperturbed = Nuclear_System_Setup(spin_par, zeem_par, quad_par)
+    spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par, \
+                                                     initial_state='canonical', temperature=1e-5)
     
-    dm_evolved = Evolve(spin, h_unperturbed, \
+    dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
                         mode=mode, pulse_time=20, \
-                        temperature=1e-5, \
                         picture = 'RRF', RRF_par=RRF_par)
     
     Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMPureSymmetricQuadrupole')
@@ -189,11 +189,11 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
                'theta_RRF': -math.pi/4,
                'phi_RRF': 0}
         
-    spin, h_unperturbed = Nuclear_System_Setup(spin_par, zeem_par, quad_par)
+    spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par, \
+                                                     initial_state='canonical', temperature=1e-6)
     
-    dm_evolved = Evolve(spin, h_unperturbed, \
+    dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
                         mode=mode, pulse_time=20, \
-                        temperature=1e-6, \
                         picture = 'RRF', RRF_par=RRF_par)
     
     Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMPureAsymmetricQuadrupoleInt')
@@ -233,11 +233,11 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Half_Integer_Spin():
                'theta_RRF': math.pi,
                'phi_RRF': 0}
     
-    spin, h_unperturbed = Nuclear_System_Setup(spin_par, zeem_par, quad_par)
+    spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par, \
+                                                     initial_state='canonical', temperature=1e-6)
     
-    dm_evolved = Evolve(spin, h_unperturbed, \
+    dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
                         mode=mode, pulse_time=20, \
-                        temperature=1e-6, \
                         picture = 'RRF', RRF_par=RRF_par)
     
     Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMPureAsymmetricQuadrupoleHalfInt')
@@ -277,11 +277,11 @@ def Spectrum_Perturbed_Quadrupole_Integer_Spin():
                'theta_RRF': 0,
                'phi_RRF': 0}
     
-    spin, h_unperturbed = Nuclear_System_Setup(spin_par, zeem_par, quad_par)
+    spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par, \
+                                                     initial_state='canonical', temperature=1e-6)
     
-    dm_evolved = Evolve(spin, h_unperturbed, \
+    dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
                         mode=mode, pulse_time=20, \
-                        temperature=1e-6, \
                         picture = 'RRF', RRF_par=RRF_par)
     
     Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMSpectrumPerturbedQuadrupoleInt')
@@ -321,11 +321,10 @@ def Spectrum_Perturbed_Quadrupole_Half_Integer_Spin():
                'theta_RRF': 0,
                'phi_RRF': 0}
     
-    spin, h_unperturbed = Nuclear_System_Setup(spin_par, zeem_par, quad_par)
-    
-    dm_evolved = Evolve(spin, h_unperturbed, \
+    spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par, \
+                                                     initial_state='canonical', temperature=1e-7)    
+    dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
                         mode=mode, pulse_time=20, \
-                        temperature=1e-7, \
                         picture = 'RRF', RRF_par=RRF_par)
     
     Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMSpectrumPerturbedQuadrupoleHalfInt')
@@ -340,3 +339,4 @@ def Spectrum_Perturbed_Quadrupole_Half_Integer_Spin():
     f, ft = Fourier_Transform_Signal(FID, t, 1, 10)
     
     Plot_Fourier_Transform(f, ft)
+    
