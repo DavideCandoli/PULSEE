@@ -33,8 +33,7 @@ def test_Generic_Simulation():
     mode = pd.DataFrame([(5., 10., 0., math.pi/2, 0.)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
-    spin, h_unperturbed = Nuclear_System_Setup(spin_par, zeem_par, quad_par)
+    spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par, initial_state='canonical')
     
-    Evolve(spin, h_unperturbed, \
-           mode, pulse_time=5., \
-           temperature=1e-4)
+    Evolve(spin, h_unperturbed, dm_0, \
+           mode, pulse_time=5.)

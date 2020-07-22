@@ -22,10 +22,12 @@ from Hamiltonians import H_Zeeman, H_Quadrupole, \
                          H_Changed_Picture, \
                          V0, V1, V2
 
+
 # Sets up and returns the following elements of the system under study:
 # - Nuclear spin
 # - Unperturbed Hamiltonian
-def Nuclear_System_Setup(spin_par, zeem_par, quad_par):
+# - State of the system at t=0
+def Nuclear_System_Setup(spin_par, zeem_par, quad_par, initial_state='canonical', temperature=1e-4):
     # Nuclear spin under study
     spin = Nuclear_Spin(spin_par['quantum number'], \
                         spin_par['gyromagnetic ratio'])
@@ -46,26 +48,27 @@ def Nuclear_System_Setup(spin_par, zeem_par, quad_par):
     # contributions
     h_unperturbed = Observable(h_zeeman.matrix + h_quadrupole.matrix)
     
-    return spin, h_unperturbed
-
-
-# Computes the density matrix of the system after the application of a desired pulse for a given time, 
-# given the initial preparation of the ensemble. The evolution is performed in the picture specified by
-# the argument
-def Evolve(spin, h_unperturbed, \
-           mode, pulse_time, \
-           initial_state = 'canonical', temperature=1e-4, \
-           picture='RRF', RRF_par={'omega_RRF': 0,
-                                   'theta_RRF': 0,
-                                   'phi_RRF': 0}, \
-           n_points=10):
-    
     # Sets the density matrix of the system at time t=0, according to the value of 'initial_state'
     if initial_state == 'canonical':
         dm_initial = Canonical_Density_Matrix(h_unperturbed, temperature)
     else:
         dm_initial = initial_state
-        
+    
+    Plot_Real_Density_Matrix(dm_initial)
+
+    return spin, h_unperturbed, dm_initial
+
+
+# Computes the density matrix of the system after the application of a desired pulse for a given time, 
+# given the initial preparation of the ensemble. The evolution is performed in the picture specified by
+# the argument
+def Evolve(spin, h_unperturbed, dm_initial, \
+           mode, pulse_time, \
+           picture='RRF', RRF_par={'omega_RRF': 0,
+                                   'theta_RRF': 0,
+                                   'phi_RRF': 0}, \
+           n_points=10):
+    
     # Selects the operator for the change of picture, according to the value of 'picture'
     if picture == 'IP':
         o_change_of_picture = h_unperturbed
@@ -276,3 +279,13 @@ def Plot_Fourier_Transform(frequencies, fourier, save=False, name='FTSignal', de
     if save: plt.savefig(destination + name)
     
     plt.show()
+
+
+
+
+
+
+
+
+
+
