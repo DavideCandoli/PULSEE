@@ -52,7 +52,7 @@ def Nuclear_System_Setup(spin_par, zeem_par, quad_par, initial_state='canonical'
     if initial_state == 'canonical':
         dm_initial = Canonical_Density_Matrix(h_unperturbed, temperature)
     else:
-        dm_initial = initial_state
+        dm_initial = Density_Matrix(initial_state)
     
     Plot_Real_Density_Matrix(dm_initial)
 
