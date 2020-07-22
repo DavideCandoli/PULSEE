@@ -163,16 +163,13 @@ def Plot_Real_Density_Matrix(dm, save=False, name='RealPartDensityMatrix', desti
     plt.show()
 
 
-# Computes the spectrum of the transitions induced by the pulse specified by 'mode' between the
-# eigenstates of h_unperturbed after a time pulse_time. The probabilities of transition are computed
-# appealing to Fermi golden rule
-def Transition_Spectrum(spin, h_unperturbed, mode, pulse_time):
+# Computes the spectrum of power absorption due to x-polarized single-mode pulses, appealing to the
+# formula derived using Fermi's golden rule. The state of initial preparation of the ensemble is taken
+# into account for the calculation of the spectrum
+def Transition_Spectrum(spin, h_unperturbed, dm_initial):
     
     # Energy levels and eigenstates of the unperturbed Hamiltonian
     energies, o_change_of_basis = h_unperturbed.diagonalise()
-    
-    # Hamiltonian of the pulse evaluated at time pulse_time
-    h_pulse = H_Multiple_Mode_Pulse(spin, mode, pulse_time)
     
     transition_frequency = []
     
@@ -180,14 +177,18 @@ def Transition_Spectrum(spin, h_unperturbed, mode, pulse_time):
     
     d = h_unperturbed.dimension()
     
-    # In the following loop, the frequencies and the respective probabilities of transition are computed
+    # In the following loop, the frequencies and the respective intensities of the spectrum are computed
     # and recorded in the appropriate lists
     for i in range(d):
         for j in range(d):
             if i < j:
-                transition_frequency.append(np.absolute(energies[j] - energies[i]))
-                h_pulse_eig = h_pulse.sim_trans(o_change_of_basis)
-                transition_probability.append((np.absolute(h_pulse_eig.matrix[j][i]))**2)
+                omega = np.absolute(energies[j] - energies[i])
+                transition_frequency.append(omega)
+                p_i = dm_initial.matrix[i, i]
+                p_j = dm_initial.matrix[j, j]
+                magnetization_eig = spin.I['x'].sim_trans(o_change_of_basis)
+                P_omega = omega*np.absolute(p_i-p_j)*(np.absolute(magnetization_eig.matrix[j, i]))**2
+                transition_probability.append(P_omega)
             else:
                 pass
     
