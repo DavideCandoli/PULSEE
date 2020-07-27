@@ -54,8 +54,6 @@ def Nuclear_System_Setup(spin_par, zeem_par, quad_par, initial_state='canonical'
     else:
         dm_initial = Density_Matrix(initial_state)
     
-    Plot_Real_Density_Matrix(dm_initial)
-
     return spin, h_unperturbed, dm_initial
 
 
