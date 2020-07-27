@@ -220,10 +220,10 @@ def FID_Signal(spin, h_unperturbed, dm, time_window):
     
     # Computes the FID assuming that the detection coil records the time-dependence of the magnetization
     # on the x-y plane, given by
-    # FID = Tr[dm(t)*I-]
+    # FID = Tr[dm(t)*I+]
     for t in times:
         dm_t = dm.free_evolution(h_unperturbed, t)
-        FID.append((dm_t*spin.I['-']).trace())
+        FID.append((dm_t*spin.I['+']).trace())
     
     return times, np.array(FID)
 
