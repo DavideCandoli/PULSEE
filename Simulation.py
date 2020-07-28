@@ -162,9 +162,9 @@ def Plot_Real_Density_Matrix(dm, save=False, name='RealPartDensityMatrix', desti
 
 
 # Computes the spectrum of power absorption due to x-polarized single-mode pulses, appealing to the
-# formula derived using Fermi's golden rule. The state of initial preparation of the ensemble is taken
-# into account for the calculation of the spectrum
-def Transition_Spectrum(spin, h_unperturbed, dm_initial):
+# formula derived using Fermi's golden rule. If normalized=False, the state of initial preparation of
+# the ensemble is taken into account for the calculation of the spectrum
+def Transition_Spectrum(spin, h_unperturbed, normalized=True, dm_initial=0):
     
     # Energy levels and eigenstates of the unperturbed Hamiltonian
     energies, o_change_of_basis = h_unperturbed.diagonalise()
@@ -182,10 +182,15 @@ def Transition_Spectrum(spin, h_unperturbed, dm_initial):
             if i < j:
                 omega = np.absolute(energies[j] - energies[i])
                 transition_frequency.append(omega)
-                p_i = dm_initial.matrix[i, i]
-                p_j = dm_initial.matrix[j, j]
                 magnetization_eig = spin.I['x'].sim_trans(o_change_of_basis)
-                P_omega = omega*np.absolute(p_i-p_j)*(np.absolute(magnetization_eig.matrix[j, i]))**2
+                
+                P_omega = omega*(np.absolute(magnetization_eig.matrix[j, i]))**2
+                
+                if not normalized:
+                    p_i = dm_initial.matrix[i, i]
+                    p_j = dm_initial.matrix[j, j]
+                    P_omega = np.absolute(p_i-p_j)*P_omega
+                    
                 transition_probability.append(P_omega)
             else:
                 pass
