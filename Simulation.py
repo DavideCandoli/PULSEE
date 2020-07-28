@@ -182,7 +182,7 @@ def Transition_Spectrum(spin, h_unperturbed, normalized=True, dm_initial=0):
             if i < j:
                 omega = np.absolute(energies[j] - energies[i])
                 transition_frequency.append(omega)
-                magnetization_eig = spin.I['x'].sim_trans(o_change_of_basis)
+                magnetization_eig = spin.gyromagnetic_ratio*spin.I['x'].sim_trans(o_change_of_basis)
                 
                 P_omega = omega*(np.absolute(magnetization_eig.matrix[j, i]))**2
                 
