@@ -210,10 +210,10 @@ def Plot_Transition_Spectrum(frequencies, probabilities, save=False, name='Trans
 
 
 # Returns the free induction decay (FID) signal resulting from the free evolution of the component
-# of the magnetization on the x-y plane of the LAB system. The initial state of the system is given by
-# the parameter dm, and the dynamics of the magnetization is recorded for a time time_window. Relaxation
-# effects are not taken into account.
-def FID_Signal(spin, h_unperturbed, dm, time_window):
+# of the magnetization on the specified plane of the LAB system. The initial state of the system is
+# given by the parameter dm, and the dynamics of the magnetization is recorded for a time time_window.
+# Relaxation effects are not taken into account.
+def FID_Signal(spin, h_unperturbed, dm, time_window, theta=0, phi=0):
     
     # Sampling of the time window [0, time_window] (microseconds) where the free evolution takes place
     times = np.linspace(start=0, stop=time_window, num=time_window*10)
@@ -222,11 +222,14 @@ def FID_Signal(spin, h_unperturbed, dm, time_window):
     FID = []
     
     # Computes the FID assuming that the detection coil records the time-dependence of the magnetization
-    # on the x-y plane, given by
-    # FID = Tr[dm(t)*I+]
+    # on the plane perpendicular to (sin(theta)cos(phi), sin(theta)sin(phi), cos(theta)), given by
+    # FID = Tr[dm(t)*e^{i phi I_z}e^{i theta I_y}I+e^{-i theta I_y}e^{-i phi I_z}]
     for t in times:
         dm_t = dm.free_evolution(h_unperturbed, t)
-        FID.append((dm_t*spin.I['+']).trace())
+        Iz = spin.I['z']
+        Iy = spin.I['y']
+        I_plus_rotated = (1j*phi*Iz).exp()*(1j*theta*Iy).exp()*spin.I['+']*(-1j*theta*Iy).exp()*(-1j*phi*Iz).exp()
+        FID.append((dm_t*I_plus_rotated).trace())
     
     return times, np.array(FID)
 
