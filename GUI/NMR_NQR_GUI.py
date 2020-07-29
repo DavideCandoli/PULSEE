@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 from fractions import Fraction
 
@@ -26,6 +27,8 @@ from kivy.uix.label import Label
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.slider import Slider
 
+from kivy.graphics import *
+
 # Function which specifies the action of various controls (stub)
 def on_enter():
         pass
@@ -41,6 +44,7 @@ def clear_and_write_text(text_object, text, *args):
 class System_Parameters(FloatLayout):
     
     manual_dm = Widget()
+    error_spin_qn=Label(text='')
     
     # Specifies the action of the checkbox 'Canonical', i.e. to toggle the TextInput widgets associated
     # with the temperature and the density matrix to be inserted manually respectively
@@ -54,18 +58,29 @@ class System_Parameters(FloatLayout):
     
     # Specifies the action carried out after the validation of the spin quantum number
     def set_quantum_number(self, *args):
-        self.remove_widget(self.manual_dm)
+        try:
+            self.remove_widget(self.error_spin_qn)
+            
+            self.remove_widget(self.manual_dm)
         
-        self.d = int(Fraction(self.spin_qn.text)*2+1)
+            self.d = int(Fraction(self.spin_qn.text)*2+1)
+        
+            if self.d <= 8: self.el_w = 40
+            else: self.el_w = 30
         
         # Sets the grid representing the initial density matrix to be filled manually
-        self.manual_dm = GridLayout(cols=self.d, size=(40*self.d, 40*self.d), size_hint=(None, None), pos=(50, 440-self.d*40))
-        self.dm_elements = np.empty((self.d, self.d), dtype=TextInput)
-        for j in range(self.d):
-            for i in range(self.d):
-                self.dm_elements[i, j] = TextInput(multiline=False, disabled=False)
-                self.manual_dm.add_widget(self.dm_elements[i, j])
-        self.add_widget(self.manual_dm)
+            self.manual_dm = GridLayout(cols=self.d, size=(self.el_w*self.d, self.el_w*self.d), size_hint=(None, None), pos=(50, 440-self.d*self.el_w))
+            self.dm_elements = np.empty((self.d, self.d), dtype=TextInput)
+            for j in range(self.d):
+                for i in range(self.d):
+                    self.dm_elements[i, j] = TextInput(multiline=False, disabled=False)
+                    self.manual_dm.add_widget(self.dm_elements[i, j])
+                    self.dm_elements[i, j].disabled = not self.temperature.disabled
+            self.add_widget(self.manual_dm)
+        # Prints any error raised after the validation of the spin quantum number below the TextInput
+        except Exception as e:
+            self.error_spin_qn=Label(text=e.args[0], pos=(-10, 337.5), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+            self.add_widget(self.error_spin_qn)
     
     # Controls of the nuclear spin parameters
     def nuclear_parameters(self, x_shift=0, y_shift=0):        
