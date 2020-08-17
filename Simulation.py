@@ -273,15 +273,19 @@ def Fourier_Transform_Signal(signal, times, frequency_start, frequency_stop):
 
 
 # Plots the Fourier transform of the signal
-def Plot_Fourier_Transform(frequencies, fourier, save=False, name='FTSignal', destination=''):
-    plt.plot(frequencies, np.real(fourier), label='Real part')
+def Plot_Fourier_Transform(frequencies, fourier, square_modulus=False, save=False, name='FTSignal', destination=''):
+    if not square_modulus:
+        plt.plot(frequencies, np.real(fourier), label='Real part')
     
-    plt.plot(frequencies, np.imag(fourier), label='Imaginary part')
+        plt.plot(frequencies, np.imag(fourier), label='Imaginary part')
+    
+    else:
+        plt.plot(frequencies, np.absolute(fourier)**2, label='Square modulus')
     
     plt.legend(loc='upper left')
     
     plt.xlabel("frequency (MHz)")    
-    plt.ylabel("FT signal (a. u.)")    
+    plt.ylabel("FT signal (a. u.)")
     
     if save: plt.savefig(destination + name)
     
