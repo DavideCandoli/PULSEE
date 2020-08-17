@@ -49,11 +49,11 @@ def Spectrum_Pure_Zeeman():
                 'beta_q' : 0,
                 'gamma_q' : 0}
     
-    mode = pd.DataFrame([(10., 1., 0., math.pi/2, math.pi/2)], 
+    mode = pd.DataFrame([(10., 1., 0., math.pi/2, 0)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
     RRF_par = {'omega_RRF': 10,
-               'theta_RRF': 0,
+               'theta_RRF': math.pi,
                'phi_RRF': 0}
     
     spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par)
@@ -73,6 +73,8 @@ def Spectrum_Pure_Zeeman():
     f, ft = Fourier_Transform_Signal(FID, t, 9.5, 10.5)
     
     Plot_Fourier_Transform(f, ft)
+    
+    Plot_Fourier_Transform(f, ft, square_modulus=True)
 
 
 # Plots:
@@ -94,11 +96,11 @@ def Spectrum_Perturbed_Zeeman():
                 'beta_q' : math.pi/4,
                 'gamma_q' : math.pi/4}
     
-    mode = pd.DataFrame([(10., 1., 0., math.pi/2, math.pi/2)], 
+    mode = pd.DataFrame([(10., 1., 0., math.pi/2, 0)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
     RRF_par = {'omega_RRF': 10,
-               'theta_RRF': 0,
+               'theta_RRF': math.pi,
                'phi_RRF': 0}
     
     spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par, \
@@ -114,11 +116,13 @@ def Spectrum_Perturbed_Zeeman():
     
     Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPerturbedZeeman')
     
-    t, FID = FID_Signal(spin, h_unperturbed, dm_evolved, time_window=2000, T2=500, theta=0, phi=mode['frequency'][0]*20)
+    t, FID = FID_Signal(spin, h_unperturbed, dm_evolved, time_window=2000, T2=500, phi=10*20)
     
     f, ft = Fourier_Transform_Signal(FID, t, 9.9, 10.1)
     
     Plot_Fourier_Transform(f, ft)
+    
+    Plot_Fourier_Transform(f, ft, square_modulus=True)
 
 
 # Plots the transition spectrum for a pure quadrupole Hamiltonian, where the EFG is axially symmetric
@@ -136,15 +140,17 @@ def Spectrum_Pure_Symmetric_Quadrupole():
                 'beta_q' : 0,
                 'gamma_q' : 0}
     
-    mode = pd.DataFrame([(1., 1., 0., math.pi/2, math.pi/2)], 
+    mode = pd.DataFrame([(1., 1., 0., math.pi/2, 0)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
     RRF_par = {'omega_RRF': 1.,
-               'theta_RRF': 0,
+               'theta_RRF': math.pi,
                'phi_RRF': 0}
     
     spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par, \
                                                      initial_state='canonical', temperature=1e-4)
+    
+    Plot_Real_Density_Matrix(dm_0, save=False, name='DMPureSymmetricQuadrupole')
     
     dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
                         mode=mode, pulse_time=20, \
@@ -162,6 +168,8 @@ def Spectrum_Pure_Symmetric_Quadrupole():
     f, ft = Fourier_Transform_Signal(FID, t, 0, 4)
     
     Plot_Fourier_Transform(f, ft)
+    
+    Plot_Fourier_Transform(f, ft, square_modulus=True)
 
 
 # Plots the transition spectrum of an integer spin nucleus with a pure quadrupole Hamiltonian where the
@@ -180,18 +188,18 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
                 'beta_q' : 0,
                 'gamma_q' : 0}
     
-    mode = pd.DataFrame([(10, 100., 0., math.pi/2, math.pi/2)], 
+    mode = pd.DataFrame([(10, 1., 0., math.pi/2, 0)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
     RRF_par = {'omega_RRF': 10,
-               'theta_RRF': 0,
+               'theta_RRF': math.pi,
                'phi_RRF': 0}
     
     spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par, \
                                                      initial_state='canonical', temperature=1e-3)
     
     dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
-                        mode=mode, pulse_time=0.5, \
+                        mode=mode, pulse_time=20, \
                         picture = 'RRF', RRF_par=RRF_par)
     
     Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMPureAsymmetricQuadrupoleInt')
@@ -205,6 +213,8 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
     f, ft = Fourier_Transform_Signal(FID, t, 0, 10)
     
     Plot_Fourier_Transform(f, ft)
+    
+    Plot_Fourier_Transform(f, ft, square_modulus=True)
 
 
 # Plots the transition spectrum of a half-integer spin nucleus with a pure quadrupole Hamiltonian where
@@ -248,8 +258,10 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Half_Integer_Spin():
     f, ft = Fourier_Transform_Signal(FID, t, 9, 11)
     
     Plot_Fourier_Transform(f, ft)
-
     
+    Plot_Fourier_Transform(f, ft, square_modulus=True)
+
+
 # Plots the transition spectrum of an integer spin nucleus with a Zeeman perturbed quadrupole
 # Hamiltonian where the EFG is axially symmetric
 def Spectrum_Perturbed_Quadrupole_Integer_Spin():
@@ -291,6 +303,8 @@ def Spectrum_Perturbed_Quadrupole_Integer_Spin():
     f, ft = Fourier_Transform_Signal(FID, t, 1, 8)
     
     Plot_Fourier_Transform(f, ft)
+    
+    Plot_Fourier_Transform(f, ft, square_modulus=True)
 
 
 # Plots the transition spectrum of a half-integer spin nucleus with a Zeeman perturbed quadrupole
@@ -317,7 +331,7 @@ def Spectrum_Perturbed_Quadrupole_Half_Integer_Spin():
                'phi_RRF': 0}
     
     spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par, \
-                                                     initial_state='canonical', temperature=1e-7)    
+                                                     initial_state='canonical', temperature=1e-4)    
     dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
                         mode=mode, pulse_time=20, \
                         picture = 'RRF', RRF_par=RRF_par)
@@ -333,4 +347,6 @@ def Spectrum_Perturbed_Quadrupole_Half_Integer_Spin():
     f, ft = Fourier_Transform_Signal(FID, t, 1, 10)
     
     Plot_Fourier_Transform(f, ft)
+    
+    Plot_Fourier_Transform(f, ft, square_modulus=True)
     
