@@ -1,4 +1,5 @@
 import sys
+import math
 import numpy as np
 import pandas as pd
 from fractions import Fraction
@@ -170,7 +171,7 @@ class System_Parameters(FloatLayout):
         try:
             self.remove_widget(self.error_theta_z)
             
-            sim_man.zeem_par['theta_z'] = float(self.theta_z.text)
+            sim_man.zeem_par['theta_z'] = (float(self.theta_z.text)*math.pi)/180
             
         except Exception as e:
             self.error_theta_z=Label(text=e.args[0], pos=(-60, 220), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
@@ -181,7 +182,7 @@ class System_Parameters(FloatLayout):
         try:
             self.remove_widget(self.error_phi_z)
             
-            sim_man.zeem_par['phi_z'] = float(self.phi_z.text)
+            sim_man.zeem_par['phi_z'] = (float(self.phi_z.text)*math.pi)/180
             
         except Exception as e:
             self.error_phi_z=Label(text=e.args[0], pos=(110, 220), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
@@ -215,7 +216,7 @@ class System_Parameters(FloatLayout):
         try:
             self.remove_widget(self.error_alpha_q)
             
-            sim_man.zeem_par['alpha_q'] = float(self.alpha_q.text)
+            sim_man.zeem_par['alpha_q'] = (float(self.alpha_q.text)*math.pi)/180
 
         except Exception as e:
             self.error_alpha_q=Label(text=e.args[0], pos=(-250, 60), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
@@ -226,7 +227,7 @@ class System_Parameters(FloatLayout):
         try:
             self.remove_widget(self.error_beta_q)
             
-            sim_man.zeem_par['beta_q'] = float(self.beta_q.text)
+            sim_man.zeem_par['beta_q'] = (float(self.beta_q.text)*math.pi)/180
 
         except Exception as e:
             self.error_beta_q=Label(text=e.args[0], pos=(-125, 60), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
@@ -237,7 +238,7 @@ class System_Parameters(FloatLayout):
         try:
             self.remove_widget(self.error_gamma_q)
             
-            sim_man.zeem_par['gamma_q'] = float(self.gamma_q.text)
+            sim_man.zeem_par['gamma_q'] = (float(self.gamma_q.text)*math.pi)/180
 
         except Exception as e:
             self.error_gamma_q=Label(text=e.args[0], pos=(40, 60), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
@@ -308,7 +309,7 @@ class System_Parameters(FloatLayout):
         self.theta_z.bind(on_text_validate=self.set_theta_z)
         self.add_widget(self.theta_z)
         
-        self.theta_z_unit = Label(text='rad', size=(10, 5), pos=(x_shift-10, y_shift+50), font_size='15sp')
+        self.theta_z_unit = Label(text='°', size=(10, 5), pos=(x_shift-20, y_shift+50), font_size='15sp')
         self.add_widget(self.theta_z_unit)
         
         # Azimuthal angle
@@ -319,7 +320,7 @@ class System_Parameters(FloatLayout):
         self.phi_z.bind(on_text_validate=self.set_phi_z)
         self.add_widget(self.phi_z)
         
-        self.phi_z_unit = Label(text='rad', size=(10, 5), pos=(x_shift+150, y_shift+50), font_size='15sp')
+        self.phi_z_unit = Label(text='°', size=(10, 5), pos=(x_shift+140, y_shift+50), font_size='15sp')
         self.add_widget(self.phi_z_unit)
         
     # Controls of the quadrupole interaction parameters
@@ -354,7 +355,7 @@ class System_Parameters(FloatLayout):
         self.alpha_q.bind(on_text_validate=self.set_alpha_q)
         self.add_widget(self.alpha_q)
         
-        self.alpha_q_unit = Label(text='rad', size=(10, 5), pos=(x_shift-240, y_shift-10), font_size='15sp')
+        self.alpha_q_unit = Label(text='°', size=(10, 5), pos=(x_shift-250, y_shift-10), font_size='15sp')
         self.add_widget(self.alpha_q_unit)
         
         self.beta_q_label = Label(text='\N{GREEK SMALL LETTER BETA}Q', size=(10, 5), pos=(x_shift-180, y_shift-10), font_size='15sp')
@@ -364,7 +365,7 @@ class System_Parameters(FloatLayout):
         self.beta_q.bind(on_text_validate=self.set_beta_q)
         self.add_widget(self.beta_q)
         
-        self.beta_q_unit = Label(text='rad', size=(10, 5), pos=(x_shift-79, y_shift-10), font_size='15sp')
+        self.beta_q_unit = Label(text='°', size=(10, 5), pos=(x_shift-89, y_shift-10), font_size='15sp')
         self.add_widget(self.beta_q_unit)
         
         self.gamma_q_label = Label(text='\N{GREEK SMALL LETTER GAMMA}Q', size=(10, 5), pos=(x_shift-19, y_shift-10), font_size='15sp')
@@ -374,7 +375,7 @@ class System_Parameters(FloatLayout):
         self.gamma_q.bind(on_text_validate=self.set_gamma_q)
         self.add_widget(self.gamma_q)
        
-        self.gamma_q_unit = Label(text='rad', size=(10, 5), pos=(x_shift+83, y_shift-10), font_size='15sp')
+        self.gamma_q_unit = Label(text='°', size=(10, 5), pos=(x_shift+73, y_shift-10), font_size='15sp')
         self.add_widget(self.gamma_q_unit)
         
     # Controls on the initial density matrix
