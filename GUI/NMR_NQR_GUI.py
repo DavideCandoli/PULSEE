@@ -47,8 +47,8 @@ from Simulation import Nuclear_System_Setup, \
 # This class defines the object responsible of the management of the inputs and outputs of the
 # simulation, mediating the interaction between the GUI and the computational core of the program.
 class Simulation_Manager:
-    spin_par = {'quantum number' : 1,
-                'gyromagnetic ratio' : 1}
+    spin_par = {'quantum number' : 0,
+                'gyromagnetic ratio' : 0}
     
     zeem_par = {'field magnitude' : 0,
                 'theta_z' : 0,
@@ -67,6 +67,10 @@ class Simulation_Manager:
                'theta_RRF': 0,
                'phi_RRF': 0}
     
+    temperature = 300
+    
+    dm_0 = 0
+    
 sim_man = Simulation_Manager()
 
 
@@ -84,7 +88,15 @@ def clear_and_write_text(text_object, text, *args):
 # Class of the page of the software which lists the parameters of the system
 class System_Parameters(FloatLayout):
     
+    d = 1
+    
+    dm_elements = np.empty((d, d), dtype=Widget)
+    
+    dm_elements[0, 0] = Widget()
+    
     manual_dm = Widget()
+    
+    manual_dm_confirm = Widget()
     
     error_spin_qn = Label(text='')
     
@@ -106,15 +118,31 @@ class System_Parameters(FloatLayout):
 
     error_gamma_q = Label(text='')
     
+    error_canonical = Label(text='')
+    
+    error_T = Label(text='')
+    
+    error_manual_dm = Label(text='')
+    
+    error_build_system = Label(text='')
+    
     # Specifies the action of the checkbox 'Canonical', i.e. to toggle the TextInput widgets associated
-    # with the temperature and the density matrix to be inserted manually respectively
+    # with the temperature, the density matrix to be inserted manually and the related button
     def on_canonical_active(self, *args):
-        self.temperature.disabled = not self.temperature.disabled
+        try:
+            self.remove_widget(self.error_canonical)
+            
+            self.temperature.disabled = not self.temperature.disabled
         
-        if self.spin_qn.text != '':
-            for i in range(self.d):
-                for j in range(self.d):
-                    self.dm_elements[i, j].disabled = not self.dm_elements[i, j].disabled
+            if self.spin_qn.text != '':
+                for i in range(self.d):
+                    for j in range(self.d):
+                        self.dm_elements[i, j].disabled = not self.dm_elements[i, j].disabled
+                self.manual_dm_confirm.disabled = not self.manual_dm_confirm.disabled
+        except Exception as e:
+            self.error_canonical=Label(text=e.args[0], pos=(-175, -50), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+            self.add_widget(self.error_canonical)
+            
     
     # Specifies the action carried out after the validation of the spin quantum number
     def set_quantum_number(self, *args):
@@ -131,7 +159,7 @@ class System_Parameters(FloatLayout):
             else: self.el_w = 30
         
         # Sets the grid representing the initial density matrix to be filled manually
-            self.manual_dm = GridLayout(cols=self.d, size=(self.el_w*self.d, self.el_w*self.d), size_hint=(None, None), pos=(50, 440-self.d*self.el_w))
+            self.manual_dm = GridLayout(cols=self.d, size=(self.el_w*self.d, self.el_w*self.d), size_hint=(None, None), pos=(50, 405-self.d*self.el_w))
             self.dm_elements = np.empty((self.d, self.d), dtype=TextInput)
             for j in range(self.d):
                 for i in range(self.d):
@@ -139,6 +167,12 @@ class System_Parameters(FloatLayout):
                     self.manual_dm.add_widget(self.dm_elements[i, j])
                     self.dm_elements[i, j].disabled = not self.temperature.disabled
             self.add_widget(self.manual_dm)
+            
+            self.manual_dm_confirm = Button(text='Set density matrix', font_size='15sp', size_hint_y=None, height=30, size_hint_x=None, width=140, pos=(50, 420))
+            self.manual_dm_confirm.disabled = not self.temperature.disabled
+            self.manual_dm_confirm.bind(on_press=self.set_manual_dm)
+            self.add_widget(self.manual_dm_confirm)
+            
         # Prints any error raised after the validation of the spin quantum number below the TextInput
         except Exception as e:
             self.error_spin_qn=Label(text=e.args[0], pos=(-10, 337.5), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
@@ -243,6 +277,74 @@ class System_Parameters(FloatLayout):
         except Exception as e:
             self.error_gamma_q=Label(text=e.args[0], pos=(40, 60), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
             self.add_widget(self.error_gamma_q)
+            
+    # Specifies the action carried out after the validation of the temperature
+    def set_temperature(self, *args):
+        try:
+            self.remove_widget(self.error_T)
+            
+            sim_man.temperature = float(self.temperature.text)
+
+        except Exception as e:
+            self.error_T=Label(text=e.args[0], pos=(40, 60), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+            self.add_widget(self.error_T)
+            
+    # Specifies the action carried out after the confirmation of the density matrix specified manually
+    def set_manual_dm(self, *args):
+        try:
+            self.remove_widget(self.error_manual_dm)
+            
+            sim_man.dm_0 = np.zeros((self.d, self.d), dtype=complex)
+            
+            for i in range(self.d):
+                for j in range(self.d):
+                    if self.dm_elements[i, j].text == "":
+                        pass
+                    else:
+                        sim_man.dm_0[i, j] = complex(self.dm_elements[i, j].text)
+
+        except Exception as e:
+            self.error_manual_dm=Label(text=e.args[0], pos=(-70, -65), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+            self.add_widget(self.error_manual_dm)
+            
+    def build_system(self, *args):
+        try:
+            self.remove_widget(self.error_build_system)
+            
+            sim_man.spin_par['quantum_number'] = float(Fraction(self.spin_qn.text))
+            
+            sim_man.spin_par['gyromagnetic_ratio'] = float(self.gyro.text)
+            
+            sim_man.zeem_par['field magnitude'] = float(self.field_mag.text)
+            
+            sim_man.zeem_par['theta_z'] = (float(self.theta_z.text)*math.pi)/180
+            
+            sim_man.zeem_par['phi_z'] = (float(self.phi_z.text)*math.pi)/180
+            
+            sim_man.zeem_par['coupling constant'] = float(self.coupli6ng.text)
+            
+            sim_man.zeem_par['asymmetry parameter'] = float(self.asymmetry.text)
+            
+            sim_man.zeem_par['alpha_q'] = (float(self.alpha_q.text)*math.pi)/180
+            
+            sim_man.zeem_par['beta_q'] = (float(self.beta_q.text)*math.pi)/180
+            
+            sim_man.zeem_par['gamma_q'] = (float(self.gamma_q.text)*math.pi)/180
+            
+            sim_man.temperature = float(self.temperature.text)
+            
+            sim_man.dm_0 = np.zeros((self.d, self.d), dtype=complex)
+            
+            for i in range(self.d):
+                for j in range(self.d):
+                    if self.dm_elements[i, j].text == "":
+                        pass
+                    else:
+                        sim_man.dm_0[i, j] = complex(self.dm_elements[i, j].text)
+
+        except Exception as e:
+            self.error_build_system=Label(text=e.args[0], pos=(205, -490), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+            self.add_widget(self.error_build_system)
     
     # Controls of the nuclear spin parameters
     def nuclear_parameters(self, x_shift=0, y_shift=0):        
@@ -397,7 +499,8 @@ class System_Parameters(FloatLayout):
         self.temperature_label = Label(text='Temperature (K)', font_size='15sp', size_hint_x=None, width=150)
         self.dm_par.add_widget(self.temperature_label)
         
-        self.temperature = TextInput(multiline=False, disabled=True, size_hint_x=None, width=70, size_hint_y=None, height=35)
+        self.temperature = TextInput(multiline=False, disabled=True, size_hint_x=None, width=65, size_hint_y=None, height=32.5)
+        self.temperature.bind(on_text_validate=self.set_temperature)
         self.dm_par.add_widget(self.temperature)
         
         self.temperature_unit = Label(text='K', font_size='15sp', size_hint_x=None, width=30)
@@ -422,12 +525,16 @@ class System_Parameters(FloatLayout):
         
         self.initial_dm_parameters(0, 0)
         
+        self.set_up_system = Button(text='Set up the system', font_size='16sp', size_hint_y=None, height=40, size_hint_x=None, width=200, pos=(535, 25))
+        self.set_up_system.bind(on_press=self.build_system)
+        self.add_widget(self.set_up_system)
+        
 
 # Class of the object on top of the individual panels
 class Panels(TabbedPanel):
     def __init__(self, **kwargs):
         super(Panels, self).__init__(**kwargs)
-                
+        
         self.tab_sys_par = TabbedPanelItem(text='System')
         self.scroll_window =  ScrollView(size_hint=(1, None), size=(Window.width, 500))
         self.sys_par = System_Parameters(size_hint=(1, None), size=(Window.width, 1000))
