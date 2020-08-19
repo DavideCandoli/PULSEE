@@ -297,8 +297,8 @@ def Magnus_Expansion_3rd_Term(h, time_step):
 # Returns the Density_Matrix associated with a canonically distributed ensemble of nuclear spins
 def Canonical_Density_Matrix(hamiltonian, temperature):
     
-    if temperature < 0:
-        raise ValueError("The temperature cannot take negative values")
+    if temperature <= 0:
+        raise ValueError("The temperature must take a non negative value")
     
     exponent = -(hbar*hamiltonian*1e6)/(Boltzmann*temperature)
     numerator = exponent.exp()
