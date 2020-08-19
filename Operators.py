@@ -147,7 +147,7 @@ class Operator:
         eigenvalues = eig(self.matrix)[0]
         return np.all(np.real(eigenvalues) >= -1e-10)
     
-    # Casts the Operator into the type of the subclass Density_Matrix (if all requirements are met)
+    # Casts the Operator into the type of the subclass xix (if all requirements are met)
     def cast_to_Density_Matrix(self):
         return Density_Matrix(self.matrix)
     
@@ -296,6 +296,10 @@ def Magnus_Expansion_3rd_Term(h, time_step):
 
 # Returns the Density_Matrix associated with a canonically distributed ensemble of nuclear spins
 def Canonical_Density_Matrix(hamiltonian, temperature):
+    
+    if temperature < 0:
+        raise ValueError("The temperature cannot take negative values")
+    
     exponent = -(hbar*hamiltonian*1e6)/(Boltzmann*temperature)
     numerator = exponent.exp()
     canonical_partition_function = numerator.trace()
