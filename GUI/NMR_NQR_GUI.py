@@ -91,7 +91,6 @@ class System_Parameters(FloatLayout):
     d = 1
     
     dm_elements = np.empty((d, d), dtype=Widget)
-    
     dm_elements[0, 0] = Widget()
     
     manual_dm = Widget()
