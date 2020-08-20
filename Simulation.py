@@ -28,6 +28,7 @@ from Hamiltonians import H_Zeeman, H_Quadrupole, \
 # - Unperturbed Hamiltonian
 # - State of the system at t=0
 def Nuclear_System_Setup(spin_par, zeem_par, quad_par, initial_state='canonical', temperature=1e-4):
+    
     # Nuclear spin under study
     spin = Nuclear_Spin(spin_par['quantum number'], \
                         spin_par['gyromagnetic ratio'])
@@ -159,6 +160,8 @@ def Plot_Real_Density_Matrix(dm, save=False, name='RealPartDensityMatrix', desti
     # Finally, display the plot.
     
     plt.show()
+        
+    return plt
 
 
 # Computes the spectrum of power absorption due to x-polarized single-mode pulses, appealing to the
@@ -207,6 +210,8 @@ def Plot_Transition_Spectrum(frequencies, probabilities, save=False, name='Trans
     if save: plt.savefig(destination + name)
     
     plt.show()
+    
+    return plt
 
 
 # Returns the free induction decay (FID) signal resulting from the free evolution of the component
@@ -244,6 +249,8 @@ def Plot_FID_Signal(times, FID, save=False, name='FIDSignal', destination=''):
     if save: plt.savefig(destination + name)
     
     plt.show()
+    
+    return plt
 
 
 # Computes the complex Fourier transform of the given signal originally expressed in the time domain
@@ -290,8 +297,8 @@ def Plot_Fourier_Transform(frequencies, fourier, square_modulus=False, save=Fals
     if save: plt.savefig(destination + name)
     
     plt.show()
-
-
+    
+    return plt
 
 
 
