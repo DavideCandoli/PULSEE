@@ -34,6 +34,11 @@ from kivy.graphics import *
 
 sys.path.insert(1, '/home/davidecandoli/Documenti/Università/Thesis/NQR-NMRSimulationSoftware')
 
+from Operators import Observable, \
+                      Density_Matrix
+
+from Nuclear_Spin import Nuclear_Spin
+
 from Simulation import Nuclear_System_Setup, \
                        Evolve, \
                        Transition_Spectrum, \
@@ -70,6 +75,14 @@ class Simulation_Manager:
     temperature = 300
     
     dm_0 = 0
+    
+    
+    spin = Nuclear_Spin()
+    
+    h_unperturbed = Observable(1)
+    
+    dm_initial = Density_Matrix(1)
+    
     
 sim_man = Simulation_Manager()
 
@@ -351,12 +364,14 @@ class System_Parameters(FloatLayout):
                         sim_man.dm_0[i, j] = complex(self.dm_elements[i, j].text)
             
             if self.canonical_checkbox.active:
+                sim_man.spin, sim_man.h_unperturbed, sim_man.dm_initial = \
                 Nuclear_System_Setup(sim_man.spin_par, \
                                      sim_man.zeem_par, \
                                      sim_man.quad_par, \
                                      initial_state='canonical', \
                                      temperature=sim_man.temperature)
             else:
+                sim_man.spin, sim_man.h_unperturbed, sim_man.dim_initial = \
                 Nuclear_System_Setup(sim_man.spin_par, \
                                      sim_man.zeem_par, \
                                      sim_man.quad_par, \
