@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 from fractions import Fraction
 
+import matplotlib.pylab as plt
+
 from kivy.config import Config
 Config.set('graphics', 'resizable', False)
 
@@ -11,9 +13,12 @@ from functools import partial
 
 from kivy.app import App
 
+from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
+
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.relativelayout import RelativeLayout
+from kivy.uix.boxlayout import BoxLayout
 
 from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelItem
 
@@ -327,6 +332,7 @@ class System_Parameters(FloatLayout):
     # Builds up the objects representing the nuclear system
     def build_system(self, *args):
         try:
+            
             self.remove_widget(self.error_build_system)
             
             self.remove_widget(self.tb_button)
@@ -371,13 +377,21 @@ class System_Parameters(FloatLayout):
                                      initial_state='canonical', \
                                      temperature=sim_man.temperature)
             else:
-                sim_man.spin, sim_man.h_unperturbed, sim_man.dim_initial = \
+                sim_man.spin, sim_man.h_unperturbed, sim_man.dm_initial = \
                 Nuclear_System_Setup(sim_man.spin_par, \
                                      sim_man.zeem_par, \
                                      sim_man.quad_par, \
                                      initial_state=sim_man.dm_0, \
                                      temperature=300)
-
+                
+            Plot_Real_Density_Matrix(sim_man.dm_initial, show=False)
+            
+            self.dm_graph_box = BoxLayout(size=(300, 300), size_hint=(None, None), pos=(470, 105))
+            
+            self.dm_graph_box.add_widget(FigureCanvasKivyAgg(plt.gcf()))
+            
+            self.add_widget(self.dm_graph_box)
+            
         except Exception as e:
             self.error_build_system=Label(text=e.args[0], pos=(0, -490), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
             self.add_widget(self.error_build_system)
