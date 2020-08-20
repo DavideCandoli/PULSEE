@@ -160,9 +160,7 @@ def Plot_Real_Density_Matrix(dm, save=False, name='RealPartDensityMatrix', desti
     # Finally, display the plot.
     
     plt.show()
-        
-    return plt
-
+    
 
 # Computes the spectrum of power absorption due to x-polarized single-mode pulses, appealing to the
 # formula derived using Fermi's golden rule. If normalized=False, the state of initial preparation of
@@ -210,8 +208,6 @@ def Plot_Transition_Spectrum(frequencies, probabilities, save=False, name='Trans
     if save: plt.savefig(destination + name)
     
     plt.show()
-    
-    return plt
 
 
 # Returns the free induction decay (FID) signal resulting from the free evolution of the component
@@ -249,8 +245,6 @@ def Plot_FID_Signal(times, FID, save=False, name='FIDSignal', destination=''):
     if save: plt.savefig(destination + name)
     
     plt.show()
-    
-    return plt
 
 
 # Computes the complex Fourier transform of the given signal originally expressed in the time domain
@@ -297,8 +291,6 @@ def Plot_Fourier_Transform(frequencies, fourier, square_modulus=False, save=Fals
     if save: plt.savefig(destination + name)
     
     plt.show()
-    
-    return plt
 
 
 
