@@ -128,6 +128,8 @@ class System_Parameters(FloatLayout):
     
     error_build_system = Label(text='')
     
+    tb_button = Button()
+    
     # Specifies the action of the checkbox 'Canonical', i.e. to toggle the TextInput widgets associated
     # with the temperature, the density matrix to be inserted manually and the related button
     def on_canonical_active(self, *args):
@@ -313,6 +315,8 @@ class System_Parameters(FloatLayout):
     def build_system(self, *args):
         try:
             self.remove_widget(self.error_build_system)
+            
+            self.remove_widget(self.tb_button)
             
             sim_man.spin_par['quantum number'] = float(Fraction(self.spin_qn.text))
             
