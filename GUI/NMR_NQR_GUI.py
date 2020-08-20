@@ -78,6 +78,9 @@ sim_man = Simulation_Manager()
 def on_enter():
         pass
     
+def print_traceback(err, *args):
+    raise err
+    
 # Function which automatically replaces the content of a TextInput with the new string 'text'
 def clear_and_write_text(text_object, text, *args):
     text_object.select_all()
@@ -91,7 +94,7 @@ class System_Parameters(FloatLayout):
     d = 1
     
     dm_elements = np.empty((d, d), dtype=Widget)
-    dm_elements[0, 0] = Widget()
+    dm_elements[0, 0] = TextInput()
     
     manual_dm = Widget()
     
@@ -150,7 +153,7 @@ class System_Parameters(FloatLayout):
             
             self.remove_widget(self.manual_dm)
             
-            sim_man.spin_par['quantum_number'] = float(Fraction(self.spin_qn.text))
+            sim_man.spin_par['quantum number'] = float(Fraction(self.spin_qn.text))
         
             self.d = int(Fraction(self.spin_qn.text)*2+1)
         
@@ -169,7 +172,7 @@ class System_Parameters(FloatLayout):
             
             self.manual_dm_confirm = Button(text='Set density matrix', font_size='15sp', size_hint_y=None, height=30, size_hint_x=None, width=140, pos=(50, 420))
             self.manual_dm_confirm.disabled = not self.temperature.disabled
-            self.manual_dm_confirm.bind(on_press=self.set_manual_dm)
+            self.manual_dm_confirm.bind(on_release=self.set_manual_dm)
             self.add_widget(self.manual_dm_confirm)
             
         # Prints any error raised after the validation of the spin quantum number below the TextInput
@@ -227,7 +230,7 @@ class System_Parameters(FloatLayout):
         try:
             self.remove_widget(self.error_e2qQ)
             
-            sim_man.zeem_par['coupling constant'] = float(self.coupli6ng.text)
+            sim_man.quad_par['coupling constant'] = float(self.coupling.text)
 
         except Exception as e:
             self.error_e2qQ=Label(text=e.args[0], pos=(-150, 117.5), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
@@ -238,7 +241,7 @@ class System_Parameters(FloatLayout):
         try:
             self.remove_widget(self.error_eta)
             
-            sim_man.zeem_par['asymmetry parameter'] = float(self.asymmetry.text)
+            sim_man.quad_par['asymmetry parameter'] = float(self.asymmetry.text)
 
         except Exception as e:
             self.error_eta=Label(text=e.args[0], pos=(150, 117.5), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
@@ -249,7 +252,7 @@ class System_Parameters(FloatLayout):
         try:
             self.remove_widget(self.error_alpha_q)
             
-            sim_man.zeem_par['alpha_q'] = (float(self.alpha_q.text)*math.pi)/180
+            sim_man.quad_par['alpha_q'] = (float(self.alpha_q.text)*math.pi)/180
 
         except Exception as e:
             self.error_alpha_q=Label(text=e.args[0], pos=(-250, 60), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
@@ -260,7 +263,7 @@ class System_Parameters(FloatLayout):
         try:
             self.remove_widget(self.error_beta_q)
             
-            sim_man.zeem_par['beta_q'] = (float(self.beta_q.text)*math.pi)/180
+            sim_man.quad_par['beta_q'] = (float(self.beta_q.text)*math.pi)/180
 
         except Exception as e:
             self.error_beta_q=Label(text=e.args[0], pos=(-125, 60), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
@@ -271,7 +274,7 @@ class System_Parameters(FloatLayout):
         try:
             self.remove_widget(self.error_gamma_q)
             
-            sim_man.zeem_par['gamma_q'] = (float(self.gamma_q.text)*math.pi)/180
+            sim_man.quad_par['gamma_q'] = (float(self.gamma_q.text)*math.pi)/180
 
         except Exception as e:
             self.error_gamma_q=Label(text=e.args[0], pos=(40, 60), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
@@ -305,12 +308,13 @@ class System_Parameters(FloatLayout):
         except Exception as e:
             self.error_manual_dm=Label(text=e.args[0], pos=(-70, -65), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
             self.add_widget(self.error_manual_dm)
-            
+    
+    # Builds up the objects representing the nuclear system
     def build_system(self, *args):
         try:
             self.remove_widget(self.error_build_system)
             
-            sim_man.spin_par['quantum_number'] = float(Fraction(self.spin_qn.text))
+            sim_man.spin_par['quantum number'] = float(Fraction(self.spin_qn.text))
             
             sim_man.spin_par['gyromagnetic_ratio'] = float(self.gyro.text)
             
@@ -320,17 +324,18 @@ class System_Parameters(FloatLayout):
             
             sim_man.zeem_par['phi_z'] = (float(self.phi_z.text)*math.pi)/180
             
-            sim_man.zeem_par['coupling constant'] = float(self.coupli6ng.text)
+            sim_man.quad_par['coupling constant'] = float(self.coupling.text)
             
-            sim_man.zeem_par['asymmetry parameter'] = float(self.asymmetry.text)
+            sim_man.quad_par['asymmetry parameter'] = float(self.asymmetry.text)
             
-            sim_man.zeem_par['alpha_q'] = (float(self.alpha_q.text)*math.pi)/180
+            sim_man.quad_par['alpha_q'] = (float(self.alpha_q.text)*math.pi)/180
             
-            sim_man.zeem_par['beta_q'] = (float(self.beta_q.text)*math.pi)/180
+            sim_man.quad_par['beta_q'] = (float(self.beta_q.text)*math.pi)/180
             
-            sim_man.zeem_par['gamma_q'] = (float(self.gamma_q.text)*math.pi)/180
+            sim_man.quad_par['gamma_q'] = (float(self.gamma_q.text)*math.pi)/180
             
-            sim_man.temperature = float(self.temperature.text)
+            if self.canonical_checkbox.active:
+                sim_man.temperature = float(self.temperature.text)
             
             sim_man.dm_0 = np.zeros((self.d, self.d), dtype=complex)
             
@@ -340,10 +345,27 @@ class System_Parameters(FloatLayout):
                         pass
                     else:
                         sim_man.dm_0[i, j] = complex(self.dm_elements[i, j].text)
+            
+            if self.canonical_checkbox.active:
+                Nuclear_System_Setup(sim_man.spin_par, \
+                                     sim_man.zeem_par, \
+                                     sim_man.quad_par, \
+                                     initial_state='canonical', \
+                                     temperature=sim_man.temperature)
+            else:
+                Nuclear_System_Setup(sim_man.spin_par, \
+                                     sim_man.zeem_par, \
+                                     sim_man.quad_par, \
+                                     initial_state=sim_man.dm_0, \
+                                     temperature=300)
 
         except Exception as e:
-            self.error_build_system=Label(text=e.args[0], pos=(205, -490), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+            self.error_build_system=Label(text=e.args[0], pos=(0, -490), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
             self.add_widget(self.error_build_system)
+                        
+            self.tb_button=Button(text='traceback', size_hint=(0.1, 0.03), pos=(450, 25))
+            self.tb_button.bind(on_release=partial(print_traceback, e))
+            self.add_widget(self.tb_button)
     
     # Controls of the nuclear spin parameters
     def nuclear_parameters(self, x_shift=0, y_shift=0):        
