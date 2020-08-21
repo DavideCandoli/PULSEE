@@ -53,7 +53,7 @@ def Spectrum_Pure_Zeeman():
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
     RRF_par = {'omega_RRF': 10,
-               'theta_RRF': math.pi,
+               'theta_RRF': 0,
                'phi_RRF': 0}
     
     spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par)
@@ -90,25 +90,25 @@ def Spectrum_Perturbed_Zeeman():
                 'theta_z' : 0,
                 'phi_z' : 0}
     
-    quad_par = {'coupling constant' : 1.,
+    quad_par = {'coupling constant' : 2.,
                 'asymmetry parameter' : 0.,
                 'alpha_q' : math.pi/4,
                 'beta_q' : math.pi/4,
                 'gamma_q' : math.pi/4}
     
-    mode = pd.DataFrame([(10., 1., 0., math.pi/2, 0)], 
+    mode = pd.DataFrame([(10., 5., 0., math.pi/2, 0)],
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
-    RRF_par = {'omega_RRF': 10,
-               'theta_RRF': math.pi,
+    RRF_par = {'omega_RRF': 0,
+               'theta_RRF': 0,
                'phi_RRF': 0}
     
     spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par, \
                                                      initial_state='canonical', temperature=300)
     
     dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
-                        mode=mode, pulse_time=20, \
-                        picture = 'RRF', RRF_par=RRF_par)
+                        mode=mode, pulse_time=2*math.pi/5, \
+                        picture = 'IP', RRF_par=RRF_par)
     
     Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMPerturbedZeeman')
     
@@ -116,9 +116,9 @@ def Spectrum_Perturbed_Zeeman():
     
     Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPerturbedZeeman')
     
-    t, FID = FID_Signal(spin, h_unperturbed, dm_evolved, time_window=2000, T2=500, phi=10*20)
+    t, FID = FID_Signal(spin, h_unperturbed, dm_evolved, time_window=2000, T2=500)
     
-    f, ft = Fourier_Transform_Signal(FID, t, 9.9, 10.1)
+    f, ft = Fourier_Transform_Signal(FID, t, 9.8, 10.2)
     
     Plot_Fourier_Transform(f, ft)
     
