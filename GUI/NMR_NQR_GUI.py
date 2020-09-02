@@ -70,8 +70,14 @@ class Simulation_Manager:
                 'beta_q' : 0,
                 'gamma_q' : 0}
     
-    mode = pd.DataFrame([(0, 0, 0, 0, 0)], 
-                        columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
+    pulse = np.ndarray(4, dtype=pd.DataFrame)
+    
+    for i in range(4):    
+        pulse[i] = pd.DataFrame([(0, 0, 0, 0, 0),
+                                 (0, 0, 0, 0, 0)], 
+                                 columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
+    
+    pulse_time = np.zeros(4)
     
     RRF_par = {'omega_RRF': 0,
                'theta_RRF': 0,
@@ -80,7 +86,6 @@ class Simulation_Manager:
     temperature = 300
     
     dm_0 = 0
-    
     
     spin = Nuclear_Spin()
     
