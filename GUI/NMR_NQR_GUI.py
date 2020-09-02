@@ -585,6 +585,12 @@ class System_Parameters(FloatLayout):
         self.set_up_system = Button(text='Set up the system', font_size='16sp', size_hint_y=None, height=40, size_hint_x=None, width=200, pos=(535, 25))
         self.set_up_system.bind(on_press=self.build_system)
         self.add_widget(self.set_up_system)
+
+        
+# Class of the page of the software which lists the parameters of the pulse sequence
+class Pulse_Sequence(FloatLayout):
+    def __init__(self, **kwargs):
+        super(Pulse_Sequence, self).__init__(**kwargs)
         
 
 # Class of the object on top of the individual panels
@@ -601,6 +607,11 @@ class Panels(TabbedPanel):
         self.add_widget(self.tab_sys_par)
         
         self.tab_pulse_par = TabbedPanelItem(text='Pulse')
+        self.scroll_window =  ScrollView(size_hint=(1, None), size=(Window.width, 500))
+        self.pulse_par = Pulse_Sequence(size_hint=(1, None), size=(Window.width, 1000))
+        
+        self.scroll_window.add_widget(self.pulse_par)
+        self.tab_pulse_par.add_widget(self.scroll_window)
         self.add_widget(self.tab_pulse_par)
         
         self.tab_spectrum = TabbedPanelItem(text='Spectrum')
