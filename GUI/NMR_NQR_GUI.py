@@ -589,8 +589,35 @@ class System_Parameters(FloatLayout):
         
 # Class of the page of the software which lists the parameters of the pulse sequence
 class Pulse_Sequence(FloatLayout):
+    
+    # Creates the set of controls associated with the parameters of a single pulse in the sequence
+    # n is an integer which labels successive pulses
+    def single_pulse_par(self, n, y_shift):
+        
+        # Label 'Pulse #n'
+        self.pulse_n_label = Label(text='Pulse #%r' % n, size=(10, 5), pos=(-285, y_shift), font_size='20sp')
+        self.add_widget(self.pulse_n_label)
+        
+        # Duration of the pulse
+        self.pulse_t_label = Label(text='Time', size=(10, 5), pos=(-150, y_shift-2.5), font_size='15sp')
+        self.add_widget(self.pulse_t_label)
+        
+        self.pulse_t = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(275, y_shift+482.5))
+        self.pulse_t.bind(on_text_validate=on_enter)
+        self.add_widget(self.pulse_t)
+        
+        self.pulse_t_unit = Label(text='\N{GREEK SMALL LETTER MU}s', size=(10, 5), pos=(-50, y_shift-2.5), font_size='15sp')
+        self.add_widget(self.pulse_t_unit)
+        
+    
     def __init__(self, **kwargs):
         super(Pulse_Sequence, self).__init__(**kwargs)
+        
+        # Label 'Pulse sequence'
+        self.pulse_sequence_label = Label(text='Pulse sequence', size=(10, 5), pos=(0, 450), font_size='30sp')
+        self.add_widget(self.pulse_sequence_label)
+        
+        self.single_pulse_par(n=1, y_shift=400)
         
 
 # Class of the object on top of the individual panels
