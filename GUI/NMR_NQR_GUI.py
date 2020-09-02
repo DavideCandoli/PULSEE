@@ -148,6 +148,8 @@ class System_Parameters(FloatLayout):
     
     tb_button = Button()
     
+    dm_graph_box = Widget()
+    
     # Specifies the action of the checkbox 'Canonical', i.e. to toggle the TextInput widgets associated
     # with the temperature, the density matrix to be inserted manually and the related button
     def on_canonical_active(self, *args):
@@ -337,9 +339,11 @@ class System_Parameters(FloatLayout):
             
             self.remove_widget(self.tb_button)
             
+            self.remove_widget(self.dm_graph_box)
+            
             sim_man.spin_par['quantum number'] = float(Fraction(self.spin_qn.text))
             
-            sim_man.spin_par['gyromagnetic_ratio'] = float(self.gyro.text)
+            sim_man.spin_par['gyromagnetic ratio'] = float(self.gyro.text)
             
             sim_man.zeem_par['field magnitude'] = float(self.field_mag.text)
             
@@ -359,24 +363,23 @@ class System_Parameters(FloatLayout):
             
             if self.canonical_checkbox.active:
                 sim_man.temperature = float(self.temperature.text)
-            
-            sim_man.dm_0 = np.zeros((self.d, self.d), dtype=complex)
-            
-            for i in range(self.d):
-                for j in range(self.d):
-                    if self.dm_elements[i, j].text == "":
-                        pass
-                    else:
-                        sim_man.dm_0[i, j] = complex(self.dm_elements[i, j].text)
-            
-            if self.canonical_checkbox.active:
                 sim_man.spin, sim_man.h_unperturbed, sim_man.dm_initial = \
                 Nuclear_System_Setup(sim_man.spin_par, \
                                      sim_man.zeem_par, \
                                      sim_man.quad_par, \
                                      initial_state='canonical', \
                                      temperature=sim_man.temperature)
+            
             else:
+                sim_man.dm_0 = np.zeros((self.d, self.d), dtype=complex)
+            
+                for i in range(self.d):
+                    for j in range(self.d):
+                        if self.dm_elements[i, j].text == "":
+                            pass
+                        else:
+                            sim_man.dm_0[i, j] = complex(self.dm_elements[i, j].text)
+            
                 sim_man.spin, sim_man.h_unperturbed, sim_man.dm_initial = \
                 Nuclear_System_Setup(sim_man.spin_par, \
                                      sim_man.zeem_par, \
