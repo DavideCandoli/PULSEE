@@ -604,11 +604,17 @@ class Pulse_Sequence(FloatLayout):
     theta1_label = np.ndarray(10, dtype=Label)
     phi1_label = np.ndarray(10, dtype=Label)
     
-    frequency = np.ndarray((10, 10), dtype=TextInput)
-    amplitude = np.ndarray((10, 10), dtype=TextInput)
-    phase = np.ndarray((10, 10), dtype=TextInput)
-    theta1 = np.ndarray((10, 10), dtype=TextInput)
-    phi1 = np.ndarray((10, 10), dtype=TextInput)
+    frequency_unit = np.ndarray(10, dtype=Label)
+    amplitude_unit = np.ndarray(10, dtype=Label)
+    phase_unit = np.ndarray(10, dtype=Label)
+    theta1_unit = np.ndarray(10, dtype=Label)
+    phi1_unit = np.ndarray(10, dtype=Label)
+    
+    frequency = np.ndarray((10, 2), dtype=TextInput)
+    amplitude = np.ndarray((10, 2), dtype=TextInput)
+    phase = np.ndarray((10, 2), dtype=TextInput)
+    theta1 = np.ndarray((10, 2), dtype=TextInput)
+    phi1 = np.ndarray((10, 2), dtype=TextInput)
     
     n_modes = np.ones(10, dtype=int)
     
@@ -618,26 +624,30 @@ class Pulse_Sequence(FloatLayout):
     # Adds a new line of TextInputs in the table of the n-th pulse
     def add_new_mode(self, n, *args):
         
-        self.single_pulse_table[n-1].size[1] = self.single_pulse_table[n-1].size[1] + 37.5
-        self.single_pulse_table[n-1].pos[1] = self.single_pulse_table[n-1].pos[1] - 37.5
-        
-        self.frequency[n-1][self.n_modes[n-1]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
-        self.single_pulse_table[n-1].add_widget(self.frequency[n-1][self.n_modes[n-1]])
-        
-        self.amplitude[n-1][self.n_modes[n-1]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
-        self.single_pulse_table[n-1].add_widget(self.amplitude[n-1][self.n_modes[n-1]])
-        
-        self.phase[n-1][self.n_modes[n-1]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
-        self.single_pulse_table[n-1].add_widget(self.phase[n-1][self.n_modes[n-1]])
-        
-        self.theta1[n-1][self.n_modes[n-1]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
-        self.single_pulse_table[n-1].add_widget(self.theta1[n-1][self.n_modes[n-1]])
-        
-        self.phi1[n-1][self.n_modes[n-1]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
-        self.single_pulse_table[n-1].add_widget(self.phi1[n-1][self.n_modes[n-1]])
-        
-        self.n_modes[n-1] = self.n_modes[n-1]+1
-        
+        if self.n_modes[n-1] < 2:
+            self.single_pulse_table[n-1].size[1] = self.single_pulse_table[n-1].size[1] + 28
+            self.single_pulse_table[n-1].pos[1] = self.single_pulse_table[n-1].pos[1] - 28
+            
+            self.frequency[n-1][self.n_modes[n-1]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+            self.single_pulse_table[n-1].add_widget(self.frequency[n-1][self.n_modes[n-1]])
+            
+            self.amplitude[n-1][self.n_modes[n-1]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+            self.single_pulse_table[n-1].add_widget(self.amplitude[n-1][self.n_modes[n-1]])
+            
+            self.phase[n-1][self.n_modes[n-1]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+            self.single_pulse_table[n-1].add_widget(self.phase[n-1][self.n_modes[n-1]])
+            
+            self.theta1[n-1][self.n_modes[n-1]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+            self.single_pulse_table[n-1].add_widget(self.theta1[n-1][self.n_modes[n-1]])
+            
+            self.phi1[n-1][self.n_modes[n-1]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+            self.single_pulse_table[n-1].add_widget(self.phi1[n-1][self.n_modes[n-1]])
+            
+            self.n_modes[n-1] = self.n_modes[n-1]+1
+            
+        else:
+            pass
+    
     # Removes a line of TextInputs in the table of the n-th pulse
     def remove_mode(self, n, *args):
         if self.n_modes[n-1]>1:
@@ -650,8 +660,8 @@ class Pulse_Sequence(FloatLayout):
             self.single_pulse_table[n-1].remove_widget(self.theta1[n-1][self.n_modes[n-1]])
             self.single_pulse_table[n-1].remove_widget(self.phi1[n-1][self.n_modes[n-1]])
             
-            self.single_pulse_table[n-1].size[1] = self.single_pulse_table[n-1].size[1] - 37.5
-            self.single_pulse_table[n-1].pos[1] = self.single_pulse_table[n-1].pos[1] + 37.5
+            self.single_pulse_table[n-1].size[1] = self.single_pulse_table[n-1].size[1] - 28
+            self.single_pulse_table[n-1].pos[1] = self.single_pulse_table[n-1].pos[1] + 28
         else:
             pass
         
@@ -676,7 +686,7 @@ class Pulse_Sequence(FloatLayout):
         self.add_widget(self.pulse_t_unit[n-1])
         
         # Parameters of the electromagnetic wave
-        self.single_pulse_table[n-1] = GridLayout(cols=5, size=(400, 75), size_hint=(None, None), pos=(71, y_shift+400))
+        self.single_pulse_table[n-1] = GridLayout(cols=5, size=(400, 100), size_hint=(None, None), pos=(71, y_shift+375))
         
         self.frequency_label[n-1] = Label(text='Frequency', font_size='15sp')
         self.single_pulse_table[n-1].add_widget(self.frequency_label[n-1])
@@ -692,6 +702,21 @@ class Pulse_Sequence(FloatLayout):
         
         self.phi1_label[n-1] = Label(text='\N{GREEK SMALL LETTER PHI}', font_size='15sp')
         self.single_pulse_table[n-1].add_widget(self.phi1_label[n-1])
+        
+        self.frequency_unit[n-1] = Label(text='(MHz)', font_size='15sp')
+        self.single_pulse_table[n-1].add_widget(self.frequency_unit[n-1])
+        
+        self.amplitude_unit[n-1] = Label(text='(G)', font_size='15sp')
+        self.single_pulse_table[n-1].add_widget(self.amplitude_unit[n-1])
+        
+        self.phase_unit[n-1] = Label(text='(°)', font_size='15sp')
+        self.single_pulse_table[n-1].add_widget(self.phase_unit[n-1])
+        
+        self.theta1_unit = Label(text='(°)', font_size='15sp')
+        self.single_pulse_table[n-1].add_widget(self.theta1_unit)
+        
+        self.phi1_unit[n-1] = Label(text='(°)', font_size='15sp')
+        self.single_pulse_table[n-1].add_widget(self.phi1_unit[n-1])
         
         self.add_widget(self.single_pulse_table[n-1])
         
@@ -711,12 +736,12 @@ class Pulse_Sequence(FloatLayout):
         self.single_pulse_table[n-1].add_widget(self.phi1[n-1][0])
         
         # Button for the addition of another mode of radiation
-        self.new_mode_btn[n-1] = Button(text='+', font_size = '15sp', size_hint=(None, None), size=(30, 30), pos=(485, 801))
+        self.new_mode_btn[n-1] = Button(text='+', font_size = '15sp', size_hint=(None, None), size=(30, 30), pos=(485, y_shift+374))
         self.new_mode_btn[n-1].bind(on_press=partial(self.add_new_mode, n))
         self.add_widget(self.new_mode_btn[n-1])
         
         # Button for the removal of a mode of radiation
-        self.less_mode_btn[n-1] = Button(text='-', font_size = '15sp', size_hint=(None, None), size=(30, 30), pos=(517.5, 801))
+        self.less_mode_btn[n-1] = Button(text='-', font_size = '15sp', size_hint=(None, None), size=(30, 30), pos=(517.5, y_shift+374))
         self.less_mode_btn[n-1].bind(on_press=partial(self.remove_mode, n))
         self.add_widget(self.less_mode_btn[n-1])
     
@@ -730,6 +755,12 @@ class Pulse_Sequence(FloatLayout):
         
         self.single_pulse_par(n=1, y_shift=400)
         
+        self.single_pulse_par(n=2, y_shift=200)
+        
+        self.single_pulse_par(n=3, y_shift=0)
+        
+        self.single_pulse_par(n=4, y_shift=-200)
+                
 
 # Class of the object on top of the individual panels
 class Panels(TabbedPanel):
