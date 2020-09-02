@@ -590,25 +590,136 @@ class System_Parameters(FloatLayout):
 # Class of the page of the software which lists the parameters of the pulse sequence
 class Pulse_Sequence(FloatLayout):
     
+    pulse_label = np.ndarray(10, dtype=Label)
+    
+    pulse_t_label = np.ndarray(10, dtype=Label)
+    pulse_times = np.ndarray(10, dtype=TextInput)
+    pulse_t_unit = np.ndarray(10, dtype=Label)
+    
+    single_pulse_table = np.ndarray(10, dtype=GridLayout)
+    
+    frequency_label = np.ndarray(10, dtype=Label)
+    amplitude_label = np.ndarray(10, dtype=Label)
+    phase_label = np.ndarray(10, dtype=Label)
+    theta1_label = np.ndarray(10, dtype=Label)
+    phi1_label = np.ndarray(10, dtype=Label)
+    
+    frequency = np.ndarray((10, 10), dtype=TextInput)
+    amplitude = np.ndarray((10, 10), dtype=TextInput)
+    phase = np.ndarray((10, 10), dtype=TextInput)
+    theta1 = np.ndarray((10, 10), dtype=TextInput)
+    phi1 = np.ndarray((10, 10), dtype=TextInput)
+    
+    n_modes = np.ones(10, dtype=int)
+    
+    new_mode_btn = np.ndarray(10, dtype=Button)
+    less_mode_btn = np.ndarray(10, dtype=Button)
+    
+    # Adds a new line of TextInputs in the table of the n-th pulse
+    def add_new_mode(self, n, *args):
+        
+        self.single_pulse_table[n-1].size[1] = self.single_pulse_table[n-1].size[1] + 37.5
+        self.single_pulse_table[n-1].pos[1] = self.single_pulse_table[n-1].pos[1] - 37.5
+        
+        self.frequency[n-1][self.n_modes[n-1]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+        self.single_pulse_table[n-1].add_widget(self.frequency[n-1][self.n_modes[n-1]])
+        
+        self.amplitude[n-1][self.n_modes[n-1]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+        self.single_pulse_table[n-1].add_widget(self.amplitude[n-1][self.n_modes[n-1]])
+        
+        self.phase[n-1][self.n_modes[n-1]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+        self.single_pulse_table[n-1].add_widget(self.phase[n-1][self.n_modes[n-1]])
+        
+        self.theta1[n-1][self.n_modes[n-1]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+        self.single_pulse_table[n-1].add_widget(self.theta1[n-1][self.n_modes[n-1]])
+        
+        self.phi1[n-1][self.n_modes[n-1]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+        self.single_pulse_table[n-1].add_widget(self.phi1[n-1][self.n_modes[n-1]])
+        
+        self.n_modes[n-1] = self.n_modes[n-1]+1
+        
+    # Removes a line of TextInputs in the table of the n-th pulse
+    def remove_mode(self, n, *args):
+        if self.n_modes[n-1]>1:
+            
+            self.n_modes[n-1] = self.n_modes[n-1]-1
+            
+            self.single_pulse_table[n-1].remove_widget(self.frequency[n-1][self.n_modes[n-1]])
+            self.single_pulse_table[n-1].remove_widget(self.amplitude[n-1][self.n_modes[n-1]])
+            self.single_pulse_table[n-1].remove_widget(self.phase[n-1][self.n_modes[n-1]])
+            self.single_pulse_table[n-1].remove_widget(self.theta1[n-1][self.n_modes[n-1]])
+            self.single_pulse_table[n-1].remove_widget(self.phi1[n-1][self.n_modes[n-1]])
+            
+            self.single_pulse_table[n-1].size[1] = self.single_pulse_table[n-1].size[1] - 37.5
+            self.single_pulse_table[n-1].pos[1] = self.single_pulse_table[n-1].pos[1] + 37.5
+        else:
+            pass
+        
+    
     # Creates the set of controls associated with the parameters of a single pulse in the sequence
     # n is an integer which labels successive pulses
     def single_pulse_par(self, n, y_shift):
         
         # Label 'Pulse #n'
-        self.pulse_n_label = Label(text='Pulse #%r' % n, size=(10, 5), pos=(-285, y_shift), font_size='20sp')
-        self.add_widget(self.pulse_n_label)
+        self.pulse_label[n-1] = Label(text='Pulse #%r' % n, size=(10, 5), pos=(-285, y_shift), font_size='20sp')
+        self.add_widget(self.pulse_label[n-1])
         
         # Duration of the pulse
-        self.pulse_t_label = Label(text='Time', size=(10, 5), pos=(-150, y_shift-2.5), font_size='15sp')
-        self.add_widget(self.pulse_t_label)
+        self.pulse_t_label[n-1] = Label(text='Time', size=(10, 5), pos=(-150, y_shift-2.5), font_size='15sp')
+        self.add_widget(self.pulse_t_label[n-1])
         
-        self.pulse_t = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(275, y_shift+482.5))
-        self.pulse_t.bind(on_text_validate=on_enter)
-        self.add_widget(self.pulse_t)
+        self.pulse_times[n-1] = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(275, y_shift+482.5))
+        self.pulse_times[n-1].bind(on_text_validate=on_enter)
+        self.add_widget(self.pulse_times[n-1])
         
-        self.pulse_t_unit = Label(text='\N{GREEK SMALL LETTER MU}s', size=(10, 5), pos=(-50, y_shift-2.5), font_size='15sp')
-        self.add_widget(self.pulse_t_unit)
+        self.pulse_t_unit[n-1] = Label(text='\N{GREEK SMALL LETTER MU}s', size=(10, 5), pos=(-50, y_shift-2.5), font_size='15sp')
+        self.add_widget(self.pulse_t_unit[n-1])
         
+        # Parameters of the electromagnetic wave
+        self.single_pulse_table[n-1] = GridLayout(cols=5, size=(400, 75), size_hint=(None, None), pos=(71, y_shift+400))
+        
+        self.frequency_label[n-1] = Label(text='Frequency', font_size='15sp')
+        self.single_pulse_table[n-1].add_widget(self.frequency_label[n-1])
+        
+        self.amplitude_label[n-1] = Label(text='Amplitude', font_size='15sp')
+        self.single_pulse_table[n-1].add_widget(self.amplitude_label[n-1])
+        
+        self.phase_label[n-1] = Label(text='Phase', font_size='15sp')
+        self.single_pulse_table[n-1].add_widget(self.phase_label[n-1])
+        
+        self.theta1_label = Label(text='\N{GREEK SMALL LETTER THETA}', font_size='15sp')
+        self.single_pulse_table[n-1].add_widget(self.theta1_label)
+        
+        self.phi1_label[n-1] = Label(text='\N{GREEK SMALL LETTER PHI}', font_size='15sp')
+        self.single_pulse_table[n-1].add_widget(self.phi1_label[n-1])
+        
+        self.add_widget(self.single_pulse_table[n-1])
+        
+        self.frequency[n-1][0] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+        self.single_pulse_table[n-1].add_widget(self.frequency[n-1][0])
+        
+        self.amplitude[n-1][0] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+        self.single_pulse_table[n-1].add_widget(self.amplitude[n-1][0])
+        
+        self.phase[n-1][0] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+        self.single_pulse_table[n-1].add_widget(self.phase[n-1][0])
+        
+        self.theta1[n-1][0] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+        self.single_pulse_table[n-1].add_widget(self.theta1[n-1][0])
+        
+        self.phi1[n-1][0] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+        self.single_pulse_table[n-1].add_widget(self.phi1[n-1][0])
+        
+        # Button for the addition of another mode of radiation
+        self.new_mode_btn[n-1] = Button(text='+', font_size = '15sp', size_hint=(None, None), size=(30, 30), pos=(485, 801))
+        self.new_mode_btn[n-1].bind(on_press=partial(self.add_new_mode, n))
+        self.add_widget(self.new_mode_btn[n-1])
+        
+        # Button for the removal of a mode of radiation
+        self.less_mode_btn[n-1] = Button(text='-', font_size = '15sp', size_hint=(None, None), size=(30, 30), pos=(517.5, 801))
+        self.less_mode_btn[n-1].bind(on_press=partial(self.remove_mode, n))
+        self.add_widget(self.less_mode_btn[n-1])
+    
     
     def __init__(self, **kwargs):
         super(Pulse_Sequence, self).__init__(**kwargs)
