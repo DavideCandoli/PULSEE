@@ -621,6 +621,8 @@ class Pulse_Sequence(FloatLayout):
     new_mode_btn = np.ndarray(10, dtype=Button)
     less_mode_btn = np.ndarray(10, dtype=Button)
     
+    n_pulses = 1
+    
     # Adds a new line of TextInputs in the table of the n-th pulse
     def add_new_mode(self, n, *args):
         
@@ -746,6 +748,23 @@ class Pulse_Sequence(FloatLayout):
         self.add_widget(self.less_mode_btn[n-1])
     
     
+    def set_pulse_controls(self, *args):
+        
+        for i in range(self.n_pulses):
+            self.remove_widget(self.pulse_label[i])
+            self.remove_widget(self.pulse_t_label[i])
+            self.remove_widget(self.pulse_times[i])
+            self.remove_widget(self.pulse_t_unit[i])
+            self.remove_widget(self.single_pulse_table[i])
+            self.remove_widget(self.new_mode_btn[i])
+            self.remove_widget(self.less_mode_btn[i])
+        
+        self.n_pulses = int(self.number_pulses.text)
+        
+        for i in range(0, self.n_pulses):
+            self.single_pulse_par(n=i+1, y_shift=400-i*200)
+    
+    
     def __init__(self, **kwargs):
         super(Pulse_Sequence, self).__init__(**kwargs)
         
@@ -755,12 +774,13 @@ class Pulse_Sequence(FloatLayout):
         
         self.single_pulse_par(n=1, y_shift=400)
         
-        self.single_pulse_par(n=2, y_shift=200)
+        # Number of pulses in the sequence
+        self.number_pulses_label = Label(text='Number of pulses', size=(10, 5), pos=(250, 400), font_size='20sp')
+        self.add_widget(self.number_pulses_label)
         
-        self.single_pulse_par(n=3, y_shift=0)
-        
-        self.single_pulse_par(n=4, y_shift=-200)
-                
+        self.number_pulses = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(670, 850))
+        self.number_pulses.bind(on_text_validate=self.set_pulse_controls)
+        self.add_widget(self.number_pulses)
 
 # Class of the object on top of the individual panels
 class Panels(TabbedPanel):
