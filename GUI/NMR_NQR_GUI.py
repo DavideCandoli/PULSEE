@@ -623,6 +623,8 @@ class Pulse_Sequence(FloatLayout):
     
     n_pulses = 1
     
+    error_n_pulses = Label()
+    
     # Adds a new line of TextInputs in the table of the n-th pulse
     def add_new_mode(self, n, *args):
         
@@ -749,21 +751,30 @@ class Pulse_Sequence(FloatLayout):
     
     
     def set_pulse_controls(self, *args):
+        try:
+            self.remove_widget(self.error_n_pulses)
+            
+            if int(self.number_pulses.text) < 1 or int(self.number_pulses.text) > 4:
+                raise ValueError("The number of pulses in the sequence"+'\n'+"must fall between 1 and 4")
+            
+            for i in range(1, self.n_pulses):
+                self.remove_widget(self.pulse_label[i])
+                self.remove_widget(self.pulse_t_label[i])
+                self.remove_widget(self.pulse_times[i])
+                self.remove_widget(self.pulse_t_unit[i])
+                self.remove_widget(self.single_pulse_table[i])
+                self.remove_widget(self.new_mode_btn[i])
+                self.remove_widget(self.less_mode_btn[i])
+                
+            self.n_pulses = int(self.number_pulses.text)
         
-        for i in range(self.n_pulses):
-            self.remove_widget(self.pulse_label[i])
-            self.remove_widget(self.pulse_t_label[i])
-            self.remove_widget(self.pulse_times[i])
-            self.remove_widget(self.pulse_t_unit[i])
-            self.remove_widget(self.single_pulse_table[i])
-            self.remove_widget(self.new_mode_btn[i])
-            self.remove_widget(self.less_mode_btn[i])
-        
-        self.n_pulses = int(self.number_pulses.text)
-        
-        for i in range(0, self.n_pulses):
-            self.single_pulse_par(n=i+1, y_shift=400-i*200)
-    
+            for i in range(0, self.n_pulses):
+                self.single_pulse_par(n=i+1, y_shift=400-i*200)
+            
+        except Exception as e:
+            self.error_n_pulses=Label(text=e.args[0], pos=(200, 335), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+            self.add_widget(self.error_n_pulses)
+             
     
     def __init__(self, **kwargs):
         super(Pulse_Sequence, self).__init__(**kwargs)
