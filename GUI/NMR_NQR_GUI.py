@@ -632,6 +632,8 @@ class Pulse_Sequence(FloatLayout):
     
     error_n_pulses = Label()
     
+    error_set_up_pulse = Label()
+    
     # Adds a new line of TextInputs in the table of the n-th pulse
     def add_new_mode(self, n, *args):
         
@@ -782,15 +784,21 @@ class Pulse_Sequence(FloatLayout):
             self.add_widget(self.error_n_pulses)
             
     def set_up_pulse(self, *args):
-        for i in range(self.n_pulses):
-            for j in range(self.n_modes[i]):
-                sim_man.pulse[i]['frequency'][j] = float(self.frequency[i][j].text)
-                sim_man.pulse[i]['amplitude'][j] = float(self.amplitude[i][j].text)
-                sim_man.pulse[i]['phase'][j] = float(self.amplitude[i][j].text)
-                sim_man.pulse[i]['theta_p'][j] = float(self.amplitude[i][j].text)
-                sim_man.pulse[i]['phi_p'][j] = float(self.amplitude[i][j].text)
-            sim_man.pulse_time[i] = float(self.pulse_times[i].text)
-        sim_man.n_pulses = self.n_pulses
+        try:
+            self.remove_widget(self.error_set_up_pulse)
+            
+            for i in range(self.n_pulses):
+                for j in range(self.n_modes[i]):
+                    sim_man.pulse[i]['frequency'][j] = float(self.frequency[i][j].text)
+                    sim_man.pulse[i]['amplitude'][j] = float(self.amplitude[i][j].text)
+                    sim_man.pulse[i]['phase'][j] = float(self.amplitude[i][j].text)
+                    sim_man.pulse[i]['theta_p'][j] = float(self.amplitude[i][j].text)
+                    sim_man.pulse[i]['phi_p'][j] = float(self.amplitude[i][j].text)
+                sim_man.pulse_time[i] = float(self.pulse_times[i].text)
+            sim_man.n_pulses = self.n_pulses
+        except Exception as e:
+            self.error_set_up_pulse=Label(text=e.args[0], pos=(0, -490), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+            self.add_widget(self.error_set_up_pulse)
 
     def __init__(self, **kwargs):
         super(Pulse_Sequence, self).__init__(**kwargs)
