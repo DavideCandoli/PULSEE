@@ -779,8 +779,10 @@ class Pulse_Sequence(FloatLayout):
         except Exception as e:
             self.error_n_pulses=Label(text=e.args[0], pos=(200, 335), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
             self.add_widget(self.error_n_pulses)
-             
-    
+            
+    def set_up_pulse(self, *args):
+        pass
+
     def __init__(self, **kwargs):
         super(Pulse_Sequence, self).__init__(**kwargs)
         
@@ -797,6 +799,10 @@ class Pulse_Sequence(FloatLayout):
         self.number_pulses = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(670, 850))
         self.number_pulses.bind(on_text_validate=self.set_pulse_controls)
         self.add_widget(self.number_pulses)
+        
+        self.set_up_pulse_btn = Button(text='Set up the pulse sequence', font_size='16sp', size_hint_y=None, height=40, size_hint_x=None, width=220, pos=(535, 25))
+        self.set_up_pulse_btn.bind(on_press=self.set_up_pulse)
+        self.add_widget(self.set_up_pulse_btn)
 
 # Class of the object on top of the individual panels
 class Panels(TabbedPanel):
