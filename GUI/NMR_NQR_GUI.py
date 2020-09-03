@@ -30,6 +30,7 @@ from kivy.uix.widget import Widget
 from kivy.uix.textinput import TextInput
 from kivy.uix.dropdown import DropDown
 from kivy.uix.button import Button
+from kivy.uix.togglebutton import ToggleButton
 from kivy.uix.label import Label
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.slider import Slider
@@ -80,6 +81,8 @@ class Simulation_Manager:
                                  columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
     pulse_time = np.zeros(4)
+    
+    evolution_algorithm = ''
     
     RRF_par = {'omega_RRF': 0,
                'theta_RRF': 0,
@@ -634,6 +637,9 @@ class Pulse_Sequence(FloatLayout):
     
     error_set_up_pulse = Label()
     
+    RRF_btn = np.ndarray(4, dtype=Button)
+    IP_btn = np.ndarray(4, dtype=Button)
+    
     # Adds a new line of TextInputs in the table of the n-th pulse
     def add_new_mode(self, n, *args):
         
@@ -677,6 +683,24 @@ class Pulse_Sequence(FloatLayout):
             self.single_pulse_table[n-1].pos[1] = self.single_pulse_table[n-1].pos[1] + 28
         else:
             pass
+    
+    # Defines what happens when the ToggleButton 'RRF' is down
+    def set_RRF_evolution(self, n, *args):
+        if self.RRF_btn[n-1].state == 'down':
+            sim_man.evolution_algorithm = 'RRF'
+            self.IP_btn[n-1].state = 'normal'
+        else:
+            sim_man.evolution_algorithm = 'IP'
+            self.IP_btn[n-1].state = 'down'
+    
+    # Defines what happens when the ToggleButton 'IP' is down
+    def set_IP_evolution(self, n, *args):
+        if self.IP_btn[n-1].state == 'down':
+            sim_man.evolution_algorithm = 'IP'
+            self.RRF_btn[n-1].state = 'normal'
+        else:
+            sim_man.evolution_algorithm = 'RRF'
+            self.RRF_btn[n-1].state = 'down'
     
     # Creates the set of controls associated with the parameters of a single pulse in the sequence
     # n is an integer which labels successive pulses
@@ -756,7 +780,15 @@ class Pulse_Sequence(FloatLayout):
         self.less_mode_btn[n-1] = Button(text='-', font_size = '15sp', size_hint=(None, None), size=(30, 30), pos=(517.5, y_shift+374))
         self.less_mode_btn[n-1].bind(on_press=partial(self.remove_mode, n))
         self.add_widget(self.less_mode_btn[n-1])
-    
+        
+        # Buttons which specify the methods of numerical evolution of the system: RRF and IP
+        self.RRF_btn[n-1] = ToggleButton(text='RRF', font_size = '15sp', size_hint=(None, None), size=(40, 30), pos=(575, y_shift+374))
+        self.RRF_btn[n-1].bind(on_press=partial(self.set_RRF_evolution, n))
+        self.add_widget(self.RRF_btn[n-1])
+        
+        self.IP_btn[n-1] = ToggleButton(text='IP', font_size = '15sp', size_hint=(None, None), size=(40, 30), pos=(619, y_shift+374))
+        self.IP_btn[n-1].bind(on_press=partial(self.set_IP_evolution, n))
+        self.add_widget(self.IP_btn[n-1])
     
     def set_pulse_controls(self, *args):
         try:
