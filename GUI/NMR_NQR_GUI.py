@@ -70,6 +70,8 @@ class Simulation_Manager:
                 'beta_q' : 0,
                 'gamma_q' : 0}
     
+    n_pulses = 1
+    
     pulse = np.ndarray(4, dtype=pd.DataFrame)
     
     for i in range(4):    
@@ -595,36 +597,36 @@ class System_Parameters(FloatLayout):
 # Class of the page of the software which lists the parameters of the pulse sequence
 class Pulse_Sequence(FloatLayout):
     
-    pulse_label = np.ndarray(10, dtype=Label)
+    pulse_label = np.ndarray(4, dtype=Label)
     
-    pulse_t_label = np.ndarray(10, dtype=Label)
-    pulse_times = np.ndarray(10, dtype=TextInput)
-    pulse_t_unit = np.ndarray(10, dtype=Label)
+    pulse_t_label = np.ndarray(4, dtype=Label)
+    pulse_times = np.ndarray(4, dtype=TextInput)
+    pulse_t_unit = np.ndarray(4, dtype=Label)
     
-    single_pulse_table = np.ndarray(10, dtype=GridLayout)
+    single_pulse_table = np.ndarray(4, dtype=GridLayout)
     
-    frequency_label = np.ndarray(10, dtype=Label)
-    amplitude_label = np.ndarray(10, dtype=Label)
-    phase_label = np.ndarray(10, dtype=Label)
-    theta1_label = np.ndarray(10, dtype=Label)
-    phi1_label = np.ndarray(10, dtype=Label)
+    frequency_label = np.ndarray(4, dtype=Label)
+    amplitude_label = np.ndarray(4, dtype=Label)
+    phase_label = np.ndarray(4, dtype=Label)
+    theta1_label = np.ndarray(4, dtype=Label)
+    phi1_label = np.ndarray(4, dtype=Label)
     
-    frequency_unit = np.ndarray(10, dtype=Label)
-    amplitude_unit = np.ndarray(10, dtype=Label)
-    phase_unit = np.ndarray(10, dtype=Label)
-    theta1_unit = np.ndarray(10, dtype=Label)
-    phi1_unit = np.ndarray(10, dtype=Label)
+    frequency_unit = np.ndarray(4, dtype=Label)
+    amplitude_unit = np.ndarray(4, dtype=Label)
+    phase_unit = np.ndarray(4, dtype=Label)
+    theta1_unit = np.ndarray(4, dtype=Label)
+    phi1_unit = np.ndarray(4, dtype=Label)
     
-    frequency = np.ndarray((10, 2), dtype=TextInput)
-    amplitude = np.ndarray((10, 2), dtype=TextInput)
-    phase = np.ndarray((10, 2), dtype=TextInput)
-    theta1 = np.ndarray((10, 2), dtype=TextInput)
-    phi1 = np.ndarray((10, 2), dtype=TextInput)
+    frequency = np.ndarray((4, 2), dtype=TextInput)
+    amplitude = np.ndarray((4, 2), dtype=TextInput)
+    phase = np.ndarray((4, 2), dtype=TextInput)
+    theta1 = np.ndarray((4, 2), dtype=TextInput)
+    phi1 = np.ndarray((4, 2), dtype=TextInput)
     
-    n_modes = np.ones(10, dtype=int)
+    n_modes = np.ones(4, dtype=int)
     
-    new_mode_btn = np.ndarray(10, dtype=Button)
-    less_mode_btn = np.ndarray(10, dtype=Button)
+    new_mode_btn = np.ndarray(4, dtype=Button)
+    less_mode_btn = np.ndarray(4, dtype=Button)
     
     n_pulses = 1
     
@@ -673,7 +675,6 @@ class Pulse_Sequence(FloatLayout):
             self.single_pulse_table[n-1].pos[1] = self.single_pulse_table[n-1].pos[1] + 28
         else:
             pass
-        
     
     # Creates the set of controls associated with the parameters of a single pulse in the sequence
     # n is an integer which labels successive pulses
@@ -781,7 +782,15 @@ class Pulse_Sequence(FloatLayout):
             self.add_widget(self.error_n_pulses)
             
     def set_up_pulse(self, *args):
-        pass
+        for i in range(self.n_pulses):
+            for j in range(self.n_modes[i]):
+                sim_man.pulse[i]['frequency'][j] = float(self.frequency[i][j].text)
+                sim_man.pulse[i]['amplitude'][j] = float(self.amplitude[i][j].text)
+                sim_man.pulse[i]['phase'][j] = float(self.amplitude[i][j].text)
+                sim_man.pulse[i]['theta_p'][j] = float(self.amplitude[i][j].text)
+                sim_man.pulse[i]['phi_p'][j] = float(self.amplitude[i][j].text)
+            sim_man.pulse_time[i] = float(self.pulse_times[i].text)
+        sim_man.n_pulses = self.n_pulses
 
     def __init__(self, **kwargs):
         super(Pulse_Sequence, self).__init__(**kwargs)
