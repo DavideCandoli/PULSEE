@@ -103,7 +103,7 @@ sim_man = Simulation_Manager()
 
 
 # Function which specifies the action of various controls (stub)
-def on_enter():
+def on_enter(*args):
         pass
     
 def print_traceback(err, *args):
@@ -638,6 +638,19 @@ class Pulse_Sequence(FloatLayout):
     error_set_up_pulse = Label()
     
     RRF_btn = np.ndarray(4, dtype=Button)
+    
+    RRF_frequency_label = np.ndarray(4, dtype=Label)
+    RRF_theta_label = np.ndarray(4, dtype=Label)
+    RRF_phi_label = np.ndarray(4, dtype=Label)
+    
+    RRF_frequency = np.ndarray(4, dtype=TextInput)
+    RRF_theta = np.ndarray(4, dtype=TextInput)
+    RRF_phi = np.ndarray(4, dtype=TextInput)
+    
+    RRF_frequency_unit = np.ndarray(4, dtype=Label)
+    RRF_theta_unit = np.ndarray(4, dtype=Label)
+    RRF_phi_unit = np.ndarray(4, dtype=Label)
+    
     IP_btn = np.ndarray(4, dtype=Button)
     
     # Adds a new line of TextInputs in the table of the n-th pulse
@@ -684,23 +697,73 @@ class Pulse_Sequence(FloatLayout):
         else:
             pass
     
+    # Prints on screen the controls for the parameters of the RRF
+    def set_RRF_par(self, n, y_shift):
+        self.RRF_frequency_label[n-1] = Label(text='\N{GREEK SMALL LETTER OMEGA}RRF', size=(10, 5), pos=(195, y_shift-145), font_size='15sp')
+        self.add_widget(self.RRF_frequency_label[n-1])
+        self.RRF_frequency[n-1] = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(620, y_shift+340))
+        self.add_widget(self.RRF_frequency[n-1])
+        self.RRF_frequency_unit[n-1] = Label(text='MHz', size=(10, 5), pos=(300, y_shift-145), font_size='15sp')
+        self.add_widget(self.RRF_frequency_unit[n-1])
+            
+        self.RRF_theta_label[n-1] = Label(text='\N{GREEK SMALL LETTER THETA}RRF', size=(10, 5), pos=(195, y_shift-180), font_size='15sp')
+        self.add_widget(self.RRF_theta_label[n-1])
+        self.RRF_theta[n-1] = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(620, y_shift+305))
+        self.add_widget(self.RRF_theta[n-1])
+        self.RRF_theta_unit[n-1] = Label(text='°', size=(10, 5), pos=(300, y_shift-180), font_size='15sp')
+        self.add_widget(self.RRF_theta_unit[n-1])
+            
+        self.RRF_phi_label[n-1] = Label(text='\N{GREEK SMALL LETTER PHI}RRF', size=(10, 5), pos=(195, y_shift-215), font_size='15sp')
+        self.add_widget(self.RRF_phi_label[n-1])
+        self.RRF_phi[n-1] = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(620, y_shift+270))
+        self.add_widget(self.RRF_phi[n-1])
+        self.RRF_phi_unit[n-1] = Label(text='°', size=(10, 5), pos=(300, y_shift-215), font_size='15sp')
+        self.add_widget(self.RRF_phi_unit[n-1])
+
+    def remove_RRF_par(self, n):
+        self.remove_widget(self.RRF_frequency_label[n-1])
+        self.remove_widget(self.RRF_frequency[n-1])
+        self.remove_widget(self.RRF_frequency_unit[n-1])
+           
+        self.remove_widget(self.RRF_theta_label[n-1])
+        self.remove_widget(self.RRF_theta[n-1])
+        self.remove_widget(self.RRF_theta_unit[n-1])
+              
+        self.remove_widget(self.RRF_phi_label[n-1])
+        self.remove_widget(self.RRF_phi[n-1])
+        self.remove_widget(self.RRF_phi_unit[n-1])
+    
     # Defines what happens when the ToggleButton 'RRF' is down
-    def set_RRF_evolution(self, n, *args):
+    def set_RRF_evolution(self, n, y_shift, *args):
         if self.RRF_btn[n-1].state == 'down':
+            
             sim_man.evolution_algorithm = 'RRF'
             self.IP_btn[n-1].state = 'normal'
+            
+            self.set_RRF_par(n, y_shift)
+            
         else:
+            
+            self.remove_RRF_par(n)
+            
             sim_man.evolution_algorithm = 'IP'
             self.IP_btn[n-1].state = 'down'
+            
     
     # Defines what happens when the ToggleButton 'IP' is down
-    def set_IP_evolution(self, n, *args):
+    def set_IP_evolution(self, n, y_shift, *args):
         if self.IP_btn[n-1].state == 'down':
+            
+            self.remove_RRF_par(n)
+            
             sim_man.evolution_algorithm = 'IP'
             self.RRF_btn[n-1].state = 'normal'
+            
         else:
             sim_man.evolution_algorithm = 'RRF'
             self.RRF_btn[n-1].state = 'down'
+            
+            self.set_RRF_par(n, y_shift)
     
     # Creates the set of controls associated with the parameters of a single pulse in the sequence
     # n is an integer which labels successive pulses
@@ -715,7 +778,6 @@ class Pulse_Sequence(FloatLayout):
         self.add_widget(self.pulse_t_label[n-1])
         
         self.pulse_times[n-1] = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(275, y_shift+482.5))
-        self.pulse_times[n-1].bind(on_text_validate=on_enter)
         self.add_widget(self.pulse_times[n-1])
         
         self.pulse_t_unit[n-1] = Label(text='\N{GREEK SMALL LETTER MU}s', size=(10, 5), pos=(-50, y_shift-2.5), font_size='15sp')
@@ -783,13 +845,15 @@ class Pulse_Sequence(FloatLayout):
         
         # Buttons which specify the methods of numerical evolution of the system: RRF and IP
         self.RRF_btn[n-1] = ToggleButton(text='RRF', font_size = '15sp', size_hint=(None, None), size=(40, 30), pos=(575, y_shift+374))
-        self.RRF_btn[n-1].bind(on_press=partial(self.set_RRF_evolution, n))
+        self.RRF_btn[n-1].bind(on_press=partial(self.set_RRF_evolution, n, y_shift))
         self.add_widget(self.RRF_btn[n-1])
         
         self.IP_btn[n-1] = ToggleButton(text='IP', font_size = '15sp', size_hint=(None, None), size=(40, 30), pos=(619, y_shift+374))
-        self.IP_btn[n-1].bind(on_press=partial(self.set_IP_evolution, n))
+        self.IP_btn[n-1].bind(on_press=partial(self.set_IP_evolution, n, y_shift))
+        self.IP_btn[n-1].state = 'down'
         self.add_widget(self.IP_btn[n-1])
     
+    # Shows all the controls associated with the pulses in the sequence
     def set_pulse_controls(self, *args):
         try:
             self.remove_widget(self.error_n_pulses)
@@ -805,16 +869,21 @@ class Pulse_Sequence(FloatLayout):
                 self.remove_widget(self.single_pulse_table[i])
                 self.remove_widget(self.new_mode_btn[i])
                 self.remove_widget(self.less_mode_btn[i])
+                self.remove_widget(self.RRF_btn[i])
+                self.remove_widget(self.IP_btn[i])
+                self.remove_RRF_par(i+1)
                 
             self.n_pulses = int(self.number_pulses.text)
         
-            for i in range(0, self.n_pulses):
+            for i in range(1, self.n_pulses):
                 self.single_pulse_par(n=i+1, y_shift=400-i*200)
             
         except Exception as e:
             self.error_n_pulses=Label(text=e.args[0], pos=(200, 335), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
             self.add_widget(self.error_n_pulses)
-            
+    
+    # Assigns the input values written on screen to the corresponding variables belonging to the
+    # Simulation_Manager
     def set_up_pulse(self, *args):
         try:
             self.remove_widget(self.error_set_up_pulse)
