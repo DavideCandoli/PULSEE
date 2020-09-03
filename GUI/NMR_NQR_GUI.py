@@ -842,11 +842,8 @@ class Panels(TabbedPanel):
         self.tab_pulse_par.add_widget(self.scroll_window)
         self.add_widget(self.tab_pulse_par)
         
-        self.tab_spectrum = TabbedPanelItem(text='Spectrum')
-        self.add_widget(self.tab_spectrum)
-        
-        self.tab_dm = TabbedPanelItem(text='State')
-        self.add_widget(self.tab_dm)
+        self.tab_evolve = TabbedPanelItem(text='Evolve')
+        self.add_widget(self.tab_evolve)
         
         
 # Class of the application
