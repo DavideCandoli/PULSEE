@@ -129,35 +129,11 @@ class System_Parameters(FloatLayout):
     dm_elements[0, 0] = TextInput()
     
     manual_dm = Widget()
-    
-    manual_dm_confirm = Widget()
-    
+        
     error_spin_qn = Label(text='')
     
-    error_gyro = Label(text='')
-    
-    error_field_mag = Label(text='')
-    
-    error_theta_z = Label(text='')
-    
-    error_phi_z = Label(text='')
-    
-    error_e2qQ = Label(text='')
-    
-    error_eta = Label(text='')
-    
-    error_alpha_q = Label(text='')
-
-    error_beta_q = Label(text='')
-
-    error_gamma_q = Label(text='')
-    
-    error_canonical = Label(text='')
-    
-    error_T = Label(text='')
-    
-    error_manual_dm = Label(text='')
-    
+    error_canonical = Label()
+        
     error_build_system = Label(text='')
     
     tb_button = Button()
@@ -209,135 +185,6 @@ class System_Parameters(FloatLayout):
         except Exception as e:
             self.error_spin_qn=Label(text=e.args[0], pos=(-10, 337.5), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
             self.add_widget(self.error_spin_qn)
-            
-    # Specifies the action carried out after the validation of the spin's gyromagnetic ratio
-    def set_gyro_ratio(self, *args):
-        try:
-            self.remove_widget(self.error_gyro)
-            
-            sim_man.spin_par['gyromagnetic_ratio'] = float(self.gyro.text)
-            
-        except Exception as e:
-            self.error_gyro=Label(text=e.args[0], pos=(210, 337.5), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
-            self.add_widget(self.error_gyro)
-            
-    # Specifies the action carried out after the validation of the magnetic field magnitude
-    def set_field_magnitude(self, *args):
-        try:
-            self.remove_widget(self.error_field_mag)
-            
-            sim_man.zeem_par['field magnitude'] = float(self.field_mag.text)
-            
-        except Exception as e:
-            self.error_field_mag=Label(text=e.args[0], pos=(-195, 220), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
-            self.add_widget(self.error_field_mag)
-            
-    # Specifies the action carried out after the validation of the polar angle of the magnetic field
-    def set_theta_z(self, *args):
-        try:
-            self.remove_widget(self.error_theta_z)
-            
-            sim_man.zeem_par['theta_z'] = (float(self.theta_z.text)*math.pi)/180
-            
-        except Exception as e:
-            self.error_theta_z=Label(text=e.args[0], pos=(-60, 220), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
-            self.add_widget(self.error_theta_z)
-            
-    # Specifies the action carried out after the validation of the azimuthal angle of the magnetic field
-    def set_phi_z(self, *args):
-        try:
-            self.remove_widget(self.error_phi_z)
-            
-            sim_man.zeem_par['phi_z'] = (float(self.phi_z.text)*math.pi)/180
-            
-        except Exception as e:
-            self.error_phi_z=Label(text=e.args[0], pos=(110, 220), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
-            self.add_widget(self.error_phi_z)
-            
-    # Specifies the action carried out after the validation of the coupling constant of the quadrupole
-    # interaction
-    def set_coupling_constant(self, *args):
-        try:
-            self.remove_widget(self.error_e2qQ)
-            
-            sim_man.quad_par['coupling constant'] = float(self.coupling.text)
-
-        except Exception as e:
-            self.error_e2qQ=Label(text=e.args[0], pos=(-150, 117.5), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
-            self.add_widget(self.error_e2qQ)
-            
-    # Specifies the action carried out after the validation of the asymmetry parameter of the EFG
-    def set_asymmetry(self, *args):
-        try:
-            self.remove_widget(self.error_eta)
-            
-            sim_man.quad_par['asymmetry parameter'] = float(self.asymmetry.text)
-
-        except Exception as e:
-            self.error_eta=Label(text=e.args[0], pos=(150, 117.5), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
-            self.add_widget(self.error_eta)
-            
-    # Specifies the action carried out after the validation of the Euler angle alpha_q
-    def set_alpha_q(self, *args):
-        try:
-            self.remove_widget(self.error_alpha_q)
-            
-            sim_man.quad_par['alpha_q'] = (float(self.alpha_q.text)*math.pi)/180
-
-        except Exception as e:
-            self.error_alpha_q=Label(text=e.args[0], pos=(-250, 60), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
-            self.add_widget(self.error_alpha_q)
-            
-    # Specifies the action carried out after the validation of the Euler angle beta_q
-    def set_beta_q(self, *args):
-        try:
-            self.remove_widget(self.error_beta_q)
-            
-            sim_man.quad_par['beta_q'] = (float(self.beta_q.text)*math.pi)/180
-
-        except Exception as e:
-            self.error_beta_q=Label(text=e.args[0], pos=(-125, 60), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
-            self.add_widget(self.error_beta_q)
-            
-    # Specifies the action carried out after the validation of the Euler angle gamma_q
-    def set_gamma_q(self, *args):
-        try:
-            self.remove_widget(self.error_gamma_q)
-            
-            sim_man.quad_par['gamma_q'] = (float(self.gamma_q.text)*math.pi)/180
-
-        except Exception as e:
-            self.error_gamma_q=Label(text=e.args[0], pos=(40, 60), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
-            self.add_widget(self.error_gamma_q)
-            
-    # Specifies the action carried out after the validation of the temperature
-    def set_temperature(self, *args):
-        try:
-            self.remove_widget(self.error_T)
-            
-            sim_man.temperature = float(self.temperature.text)
-
-        except Exception as e:
-            self.error_T=Label(text=e.args[0], pos=(40, 60), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
-            self.add_widget(self.error_T)
-            
-    # Specifies the action carried out after the confirmation of the density matrix specified manually
-    def set_manual_dm(self, *args):
-        try:
-            self.remove_widget(self.error_manual_dm)
-            
-            sim_man.dm_0 = np.zeros((self.d, self.d), dtype=complex)
-            
-            for i in range(self.d):
-                for j in range(self.d):
-                    if self.dm_elements[i, j].text == "":
-                        pass
-                    else:
-                        sim_man.dm_0[i, j] = complex(self.dm_elements[i, j].text)
-
-        except Exception as e:
-            self.error_manual_dm=Label(text=e.args[0], pos=(-70, -65), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
-            self.add_widget(self.error_manual_dm)
     
     # Builds up the objects representing the nuclear system
     def build_system(self, *args):
@@ -443,7 +290,6 @@ class System_Parameters(FloatLayout):
         self.add_widget(self.gyro_label)
         
         self.gyro = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(x_shift+575, y_shift+460))
-        self.gyro.bind(on_text_validate=self.set_gyro_ratio)
         self.add_widget(self.gyro)
         self.Cl_btn.bind(on_release=partial(clear_and_write_text, self.gyro, '4.00'))
         self.Na_btn.bind(on_release=partial(clear_and_write_text, self.gyro, '11.26'))
@@ -462,7 +308,6 @@ class System_Parameters(FloatLayout):
         self.add_widget(self.field_mag_label)
         
         self.field_mag = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(x_shift+170, y_shift+535))
-        self.field_mag.bind(on_text_validate=self.set_field_magnitude)
         self.add_widget(self.field_mag)
         
         self.field_mag_unit = Label(text='G', size=(10, 5), pos=(x_shift-155, y_shift+50), font_size='15sp')
@@ -473,7 +318,6 @@ class System_Parameters(FloatLayout):
         self.add_widget(self.theta_z_label)
         
         self.theta_z = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(x_shift+310, y_shift+535))
-        self.theta_z.bind(on_text_validate=self.set_theta_z)
         self.add_widget(self.theta_z)
         
         self.theta_z_unit = Label(text='°', size=(10, 5), pos=(x_shift-20, y_shift+50), font_size='15sp')
@@ -484,7 +328,6 @@ class System_Parameters(FloatLayout):
         self.add_widget(self.phi_z_label)
         
         self.phi_z = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(x_shift+470, y_shift+535))
-        self.phi_z.bind(on_text_validate=self.set_phi_z)
         self.add_widget(self.phi_z)
         
         self.phi_z_unit = Label(text='°', size=(10, 5), pos=(x_shift+140, y_shift+50), font_size='15sp')
@@ -500,7 +343,6 @@ class System_Parameters(FloatLayout):
         self.add_widget(self.coupling_label)
         
         self.coupling = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(x_shift+220, y_shift+525))
-        self.coupling.bind(on_text_validate=self.set_coupling_constant)
         self.add_widget(self.coupling)
         
         self.coupling_unit = Label(text='MHz', size=(10, 5), pos=(x_shift-95, y_shift+40), font_size='15sp')
@@ -511,7 +353,6 @@ class System_Parameters(FloatLayout):
         self.add_widget(self.asymmetry_label)
         
         self.asymmetry = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(x_shift+515, y_shift+525))
-        self.asymmetry.bind(on_text_validate=self.set_asymmetry)
         self.add_widget(self.asymmetry)
         
         # Euler angles
@@ -519,7 +360,6 @@ class System_Parameters(FloatLayout):
         self.add_widget(self.alpha_q_label)
         
         self.alpha_q = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(x_shift+80, y_shift+475))
-        self.alpha_q.bind(on_text_validate=self.set_alpha_q)
         self.add_widget(self.alpha_q)
         
         self.alpha_q_unit = Label(text='°', size=(10, 5), pos=(x_shift-250, y_shift-10), font_size='15sp')
@@ -529,7 +369,6 @@ class System_Parameters(FloatLayout):
         self.add_widget(self.beta_q_label)
         
         self.beta_q = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(x_shift+241, y_shift+475))
-        self.beta_q.bind(on_text_validate=self.set_beta_q)
         self.add_widget(self.beta_q)
         
         self.beta_q_unit = Label(text='°', size=(10, 5), pos=(x_shift-89, y_shift-10), font_size='15sp')
@@ -539,7 +378,6 @@ class System_Parameters(FloatLayout):
         self.add_widget(self.gamma_q_label)
         
         self.gamma_q = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(x_shift+402, y_shift+475))
-        self.gamma_q.bind(on_text_validate=self.set_gamma_q)
         self.add_widget(self.gamma_q)
        
         self.gamma_q_unit = Label(text='°', size=(10, 5), pos=(x_shift+73, y_shift-10), font_size='15sp')
@@ -565,7 +403,6 @@ class System_Parameters(FloatLayout):
         self.dm_par.add_widget(self.temperature_label)
         
         self.temperature = TextInput(multiline=False, disabled=True, size_hint_x=None, width=65, size_hint_y=None, height=32.5)
-        self.temperature.bind(on_text_validate=self.set_temperature)
         self.dm_par.add_widget(self.temperature)
         
         self.temperature_unit = Label(text='K', font_size='15sp', size_hint_x=None, width=30)
@@ -588,7 +425,7 @@ class System_Parameters(FloatLayout):
         
         self.quadrupole_parameters(0, 100)
         
-        self.initial_dm_parameters(0, 0)
+        self.initial_dm_parameters(0, -30)
         
         self.set_up_system = Button(text='Set up the system', font_size='16sp', size_hint_y=None, height=40, size_hint_x=None, width=200, pos=(535, 25))
         self.set_up_system.bind(on_press=self.build_system)
