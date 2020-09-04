@@ -176,7 +176,6 @@ class System_Parameters(FloatLayout):
                 for i in range(self.d):
                     for j in range(self.d):
                         self.dm_elements[i, j].disabled = not self.dm_elements[i, j].disabled
-                self.manual_dm_confirm.disabled = not self.manual_dm_confirm.disabled
         except Exception as e:
             self.error_canonical=Label(text=e.args[0], pos=(-175, -50), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
             self.add_widget(self.error_canonical)
@@ -205,11 +204,6 @@ class System_Parameters(FloatLayout):
                     self.manual_dm.add_widget(self.dm_elements[i, j])
                     self.dm_elements[i, j].disabled = not self.temperature.disabled
             self.add_widget(self.manual_dm)
-            
-            self.manual_dm_confirm = Button(text='Set density matrix', font_size='15sp', size_hint_y=None, height=30, size_hint_x=None, width=140, pos=(50, 420))
-            self.manual_dm_confirm.disabled = not self.temperature.disabled
-            self.manual_dm_confirm.bind(on_release=self.set_manual_dm)
-            self.add_widget(self.manual_dm_confirm)
             
         # Prints any error raised after the validation of the spin quantum number below the TextInput
         except Exception as e:
