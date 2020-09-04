@@ -425,6 +425,16 @@ class System_Parameters(FloatLayout):
         
         self.quadrupole_parameters(0, 100)
         
+        # Relaxation time of the system
+        self.relax_label = Label(text='Relaxation time', size=(10, 5), pos=(-294, 45), font_size='16sp')
+        self.add_widget(self.relax_label)
+        
+        self.relax = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(169.5, 530))
+        self.add_widget(self.relax)
+        
+        self.relax_unit = Label(text='\N{GREEK SMALL LETTER MU}s', size=(10, 5), pos=(-153, 45), font_size='15sp')
+        self.add_widget(self.relax_unit)
+        
         self.initial_dm_parameters(0, -30)
         
         self.set_up_system = Button(text='Set up the system', font_size='16sp', size_hint_y=None, height=40, size_hint_x=None, width=200, pos=(535, 25))
@@ -808,37 +818,28 @@ class Evolution_Results(FloatLayout):
         self.coil_orientation_label = Label(text='Normal to the plane of the detection coils', size=(10, 5), pos=(-200, 180), font_size='15sp')
         self.add_widget(self.coil_orientation_label)
         
-        self.coil_theta_label = Label(text='\N{GREEK SMALL LETTER THETA}', size=(10, 5), pos=(-337.5, 150), font_size='15sp')
+        self.coil_theta_label = Label(text='\N{GREEK SMALL LETTER THETA}', size=(10, 5), pos=(-337.5, 140), font_size='15sp')
         self.add_widget(self.coil_theta_label)
         
-        self.coil_theta = TextInput(multiline=False, size_hint=(0.075, 0.05), pos=(72.25, 415))
+        self.coil_theta = TextInput(multiline=False, size_hint=(0.075, 0.05), pos=(72.25, 405))
         self.add_widget(self.coil_theta)
         
-        self.coil_theta_unit = Label(text='°', size=(10, 5), pos=(-260, 150), font_size='15sp')
+        self.coil_theta_unit = Label(text='°', size=(10, 5), pos=(-260, 140), font_size='15sp')
         self.add_widget(self.coil_theta_unit)
         
-        self.coil_phi_label = Label(text='\N{GREEK SMALL LETTER PHI}', size=(10, 5), pos=(-225, 150), font_size='15sp')
+        self.coil_phi_label = Label(text='\N{GREEK SMALL LETTER PHI}', size=(10, 5), pos=(-225, 140), font_size='15sp')
         self.add_widget(self.coil_phi_label)
         
-        self.coil_phi = TextInput(multiline=False, size_hint=(0.075, 0.05), pos=(185, 415))
+        self.coil_phi = TextInput(multiline=False, size_hint=(0.075, 0.05), pos=(185, 405))
         self.add_widget(self.coil_phi)
         
-        self.coil_phi_unit = Label(text='°', size=(10, 5), pos=(-147.5, 150), font_size='15sp')
+        self.coil_phi_unit = Label(text='°', size=(10, 5), pos=(-147.5, 140), font_size='15sp')
         self.add_widget(self.coil_phi_unit)
-        
-        self.relax_label = Label(text='Relaxation time', size=(10, 5), pos=(-290, 115), font_size='15sp')
-        self.add_widget(self.relax_label)
-        
-        self.relax = TextInput(multiline=False, size_hint=(0.075, 0.05), pos=(170, 380))
-        self.add_widget(self.relax)
-        
-        self.relax_unit = Label(text='\N{GREEK SMALL LETTER MU}s', size=(10, 5), pos=(-155, 115), font_size='15sp')
-        self.add_widget(self.relax_unit)
         
         # Checkbox which specifies if the generated NMR spectrum displays the separate
         # real and imaginary parts or the square modulus of the complex signal
         
-        self.sq_mod_space = GridLayout(cols=2, size=(750, 35), size_hint=(None, None), pos=(55, 345))
+        self.sq_mod_space = GridLayout(cols=2, size=(750, 35), size_hint=(None, None), pos=(55, 360))
         
         self.sq_mod_checkbox = CheckBox(size_hint_x=None, width=20)
         self.sq_mod_space.add_widget(self.sq_mod_checkbox)
