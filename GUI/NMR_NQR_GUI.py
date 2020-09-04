@@ -102,6 +102,8 @@ class Simulation_Manager:
     
     dm_initial = Density_Matrix(1)
     
+    relaxation_time = 300
+    
     
 sim_man = Simulation_Manager()
 
@@ -215,6 +217,8 @@ class System_Parameters(FloatLayout):
             sim_man.quad_par['beta_q'] = (float(self.beta_q.text)*math.pi)/180
             
             sim_man.quad_par['gamma_q'] = (float(self.gamma_q.text)*math.pi)/180
+            
+            sim_man.relaxation_time = float(self.relax.text)
             
             if self.canonical_checkbox.active:
                 sim_man.temperature = float(self.temperature.text)
