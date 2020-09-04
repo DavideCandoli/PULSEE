@@ -991,6 +991,31 @@ class Evolution_Results(FloatLayout):
         
         self.coil_phi_unit = Label(text='°', size=(10, 5), pos=(-147.5, 150), font_size='15sp')
         self.add_widget(self.coil_phi_unit)
+        
+        self.relax_label = Label(text='Relaxation time', size=(10, 5), pos=(-290, 115), font_size='15sp')
+        self.add_widget(self.relax_label)
+        
+        self.relax = TextInput(multiline=False, size_hint=(0.075, 0.05), pos=(170, 380))
+        self.add_widget(self.relax)
+        
+        self.relax_unit = Label(text='\N{GREEK SMALL LETTER MU}s', size=(10, 5), pos=(-155, 115), font_size='15sp')
+        self.add_widget(self.relax_unit)
+        
+        # Checkbox which specifies if the generated NMR spectrum displays the separate
+        # real and imaginary parts or the square modulus of the complex signal
+        
+        self.sq_mod_space = GridLayout(cols=2, size=(750, 35), size_hint=(None, None), pos=(55, 345))
+        
+        self.sq_mod_checkbox = CheckBox(size_hint_x=None, width=20)
+        self.sq_mod_space.add_widget(self.sq_mod_checkbox)
+        
+        self.sq_mod_label = Label(text='Square modulus of the NMR signal', font_size='15sp', size_hint_x=None, width=250)
+        self.sq_mod_space.add_widget(self.sq_mod_label)
+        
+        self.add_widget(self.sq_mod_space)
+        
+        
+
 
 # Class of the object on top of the individual panels
 class Panels(TabbedPanel):
