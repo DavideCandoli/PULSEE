@@ -963,6 +963,9 @@ class Pulse_Sequence(FloatLayout):
 # Class of the page of the software which lists the results of the evolution
 class Evolution_Results(FloatLayout):
     
+    def set_last_par(self, *args):
+        pass
+    
     def __init__(self, **kwargs):
         super(Evolution_Results, self).__init__(**kwargs)
         
@@ -1013,6 +1016,12 @@ class Evolution_Results(FloatLayout):
         self.sq_mod_space.add_widget(self.sq_mod_label)
         
         self.add_widget(self.sq_mod_space)
+        
+        # Button which assigns the values of the inputs above to the corresponding variables of the
+        # Simulation_Manager
+        self.set_last_par_btn = Button(text='Set up the acquisition parameters', font_size='16sp', size_hint_y=None, height=35, size_hint_x=None, width=260, pos=(475, 435))
+        self.set_last_par_btn.bind(on_press=self.set_last_par)
+        self.add_widget(self.set_last_par_btn)
         
         
 
