@@ -450,7 +450,7 @@ class System_Parameters(FloatLayout):
         self.Cl_btn.bind(on_release=partial(clear_and_write_text, self.gyro, '4.00'))
         self.Na_btn.bind(on_release=partial(clear_and_write_text, self.gyro, '11.26'))
         
-        self.gyro_unit_label = Label(text='x 10\N{SUPERSCRIPT TWO} 1/Gs', size=(10, 5), pos=(x_shift+275, y_shift-25), font_size='15sp')
+        self.gyro_unit_label = Label(text='MHz/T', size=(10, 5), pos=(x_shift+265, y_shift-25), font_size='15sp')
         self.add_widget(self.gyro_unit_label)
 
     # Controls of the magnetic field parameters
@@ -871,7 +871,8 @@ class Pulse_Sequence(FloatLayout):
                 self.remove_widget(self.less_mode_btn[i])
                 self.remove_widget(self.RRF_btn[i])
                 self.remove_widget(self.IP_btn[i])
-                self.remove_RRF_par(i+1)
+                if self.RRF_btn[i].state == 'down':
+                    self.remove_RRF_par(i+1)
                 
             self.n_pulses = int(self.number_pulses.text)
         
@@ -900,6 +901,10 @@ class Pulse_Sequence(FloatLayout):
         except Exception as e:
             self.error_set_up_pulse=Label(text=e.args[0], pos=(0, -490), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
             self.add_widget(self.error_set_up_pulse)
+            
+            self.tb_button=Button(text='traceback', size_hint=(0.1, 0.03), pos=(450, 25))
+            self.tb_button.bind(on_release=partial(print_traceback, e))
+            self.add_widget(self.tb_button)
 
     def __init__(self, **kwargs):
         super(Pulse_Sequence, self).__init__(**kwargs)
