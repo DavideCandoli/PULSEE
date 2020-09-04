@@ -960,6 +960,15 @@ class Pulse_Sequence(FloatLayout):
         self.set_up_pulse_btn.bind(on_press=self.set_up_pulse)
         self.add_widget(self.set_up_pulse_btn)
         
+# Class of the page of the software which lists the results of the evolution
+class Evolution_Results(FloatLayout):
+    
+    def __init__(self, **kwargs):
+        super(Evolution_Results, self).__init__(**kwargs)
+        
+        # Label 'Results of the evolution'
+        self.evo_res_label = Label(text='Results of the evolution', size=(10, 5), pos=(0, 227.5), font_size='30sp')
+        self.add_widget(self.evo_res_label)
 
 # Class of the object on top of the individual panels
 class Panels(TabbedPanel):
@@ -983,6 +992,8 @@ class Panels(TabbedPanel):
         self.add_widget(self.tab_pulse_par)
         
         self.tab_evolve = TabbedPanelItem(text='Evolve')
+        self.evo_res_page = Evolution_Results(size_hint=(1, 1))
+        self.tab_evolve.add_widget(self.evo_res_page)
         self.add_widget(self.tab_evolve)
         
         
