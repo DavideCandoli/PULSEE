@@ -84,9 +84,12 @@ class Simulation_Manager:
     
     evolution_algorithm = ''
     
-    RRF_par = {'omega_RRF': 0,
-               'theta_RRF': 0,
-               'phi_RRF': 0}
+    RRF_par = np.ndarray(4, dtype=dict)
+    
+    for i in range(4):
+        RRF_par[i] = {'omega_RRF': 0,
+                      'theta_RRF': 0,
+                      'phi_RRF': 0}
     
     temperature = 300
     
@@ -896,8 +899,16 @@ class Pulse_Sequence(FloatLayout):
                     sim_man.pulse[i]['phase'][j] = float(self.amplitude[i][j].text)
                     sim_man.pulse[i]['theta_p'][j] = float(self.amplitude[i][j].text)
                     sim_man.pulse[i]['phi_p'][j] = float(self.amplitude[i][j].text)
+                    
                 sim_man.pulse_time[i] = float(self.pulse_times[i].text)
+                
+                if self.RRF_btn[i].state == 'down':
+                    sim_man.RRF_par[i]['frequency'] = float(self.RRF_frequency[i].text)
+                    sim_man.RRF_par[i]['theta'] = float(self.RRF_theta[i].text)
+                    sim_man.RRF_par[i]['phi'] = float(self.RRF_phi[i].text)
+                
             sim_man.n_pulses = self.n_pulses
+            
         except Exception as e:
             self.error_set_up_pulse=Label(text=e.args[0], pos=(0, -490), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
             self.add_widget(self.error_set_up_pulse)
