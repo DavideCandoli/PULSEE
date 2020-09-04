@@ -34,6 +34,7 @@ from kivy.uix.togglebutton import ToggleButton
 from kivy.uix.label import Label
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.slider import Slider
+from kivy.uix.popup import Popup
 
 from kivy.graphics import *
 
@@ -767,6 +768,7 @@ class Pulse_Sequence(FloatLayout):
             self.RRF_btn[n-1].state = 'down'
             
             self.set_RRF_par(n, y_shift)
+            
     
     # Creates the set of controls associated with the parameters of a single pulse in the sequence
     # n is an integer which labels successive pulses
@@ -926,6 +928,26 @@ class Pulse_Sequence(FloatLayout):
         
         self.single_pulse_par(n=1, y_shift=400)
         
+        # Question mark connected with the explanation of RRF and IP buttons
+        self.RRF_IP_mark = Label(text='[ref=?]?[/ref]', markup=True, size=(20, 20), pos=(280, 290), font_size='20sp')
+        self.add_widget(self.RRF_IP_mark)
+       
+        # Popup message which explains the meaning of the RRF and IP buttons
+        explanation = 'The acronyms RRF and IP indicate two ways'+'\n'+\
+                      'to approach the evolution of the system in'+'\n'+\
+                      'the simulation. RRF (Rotating Reference Frame)'+'\n'+\
+                      'consists in treating the dynamics of the system'+'\n'+\
+                      'in the reference frame which rotates with'+'\n'+\
+                      'respect to the laboratory with the specified'+'\n'+\
+                      'frequency and orientation. IP (Interaction Picture)'+'\n'+\
+                      'implies a change of dynamical picture which makes'+'\n'+\
+                      'the evolution of the state depend only on the'+'\n'+\
+                      'perturbation, i.e. the applied pulse.'
+        self.RRF_IP_popup = Popup(title='RRF and IP', content=Label(text=explanation), size_hint=(0.475, 0.45), pos=(425, 500), auto_dismiss=True)
+        
+        self.RRF_IP_mark.bind(on_ref_press=self.RRF_IP_popup.open)
+
+        
         # Number of pulses in the sequence
         self.number_pulses_label = Label(text='Number of pulses', size=(10, 5), pos=(250, 400), font_size='20sp')
         self.add_widget(self.number_pulses_label)
@@ -937,6 +959,7 @@ class Pulse_Sequence(FloatLayout):
         self.set_up_pulse_btn = Button(text='Set up the pulse sequence', font_size='16sp', size_hint_y=None, height=40, size_hint_x=None, width=220, pos=(535, 25))
         self.set_up_pulse_btn.bind(on_press=self.set_up_pulse)
         self.add_widget(self.set_up_pulse_btn)
+        
 
 # Class of the object on top of the individual panels
 class Panels(TabbedPanel):
