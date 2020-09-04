@@ -934,7 +934,7 @@ class Pulse_Sequence(FloatLayout):
        
         # Popup message which explains the meaning of the RRF and IP buttons
         explanation = 'The acronyms RRF and IP indicate two ways'+'\n'+\
-                      'to approach the evolution of the system in'+'\n'+\
+                      'to derive the evolution of the system in'+'\n'+\
                       'the simulation. RRF (Rotating Reference Frame)'+'\n'+\
                       'consists in treating the dynamics of the system'+'\n'+\
                       'in the reference frame which rotates with'+'\n'+\
@@ -969,6 +969,28 @@ class Evolution_Results(FloatLayout):
         # Label 'Results of the evolution'
         self.evo_res_label = Label(text='Results of the evolution', size=(10, 5), pos=(0, 227.5), font_size='30sp')
         self.add_widget(self.evo_res_label)
+        
+        # Orientation of the detection coils
+        self.coil_orientation_label = Label(text='Normal to the plane of the detection coils', size=(10, 5), pos=(-200, 180), font_size='15sp')
+        self.add_widget(self.coil_orientation_label)
+        
+        self.coil_theta_label = Label(text='\N{GREEK SMALL LETTER THETA}', size=(10, 5), pos=(-337.5, 150), font_size='15sp')
+        self.add_widget(self.coil_theta_label)
+        
+        self.coil_theta = TextInput(multiline=False, size_hint=(0.075, 0.05), pos=(72.25, 415))
+        self.add_widget(self.coil_theta)
+        
+        self.coil_theta_unit = Label(text='°', size=(10, 5), pos=(-260, 150), font_size='15sp')
+        self.add_widget(self.coil_theta_unit)
+        
+        self.coil_phi_label = Label(text='\N{GREEK SMALL LETTER PHI}', size=(10, 5), pos=(-225, 150), font_size='15sp')
+        self.add_widget(self.coil_phi_label)
+        
+        self.coil_phi = TextInput(multiline=False, size_hint=(0.075, 0.05), pos=(185, 415))
+        self.add_widget(self.coil_phi)
+        
+        self.coil_phi_unit = Label(text='°', size=(10, 5), pos=(-147.5, 150), font_size='15sp')
+        self.add_widget(self.coil_phi_unit)
 
 # Class of the object on top of the individual panels
 class Panels(TabbedPanel):
