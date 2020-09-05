@@ -104,6 +104,14 @@ class Simulation_Manager:
     
     relaxation_time = 300
     
+    coil_theta = 0
+    
+    coil_phi = 0
+    
+    time_aq = 500
+    
+    square_modulus = False
+    
     
 sim_man = Simulation_Manager()
 
@@ -808,8 +816,32 @@ class Pulse_Sequence(FloatLayout):
 # Class of the page of the software which lists the results of the evolution
 class Evolution_Results(FloatLayout):
     
+    error_last_par = Label()
+    
+    
+    tb_button = Button()
+    
     def set_last_par(self, *args):
-        pass
+        try:
+            self.remove_widget(self.error_last_par)
+            self.remove_widget(self.tb_button)
+            
+            sim_man.coil_theta = float(self.coil_theta.text)
+            
+            sim_man.coil_phi = float(self.coil_phi.text)
+            
+            sim_man.time_aq = float(self.time_aq.text)
+            
+            sim_man.square_modulus = self.sq_mod_checkbox.active
+            
+        except Exception as e:
+            self.error_last_par=Label(text=e.args[0], pos=(210, 110), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+            self.add_widget(self.error_last_par)
+            
+            self.tb_button=Button(text='traceback', size_hint=(0.1, 0.05), pos=(655, 400))
+            self.tb_button.bind(on_release=partial(print_traceback, e))
+            self.add_widget(self.tb_button)
+            
     
     def __init__(self, **kwargs):
         super(Evolution_Results, self).__init__(**kwargs)
