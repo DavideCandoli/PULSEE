@@ -830,6 +830,8 @@ class Evolution_Results(FloatLayout):
     
     tb_simulation = Button()
     
+    graphical_results = Widget()
+    
     def set_last_par(self, *args):
         try:
             self.remove_widget(self.error_last_par)
@@ -860,6 +862,7 @@ class Evolution_Results(FloatLayout):
         try:
             self.remove_widget(self.error_simulation)
             self.remove_widget(self.tb_simulation)
+            self.remove_widget(self.graphical_results)
             
             sim_man.dm[0] = sim_man.dm_initial
                         
@@ -868,6 +871,11 @@ class Evolution_Results(FloatLayout):
                                          sim_man.pulse[i], sim_man.pulse_time[i], \
                                          picture=sim_man.evolution_algorithm[i], \
                                          RRF_par=sim_man.RRF_par[i])
+                
+            # Panels showing the graphical results of the simulation (i.e. the NMR spectrum and
+            # the evolved density matrix)
+            self.graphical_results = Graphical_Results(size_hint=(0.9, 0.5), pos=(250, 0), do_default_tab=False, tab_width=150, n_pulses=sim_man.n_pulses)
+            self.add_widget(self.graphical_results)
             
         except Exception as e:
             self.error_simulation=Label(text=e.args[0], pos=(210, 12.5), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
@@ -958,7 +966,18 @@ class Evolution_Results(FloatLayout):
         self.launch_sim_btn = Button(text='Launch simulation', font_size='16sp', bold=True, background_normal = '', background_color=(0, 0.2, 1, 1), size_hint_y=None, height=35, size_hint_x=None, width=160, pos=(572.5, 335))
         self.launch_sim_btn.bind(on_press=self.launch_simulation)
         self.add_widget(self.launch_sim_btn)
-
+        
+# Class for the panels showing the graphical results of the simulation, to be embedded inside the
+# Evolve main panel
+class Graphical_Results(TabbedPanel): 
+    def __init__(self, n_pulses, **kwargs):
+        super(Graphical_Results, self).__init__(**kwargs)
+        
+        self.pulse_tab = np.ndarray(n_pulses, dtype=TabbedPanelItem)
+        
+        for i in range(n_pulses):
+            self.pulse_tab[i] = TabbedPanelItem(text='Pulse %r' % i)
+            self.add_widget(self.pulse_tab[i])
 
 # Class of the object on top of the individual panels
 class Panels(TabbedPanel):
