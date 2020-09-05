@@ -818,7 +818,6 @@ class Evolution_Results(FloatLayout):
     
     error_last_par = Label()
     
-    
     tb_button = Button()
     
     def set_last_par(self, *args):
@@ -901,6 +900,10 @@ class Evolution_Results(FloatLayout):
         self.set_last_par_btn = Button(text='Set up the acquisition parameters', font_size='16sp', size_hint_y=None, height=35, size_hint_x=None, width=260, pos=(475, 435))
         self.set_last_par_btn.bind(on_press=self.set_last_par)
         self.add_widget(self.set_last_par_btn)
+        
+        # Button which launches the simulation
+        self.launch_sim_btn = Button(text='Launch simulation', font_size='16sp', bold=True, background_normal = '', background_color=(0, 0.2, 1, 1), size_hint_y=None, height=35, size_hint_x=None, width=160, pos=(572.5, 325))
+        self.add_widget(self.launch_sim_btn)
         
         
 
