@@ -85,6 +85,9 @@ class Simulation_Manager:
     
     evolution_algorithm = np.ndarray(4, dtype=str)
     
+    for i in range(4):
+        evolution_algorithm[i] = 'IP'
+    
     RRF_par = np.ndarray(4, dtype=dict)
     
     for i in range(4):
@@ -134,7 +137,13 @@ def clear_and_write_text(text_object, text, *args):
     text_object.select_all()
     text_object.delete_selection()
     text_object.insert_text(text)
-
+    
+# Function which takes a string and returns a 0 in case it is empty
+def null_string(text):
+    if text=='':
+        return 0
+    else:
+        return text
 
 # Class of the page of the software which lists the parameters of the system
 class System_Parameters(FloatLayout):
@@ -212,30 +221,30 @@ class System_Parameters(FloatLayout):
             
             self.remove_widget(self.dm_graph_box)
             
-            sim_man.spin_par['quantum number'] = float(Fraction(self.spin_qn.text))
+            sim_man.spin_par['quantum number'] = float(Fraction(null_string(self.spin_qn.text)))
             
-            sim_man.spin_par['gyromagnetic ratio'] = float(self.gyro.text)
+            sim_man.spin_par['gyromagnetic ratio'] = float(null_string(self.gyro.text))
             
-            sim_man.zeem_par['field magnitude'] = float(self.field_mag.text)
+            sim_man.zeem_par['field magnitude'] = float(null_string(self.field_mag.text))
             
-            sim_man.zeem_par['theta_z'] = (float(self.theta_z.text)*math.pi)/180
+            sim_man.zeem_par['theta_z'] = (float(null_string(self.theta_z.text))*math.pi)/180
             
-            sim_man.zeem_par['phi_z'] = (float(self.phi_z.text)*math.pi)/180
+            sim_man.zeem_par['phi_z'] = (float(null_string(self.phi_z.text))*math.pi)/180
             
-            sim_man.quad_par['coupling constant'] = float(self.coupling.text)
+            sim_man.quad_par['coupling constant'] = float(null_string(self.coupling.text))
             
-            sim_man.quad_par['asymmetry parameter'] = float(self.asymmetry.text)
+            sim_man.quad_par['asymmetry parameter'] = float(null_string(self.asymmetry.text))
             
-            sim_man.quad_par['alpha_q'] = (float(self.alpha_q.text)*math.pi)/180
+            sim_man.quad_par['alpha_q'] = (float(null_string(self.alpha_q.text))*math.pi)/180
             
-            sim_man.quad_par['beta_q'] = (float(self.beta_q.text)*math.pi)/180
+            sim_man.quad_par['beta_q'] = (float(null_string(self.beta_q.text))*math.pi)/180
             
-            sim_man.quad_par['gamma_q'] = (float(self.gamma_q.text)*math.pi)/180
+            sim_man.quad_par['gamma_q'] = (float(null_string(self.gamma_q.text))*math.pi)/180
             
-            sim_man.relaxation_time = float(self.relax.text)
+            sim_man.relaxation_time = float(null_string(self.relax.text))
             
             if self.canonical_checkbox.active:
-                sim_man.temperature = float(self.temperature.text)
+                sim_man.temperature = float(null_string(self.temperature.text))
                 sim_man.spin, sim_man.h_unperturbed, sim_man.dm_initial = \
                 Nuclear_System_Setup(sim_man.spin_par, \
                                      sim_man.zeem_par, \
@@ -457,6 +466,7 @@ class System_Parameters(FloatLayout):
         
         self.set_up_system = Button(text='Set up the system', font_size='16sp', size_hint_y=None, height=40, size_hint_x=None, width=200, pos=(535, 25))
         self.set_up_system.bind(on_press=self.build_system)
+        
         self.add_widget(self.set_up_system)
 
         
@@ -755,18 +765,18 @@ class Pulse_Sequence(FloatLayout):
             
             for i in range(self.n_pulses):
                 for j in range(self.n_modes[i]):
-                    sim_man.pulse[i]['frequency'][j] = float(self.frequency[i][j].text)
-                    sim_man.pulse[i]['amplitude'][j] = float(self.amplitude[i][j].text)
-                    sim_man.pulse[i]['phase'][j] = (float(self.phase[i][j].text)/180)*math.pi
-                    sim_man.pulse[i]['theta_p'][j] = (float(self.theta1[i][j].text)/180)*math.pi
-                    sim_man.pulse[i]['phi_p'][j] = (float(self.phi1[i][j].text)/180)*math.pi
+                    sim_man.pulse[i]['frequency'][j] = float(null_string(self.frequency[i][j].text))
+                    sim_man.pulse[i]['amplitude'][j] = float(null_string(self.amplitude[i][j].text))
+                    sim_man.pulse[i]['phase'][j] = (float(null_string(self.phase[i][j].text))/180)*math.pi
+                    sim_man.pulse[i]['theta_p'][j] = (float(null_string(self.theta1[i][j].text))/180)*math.pi
+                    sim_man.pulse[i]['phi_p'][j] = (float(null_string(self.phi1[i][j].text))/180)*math.pi
                     
-                sim_man.pulse_time[i] = float(self.pulse_times[i].text)
+                sim_man.pulse_time[i] = float(null_string(self.pulse_times[i].text))
                 
                 if self.RRF_btn[i].state == 'down':
-                    sim_man.RRF_par[i]['frequency'] = float(self.RRF_frequency[i].text)
-                    sim_man.RRF_par[i]['theta'] = (float(self.RRF_theta[i].text)/180)*math.pi
-                    sim_man.RRF_par[i]['phi'] = (float(self.RRF_phi[i].text)/180)*math.pi
+                    sim_man.RRF_par[i]['frequency'] = float(null_string(self.RRF_frequency[i].text))
+                    sim_man.RRF_par[i]['theta'] = (float(null_string(self.RRF_theta[i].text))/180)*math.pi
+                    sim_man.RRF_par[i]['phi'] = (float(null_string(self.RRF_phi[i].text))/180)*math.pi
                     
             sim_man.n_pulses = self.n_pulses
             
@@ -837,17 +847,17 @@ class Evolution_Results(FloatLayout):
             self.remove_widget(self.error_last_par)
             self.remove_widget(self.tb_last_par)
             
-            sim_man.coil_theta = (float(self.coil_theta.text)/180)*math.pi
+            sim_man.coil_theta = (float(null_string(self.coil_theta.text))/180)*math.pi
             
-            sim_man.coil_phi = (float(self.coil_phi.text)/180)*math.pi
+            sim_man.coil_phi = (float(null_string(self.coil_phi.text))/180)*math.pi
             
-            sim_man.time_aq = float(self.time_aq.text)
+            sim_man.time_aq = float(null_string(self.time_aq.text))
             
             sim_man.square_modulus = self.sq_mod_checkbox.active
             
-            sim_man.frequency_left_bound = float(self.frequency_left_bound.text)
+            sim_man.frequency_left_bound = float(null_string(self.frequency_left_bound.text))
             
-            sim_man.frequency_right_bound = float(self.frequency_right_bound.text)
+            sim_man.frequency_right_bound = float(null_string(self.frequency_right_bound.text))
             
         except Exception as e:
             self.error_last_par=Label(text=e.args[0], pos=(210, 115), size=(200, 205), bold=True, color=(1, 0, 0, 1), font_size='15sp')
