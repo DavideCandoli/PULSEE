@@ -840,10 +840,21 @@ class Evolution_Results(FloatLayout):
         self.coil_phi_unit = Label(text='°', size=(10, 5), pos=(-147.5, 140), font_size='15sp')
         self.add_widget(self.coil_phi_unit)
         
+        # Time of acquisition of the FID Signal
+        
+        self.time_aq_label = Label(text='Time of acquisition of the FID signal', size=(10, 5), pos=(-222.5, 100), font_size='15sp')
+        self.add_widget(self.time_aq_label)
+        
+        self.time_aq = TextInput(multiline=False, size_hint=(0.075, 0.05), pos=(307.5, 365))
+        self.add_widget(self.time_aq)
+        
+        self.time_aq_unit = Label(text='\N{GREEK SMALL LETTER MU}s', size=(10, 5), pos=(-15, 100), font_size='15sp')
+        self.add_widget(self.time_aq_unit)
+        
         # Checkbox which specifies if the generated NMR spectrum displays the separate
         # real and imaginary parts or the square modulus of the complex signal
         
-        self.sq_mod_space = GridLayout(cols=2, size=(750, 35), size_hint=(None, None), pos=(55, 360))
+        self.sq_mod_space = GridLayout(cols=2, size=(750, 35), size_hint=(None, None), pos=(55, 320))
         
         self.sq_mod_checkbox = CheckBox(size_hint_x=None, width=20)
         self.sq_mod_space.add_widget(self.sq_mod_checkbox)
