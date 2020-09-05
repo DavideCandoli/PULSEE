@@ -112,6 +112,10 @@ class Simulation_Manager:
     
     square_modulus = False
     
+    frequency_left_bound = 0
+    
+    frequency_right_bound = 10
+    
     dm = np.ndarray(5, dtype=Density_Matrix)
     
     
@@ -839,6 +843,10 @@ class Evolution_Results(FloatLayout):
             
             sim_man.square_modulus = self.sq_mod_checkbox.active
             
+            sim_man.frequency_left_bound = float(self.frequency_left_bound.text)
+            
+            sim_man.frequency_right_bound = float(self.frequency_right_bound.text)
+            
         except Exception as e:
             self.error_last_par=Label(text=e.args[0], pos=(210, 115), size=(200, 205), bold=True, color=(1, 0, 0, 1), font_size='15sp')
             self.add_widget(self.error_last_par)
@@ -854,10 +862,7 @@ class Evolution_Results(FloatLayout):
             self.remove_widget(self.tb_simulation)
             
             sim_man.dm[0] = sim_man.dm_initial
-            
-            
-            aohhh
-            
+                        
             for i in range(sim_man.n_pulses):
                 sim_man.dm[i+1] = Evolve(sim_man.spin, sim_man.h_unperturbed, sim_man.dm[i], \
                                          sim_man.pulse[i], sim_man.pulse_time[i], \
@@ -871,8 +876,6 @@ class Evolution_Results(FloatLayout):
             self.tb_simulation=Button(text='traceback', size_hint=(0.1, 0.05), pos=(654, 302.5))
             self.tb_simulation.bind(on_release=partial(print_traceback, e))
             self.add_widget(self.tb_simulation)
-            
-            
     
     def __init__(self, **kwargs):
         super(Evolution_Results, self).__init__(**kwargs)
@@ -917,7 +920,7 @@ class Evolution_Results(FloatLayout):
         # Checkbox which specifies if the generated NMR spectrum displays the separate
         # real and imaginary parts or the square modulus of the complex signal
         
-        self.sq_mod_space = GridLayout(cols=2, size=(750, 35), size_hint=(None, None), pos=(55, 320))
+        self.sq_mod_space = GridLayout(cols=2, size=(750, 35), size_hint=(None, None), pos=(55, 324))
         
         self.sq_mod_checkbox = CheckBox(size_hint_x=None, width=20)
         self.sq_mod_space.add_widget(self.sq_mod_checkbox)
@@ -926,6 +929,24 @@ class Evolution_Results(FloatLayout):
         self.sq_mod_space.add_widget(self.sq_mod_label)
         
         self.add_widget(self.sq_mod_space)
+        
+        # Controls for the left and right bounds of the frequency domain where the NMR spectrum is to 
+        # be plotted
+        
+        self.NMR_domain = Label(text='Frequency window of the NMR signal plot', size=(10, 5), pos=(-205, 25), font_size='15sp')
+        self.add_widget(self.NMR_domain)
+        
+        self.frequency_left_bound = TextInput(multiline=False, size_hint=(0.075, 0.05), pos=(340, 289))
+        self.add_widget(self.frequency_left_bound)
+        
+        self.left_to_right = Label(text='-', size=(10, 5), pos=(10, 25), font_size='15sp')
+        self.add_widget(self.left_to_right)
+        
+        self.frequency_right_bound = TextInput(multiline=False, size_hint=(0.075, 0.05), pos=(420, 289))
+        self.add_widget(self.frequency_right_bound)
+        
+        self.frequency_bounds_unit = Label(text='MHz', size=(10, 5), pos=(100, 25), font_size='15sp')
+        self.add_widget(self.frequency_bounds_unit)
         
         # Button which assigns the values of the inputs above to the corresponding variables of the
         # Simulation_Manager
@@ -937,8 +958,6 @@ class Evolution_Results(FloatLayout):
         self.launch_sim_btn = Button(text='Launch simulation', font_size='16sp', bold=True, background_normal = '', background_color=(0, 0.2, 1, 1), size_hint_y=None, height=35, size_hint_x=None, width=160, pos=(572.5, 335))
         self.launch_sim_btn.bind(on_press=self.launch_simulation)
         self.add_widget(self.launch_sim_btn)
-        
-        
 
 
 # Class of the object on top of the individual panels
