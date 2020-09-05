@@ -83,7 +83,7 @@ class Simulation_Manager:
     
     pulse_time = np.zeros(4)
     
-    evolution_algorithm = ''
+    evolution_algorithm = np.ndarray(4, dtype=str)
     
     RRF_par = np.ndarray(4, dtype=dict)
     
@@ -111,6 +111,8 @@ class Simulation_Manager:
     time_aq = 500
     
     square_modulus = False
+    
+    dm = np.ndarray(5, dtype=Density_Matrix)
     
     
 sim_man = Simulation_Manager()
@@ -594,7 +596,7 @@ class Pulse_Sequence(FloatLayout):
     def set_RRF_evolution(self, n, y_shift, *args):
         if self.RRF_btn[n-1].state == 'down':
             
-            sim_man.evolution_algorithm = 'RRF'
+            sim_man.evolution_algorithm[n-1] = 'RRF'
             self.IP_btn[n-1].state = 'normal'
             
             self.set_RRF_par(n, y_shift)
@@ -603,7 +605,7 @@ class Pulse_Sequence(FloatLayout):
             
             self.remove_RRF_par(n)
             
-            sim_man.evolution_algorithm = 'IP'
+            sim_man.evolution_algorithm[n-1] = 'IP'
             self.IP_btn[n-1].state = 'down'
             
     
@@ -761,7 +763,7 @@ class Pulse_Sequence(FloatLayout):
                     sim_man.RRF_par[i]['frequency'] = float(self.RRF_frequency[i].text)
                     sim_man.RRF_par[i]['theta'] = float(self.RRF_theta[i].text)
                     sim_man.RRF_par[i]['phi'] = float(self.RRF_phi[i].text)
-                
+                                
             sim_man.n_pulses = self.n_pulses
             
         except Exception as e:
@@ -818,12 +820,16 @@ class Evolution_Results(FloatLayout):
     
     error_last_par = Label()
     
-    tb_button = Button()
+    error_simulation = Label()
+    
+    tb_last_par = Button()
+    
+    tb_simulation = Button()
     
     def set_last_par(self, *args):
         try:
             self.remove_widget(self.error_last_par)
-            self.remove_widget(self.tb_button)
+            self.remove_widget(self.tb_last_par)
             
             sim_man.coil_theta = float(self.coil_theta.text)
             
@@ -834,12 +840,38 @@ class Evolution_Results(FloatLayout):
             sim_man.square_modulus = self.sq_mod_checkbox.active
             
         except Exception as e:
-            self.error_last_par=Label(text=e.args[0], pos=(210, 110), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+            self.error_last_par=Label(text=e.args[0], pos=(210, 115), size=(200, 205), bold=True, color=(1, 0, 0, 1), font_size='15sp')
             self.add_widget(self.error_last_par)
             
-            self.tb_button=Button(text='traceback', size_hint=(0.1, 0.05), pos=(655, 400))
-            self.tb_button.bind(on_release=partial(print_traceback, e))
-            self.add_widget(self.tb_button)
+            self.tb_last_par=Button(text='traceback', size_hint=(0.1, 0.05), pos=(655, 405))
+            self.tb_last_par.bind(on_release=partial(print_traceback, e))
+            self.add_widget(self.tb_last_par)
+            
+    # Function that actually evolves the system through all the steps of the specified sequence
+    def launch_simulation(self, *args):
+        try:
+            self.remove_widget(self.error_simulation)
+            self.remove_widget(self.tb_simulation)
+            
+            sim_man.dm[0] = sim_man.dm_initial
+            
+            
+            aohhh
+            
+            for i in range(sim_man.n_pulses):
+                sim_man.dm[i+1] = Evolve(sim_man.spin, sim_man.h_unperturbed, sim_man.dm[i], \
+                                         sim_man.pulse[i], sim_man.pulse_time[i], \
+                                         picture=sim_man.evolution_algorithm[i], \
+                                         RRF_par=sim_man.RRF_par[i])
+            
+        except Exception as e:
+            self.error_simulation=Label(text=e.args[0], pos=(210, 12.5), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+            self.add_widget(self.error_simulation)
+            
+            self.tb_simulation=Button(text='traceback', size_hint=(0.1, 0.05), pos=(654, 302.5))
+            self.tb_simulation.bind(on_release=partial(print_traceback, e))
+            self.add_widget(self.tb_simulation)
+            
             
     
     def __init__(self, **kwargs):
@@ -902,7 +934,8 @@ class Evolution_Results(FloatLayout):
         self.add_widget(self.set_last_par_btn)
         
         # Button which launches the simulation
-        self.launch_sim_btn = Button(text='Launch simulation', font_size='16sp', bold=True, background_normal = '', background_color=(0, 0.2, 1, 1), size_hint_y=None, height=35, size_hint_x=None, width=160, pos=(572.5, 325))
+        self.launch_sim_btn = Button(text='Launch simulation', font_size='16sp', bold=True, background_normal = '', background_color=(0, 0.2, 1, 1), size_hint_y=None, height=35, size_hint_x=None, width=160, pos=(572.5, 335))
+        self.launch_sim_btn.bind(on_press=self.launch_simulation)
         self.add_widget(self.launch_sim_btn)
         
         
