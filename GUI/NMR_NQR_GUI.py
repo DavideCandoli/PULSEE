@@ -757,17 +757,17 @@ class Pulse_Sequence(FloatLayout):
                 for j in range(self.n_modes[i]):
                     sim_man.pulse[i]['frequency'][j] = float(self.frequency[i][j].text)
                     sim_man.pulse[i]['amplitude'][j] = float(self.amplitude[i][j].text)
-                    sim_man.pulse[i]['phase'][j] = float(self.amplitude[i][j].text)
-                    sim_man.pulse[i]['theta_p'][j] = float(self.amplitude[i][j].text)
-                    sim_man.pulse[i]['phi_p'][j] = float(self.amplitude[i][j].text)
+                    sim_man.pulse[i]['phase'][j] = (float(self.phase[i][j].text)/180)*math.pi
+                    sim_man.pulse[i]['theta_p'][j] = (float(self.theta1[i][j].text)/180)*math.pi
+                    sim_man.pulse[i]['phi_p'][j] = (float(self.phi1[i][j].text)/180)*math.pi
                     
                 sim_man.pulse_time[i] = float(self.pulse_times[i].text)
                 
                 if self.RRF_btn[i].state == 'down':
                     sim_man.RRF_par[i]['frequency'] = float(self.RRF_frequency[i].text)
-                    sim_man.RRF_par[i]['theta'] = float(self.RRF_theta[i].text)
-                    sim_man.RRF_par[i]['phi'] = float(self.RRF_phi[i].text)
-                                
+                    sim_man.RRF_par[i]['theta'] = (float(self.RRF_theta[i].text)/180)*math.pi
+                    sim_man.RRF_par[i]['phi'] = (float(self.RRF_phi[i].text)/180)*math.pi
+                    
             sim_man.n_pulses = self.n_pulses
             
         except Exception as e:
@@ -835,9 +835,9 @@ class Evolution_Results(FloatLayout):
             self.remove_widget(self.error_last_par)
             self.remove_widget(self.tb_last_par)
             
-            sim_man.coil_theta = float(self.coil_theta.text)
+            sim_man.coil_theta = (float(self.coil_theta.text)/180)*math.pi
             
-            sim_man.coil_phi = float(self.coil_phi.text)
+            sim_man.coil_phi = (float(self.coil_phi.text)/180)*math.pi
             
             sim_man.time_aq = float(self.time_aq.text)
             
