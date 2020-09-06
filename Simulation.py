@@ -162,6 +162,8 @@ def Plot_Real_Density_Matrix(dm, show=True, save=False, name='RealPartDensityMat
     
     if show:
         plt.show()
+        
+    return fig
     
 
 # Computes the spectrum of power absorption due to x-polarized single-mode pulses, appealing to the
@@ -201,7 +203,9 @@ def Transition_Spectrum(spin, h_unperturbed, normalized=True, dm_initial=0):
     return transition_frequency, transition_probability
 
 
-def Plot_Transition_Spectrum(frequencies, probabilities, save=False, name='TransitionSpectrum', destination=''):
+def Plot_Transition_Spectrum(frequencies, probabilities, show=True, save=False, name='TransitionSpectrum', destination=''):
+    fig = plt.figure()
+    
     plt.vlines(frequencies, 0, probabilities, colors='b')
     
     plt.xlabel("\N{GREEK SMALL LETTER OMEGA} (MHz)")    
@@ -209,7 +213,10 @@ def Plot_Transition_Spectrum(frequencies, probabilities, save=False, name='Trans
     
     if save: plt.savefig(destination + name)
     
-    plt.show()
+    if show: plt.show()
+        
+    return fig
+
 
 
 # Returns the free induction decay (FID) signal resulting from the free evolution of the component
@@ -238,7 +245,9 @@ def FID_Signal(spin, h_unperturbed, dm, time_window, T2=100, theta=0, phi=0):
 
 
 # Plots the the real part of the FID signal as a function of time
-def Plot_FID_Signal(times, FID, save=False, name='FIDSignal', destination=''):
+def Plot_FID_Signal(times, FID, show=True, save=False, name='FIDSignal', destination=''):
+    fig = plt.figure()
+    
     plt.plot(times, np.real(FID))
     
     plt.xlabel("time (\N{GREEK SMALL LETTER MU}s)")    
@@ -246,7 +255,9 @@ def Plot_FID_Signal(times, FID, save=False, name='FIDSignal', destination=''):
     
     if save: plt.savefig(destination + name)
     
-    plt.show()
+    if show: plt.show()
+        
+    return fig
 
 
 # Computes the complex Fourier transform of the given signal originally expressed in the time domain
@@ -277,6 +288,8 @@ def Fourier_Transform_Signal(signal, times, frequency_start, frequency_stop):
 
 # Plots the Fourier transform of the signal
 def Plot_Fourier_Transform(frequencies, fourier, square_modulus=False, show=True, save=False, name='FTSignal', destination=''):
+    fig = plt.figure()
+    
     if not square_modulus:
         plt.plot(frequencies, np.real(fourier), label='Real part')
     
@@ -292,8 +305,9 @@ def Plot_Fourier_Transform(frequencies, fourier, square_modulus=False, show=True
     
     if save: plt.savefig(destination + name)
     
-    if show:
-        plt.show()
+    if show: plt.show()
+        
+    return fig
 
 
 
