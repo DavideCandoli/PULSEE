@@ -860,10 +860,10 @@ class Evolution_Results(FloatLayout):
             sim_man.frequency_right_bound = float(null_string(self.frequency_right_bound.text))
             
         except Exception as e:
-            self.error_last_par=Label(text=e.args[0], pos=(210, 115), size=(200, 205), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+            self.error_last_par=Label(text=e.args[0], pos=(210, 115+97.5), size=(200, 205), bold=True, color=(1, 0, 0, 1), font_size='15sp')
             self.add_widget(self.error_last_par)
             
-            self.tb_last_par=Button(text='traceback', size_hint=(0.1, 0.05), pos=(655, 405))
+            self.tb_last_par=Button(text='traceback', size_hint=(0.1, 0.04), pos=(655, 405+192.5))
             self.tb_last_par.bind(on_release=partial(print_traceback, e))
             self.add_widget(self.tb_last_par)
             
@@ -884,14 +884,14 @@ class Evolution_Results(FloatLayout):
                 
             # Panels showing the graphical results of the simulation (i.e. the NMR spectrum and
             # the evolved density matrix)
-            self.graphical_results = Graphical_Results(size_hint=(0.9, 0.4), pos=(40, 25), do_default_tab=False, tab_width=150, tab_pos='top_mid')
+            self.graphical_results = Graphical_Results(size_hint=(0.9, 0.6), pos=(40, 0), do_default_tab=False, tab_width=150, tab_pos='top_mid')
             self.add_widget(self.graphical_results)
             
         except Exception as e:
-            self.error_simulation=Label(text=e.args[0], pos=(210, 12.5), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+            self.error_simulation=Label(text=e.args[0], pos=(210, 12.5+97.5), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
             self.add_widget(self.error_simulation)
             
-            self.tb_simulation=Button(text='traceback', size_hint=(0.1, 0.05), pos=(654, 302.5))
+            self.tb_simulation=Button(text='traceback', size_hint=(0.1, 0.04), pos=(654, 302.5+192.5))
             self.tb_simulation.bind(on_release=partial(print_traceback, e))
             self.add_widget(self.tb_simulation)
     
@@ -899,46 +899,46 @@ class Evolution_Results(FloatLayout):
         super(Evolution_Results, self).__init__(**kwargs)
         
         # Label 'Results of the evolution'
-        self.evo_res_label = Label(text='Results of the evolution', size=(10, 5), pos=(0, 227.5), font_size='30sp')
+        self.evo_res_label = Label(text='Results of the evolution', size=(10, 5), pos=(0, 325), font_size='30sp')
         self.add_widget(self.evo_res_label)
         
         # Orientation of the detection coils
-        self.coil_orientation_label = Label(text='Normal to the plane of the detection coils', size=(10, 5), pos=(-200, 180), font_size='15sp')
+        self.coil_orientation_label = Label(text='Normal to the plane of the detection coils', size=(10, 5), pos=(-200, 180+97.5), font_size='15sp')
         self.add_widget(self.coil_orientation_label)
         
-        self.coil_theta_label = Label(text='\N{GREEK SMALL LETTER THETA}', size=(10, 5), pos=(-337.5, 140), font_size='15sp')
+        self.coil_theta_label = Label(text='\N{GREEK SMALL LETTER THETA}', size=(10, 5), pos=(-337.5, 140+97.5), font_size='15sp')
         self.add_widget(self.coil_theta_label)
         
-        self.coil_theta = TextInput(multiline=False, size_hint=(0.075, 0.05), pos=(72.25, 405))
+        self.coil_theta = TextInput(multiline=False, size_hint=(0.075, 0.04), pos=(72.25, 405+192.5))
         self.add_widget(self.coil_theta)
         
-        self.coil_theta_unit = Label(text='°', size=(10, 5), pos=(-260, 140), font_size='15sp')
+        self.coil_theta_unit = Label(text='°', size=(10, 5), pos=(-260, 140+97.5), font_size='15sp')
         self.add_widget(self.coil_theta_unit)
         
-        self.coil_phi_label = Label(text='\N{GREEK SMALL LETTER PHI}', size=(10, 5), pos=(-225, 140), font_size='15sp')
+        self.coil_phi_label = Label(text='\N{GREEK SMALL LETTER PHI}', size=(10, 5), pos=(-225, 140+97.5), font_size='15sp')
         self.add_widget(self.coil_phi_label)
         
-        self.coil_phi = TextInput(multiline=False, size_hint=(0.075, 0.05), pos=(185, 405))
+        self.coil_phi = TextInput(multiline=False, size_hint=(0.075, 0.04), pos=(185, 405+192.5))
         self.add_widget(self.coil_phi)
         
-        self.coil_phi_unit = Label(text='°', size=(10, 5), pos=(-147.5, 140), font_size='15sp')
+        self.coil_phi_unit = Label(text='°', size=(10, 5), pos=(-147.5, 140+97.5), font_size='15sp')
         self.add_widget(self.coil_phi_unit)
         
         # Time of acquisition of the FID Signal
         
-        self.time_aq_label = Label(text='Time of acquisition of the FID signal', size=(10, 5), pos=(-222.5, 100), font_size='15sp')
+        self.time_aq_label = Label(text='Time of acquisition of the FID signal', size=(10, 5), pos=(-222.5, 100+97.5), font_size='15sp')
         self.add_widget(self.time_aq_label)
         
-        self.time_aq = TextInput(multiline=False, size_hint=(0.075, 0.05), pos=(307.5, 365))
+        self.time_aq = TextInput(multiline=False, size_hint=(0.075, 0.04), pos=(307.5, 365+192.5))
         self.add_widget(self.time_aq)
         
-        self.time_aq_unit = Label(text='\N{GREEK SMALL LETTER MU}s', size=(10, 5), pos=(-15, 100), font_size='15sp')
+        self.time_aq_unit = Label(text='\N{GREEK SMALL LETTER MU}s', size=(10, 5), pos=(-15, 197.5), font_size='15sp')
         self.add_widget(self.time_aq_unit)
         
         # Checkbox which specifies if the generated NMR spectrum displays the separate
         # real and imaginary parts or the square modulus of the complex signal
         
-        self.sq_mod_space = GridLayout(cols=2, size=(750, 35), size_hint=(None, None), pos=(55, 324))
+        self.sq_mod_space = GridLayout(cols=2, size=(750, 35), size_hint=(None, None), pos=(55, 324+192.5))
         
         self.sq_mod_checkbox = CheckBox(size_hint_x=None, width=20)
         self.sq_mod_space.add_widget(self.sq_mod_checkbox)
@@ -951,29 +951,29 @@ class Evolution_Results(FloatLayout):
         # Controls for the left and right bounds of the frequency domain where the NMR spectrum is to 
         # be plotted
         
-        self.NMR_domain = Label(text='Frequency window of the NMR signal plot', size=(10, 5), pos=(-205, 25), font_size='15sp')
+        self.NMR_domain = Label(text='Frequency window of the NMR signal plot', size=(10, 5), pos=(-205, 25+97.5), font_size='15sp')
         self.add_widget(self.NMR_domain)
         
-        self.frequency_left_bound = TextInput(multiline=False, size_hint=(0.075, 0.05), pos=(340, 289))
+        self.frequency_left_bound = TextInput(multiline=False, size_hint=(0.075, 0.04), pos=(340, 289+192.5))
         self.add_widget(self.frequency_left_bound)
         
-        self.left_to_right = Label(text='-', size=(10, 5), pos=(10, 25), font_size='15sp')
+        self.left_to_right = Label(text='-', size=(10, 5), pos=(10, 25+97.5), font_size='15sp')
         self.add_widget(self.left_to_right)
         
-        self.frequency_right_bound = TextInput(multiline=False, size_hint=(0.075, 0.05), pos=(420, 289))
+        self.frequency_right_bound = TextInput(multiline=False, size_hint=(0.075, 0.04), pos=(420, 289+192.5))
         self.add_widget(self.frequency_right_bound)
         
-        self.frequency_bounds_unit = Label(text='MHz', size=(10, 5), pos=(100, 25), font_size='15sp')
+        self.frequency_bounds_unit = Label(text='MHz', size=(10, 5), pos=(100, 25+97.5), font_size='15sp')
         self.add_widget(self.frequency_bounds_unit)
         
         # Button which assigns the values of the inputs above to the corresponding variables of the
         # Simulation_Manager
-        self.set_last_par_btn = Button(text='Set up the acquisition parameters', font_size='16sp', size_hint_y=None, height=35, size_hint_x=None, width=260, pos=(475, 435))
+        self.set_last_par_btn = Button(text='Set up the acquisition parameters', font_size='16sp', size_hint_y=None, height=35, size_hint_x=None, width=260, pos=(475, 435+192.5))
         self.set_last_par_btn.bind(on_press=self.set_last_par)
         self.add_widget(self.set_last_par_btn)
         
         # Button which launches the simulation
-        self.launch_sim_btn = Button(text='Launch simulation', font_size='16sp', bold=True, background_normal = '', background_color=(0, 0.2, 1, 1), size_hint_y=None, height=35, size_hint_x=None, width=160, pos=(572.5, 335))
+        self.launch_sim_btn = Button(text='Launch simulation', font_size='16sp', bold=True, background_normal = '', background_color=(0, 0.2, 1, 1), size_hint_y=None, height=35, size_hint_x=None, width=160, pos=(572.5, 335+192.5))
         self.launch_sim_btn.bind(on_press=self.launch_simulation)
         self.add_widget(self.launch_sim_btn)
         
@@ -1033,8 +1033,10 @@ class Panels(TabbedPanel):
         self.add_widget(self.tab_pulse_par)
         
         self.tab_evolve = TabbedPanelItem(text='Evolve')
-        self.evo_res_page = Evolution_Results(size_hint=(1, 1))
-        self.tab_evolve.add_widget(self.evo_res_page)
+        self.scroll_window =  ScrollView(size_hint=(1, None), size=(Window.width, 500))
+        self.evo_res_page = Evolution_Results(size_hint=(1, None), size=(Window.width, 750))
+        self.scroll_window.add_widget(self.evo_res_page)
+        self.tab_evolve.add_widget(self.scroll_window)
         self.add_widget(self.tab_evolve)
         
         
