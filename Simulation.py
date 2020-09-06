@@ -111,7 +111,7 @@ def RRF_Operator(spin, RRF_par):
 
 
 # Generates a 3D histogram of the real part of the passed density matrix
-def Plot_Real_Density_Matrix(dm, save=False, name='RealPartDensityMatrix', destination=''):
+def Plot_Real_Density_Matrix(dm, show=True, save=False, name='RealPartDensityMatrix', destination=''):
     
     # Retain only the real part of the density matrix elements
     real_part = np.vectorize(np.real)
@@ -155,11 +155,13 @@ def Plot_Real_Density_Matrix(dm, save=False, name='RealPartDensityMatrix', desti
     
     # Save the plot
     
-    if save: plt.savefig(destination + name)
+    if save:
+        plt.savefig(destination + name)
 
     # Finally, display the plot.
     
-    plt.show()
+    if show:
+        plt.show()
     
 
 # Computes the spectrum of power absorption due to x-polarized single-mode pulses, appealing to the
@@ -217,7 +219,7 @@ def Plot_Transition_Spectrum(frequencies, probabilities, save=False, name='Trans
 def FID_Signal(spin, h_unperturbed, dm, time_window, T2=100, theta=0, phi=0):
     
     # Sampling of the time window [0, time_window] (microseconds) where the free evolution takes place
-    times = np.linspace(start=0, stop=time_window, num=time_window*10)
+    times = np.linspace(start=0, stop=time_window, num=int(time_window*10))
     
     # FID signal to be sampled
     FID = []
@@ -274,7 +276,7 @@ def Fourier_Transform_Signal(signal, times, frequency_start, frequency_stop):
 
 
 # Plots the Fourier transform of the signal
-def Plot_Fourier_Transform(frequencies, fourier, square_modulus=False, save=False, name='FTSignal', destination=''):
+def Plot_Fourier_Transform(frequencies, fourier, square_modulus=False, show=True, save=False, name='FTSignal', destination=''):
     if not square_modulus:
         plt.plot(frequencies, np.real(fourier), label='Real part')
     
@@ -290,7 +292,8 @@ def Plot_Fourier_Transform(frequencies, fourier, square_modulus=False, save=Fals
     
     if save: plt.savefig(destination + name)
     
-    plt.show()
+    if show:
+        plt.show()
 
 
 
