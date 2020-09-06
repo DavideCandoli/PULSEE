@@ -884,7 +884,7 @@ class Evolution_Results(FloatLayout):
                 
             # Panels showing the graphical results of the simulation (i.e. the NMR spectrum and
             # the evolved density matrix)
-            self.graphical_results = Graphical_Results(size_hint=(0.9, 0.5), pos=(250, 0), do_default_tab=False, tab_width=150, n_pulses=sim_man.n_pulses)
+            self.graphical_results = Graphical_Results(size_hint=(0.9, 0.4), pos=(40, 25), do_default_tab=False, tab_width=150, tab_pos='top_mid')
             self.add_widget(self.graphical_results)
             
         except Exception as e:
@@ -980,14 +980,36 @@ class Evolution_Results(FloatLayout):
 # Class for the panels showing the graphical results of the simulation, to be embedded inside the
 # Evolve main panel
 class Graphical_Results(TabbedPanel): 
-    def __init__(self, n_pulses, **kwargs):
+    def __init__(self, **kwargs):
         super(Graphical_Results, self).__init__(**kwargs)
         
-        self.pulse_tab = np.ndarray(n_pulses, dtype=TabbedPanelItem)
+        self.pulse_tab = np.ndarray(sim_man.n_pulses, dtype=TabbedPanelItem)
+        self.intermediate_layout = np.ndarray(sim_man.n_pulses, dtype=GridLayout)
+        self.NMR_spectrum = np.ndarray(sim_man.n_pulses, dtype=BoxLayout)
+        self.evolved_state = np.ndarray(sim_man.n_pulses, dtype=BoxLayout)
         
-        for i in range(n_pulses):
-            self.pulse_tab[i] = TabbedPanelItem(text='Pulse %r' % i)
+        for i in range(sim_man.n_pulses):
+            self.pulse_tab[i] = TabbedPanelItem(text='Pulse '+str(i+1))
+            
+            self.intermediate_layout[i] = GridLayout(cols=2, size_hint=(1, 1))
+            
+            self.NMR_spectrum[i] = BoxLayout()
+            t, FID = FID_Signal(sim_man.spin, sim_man.h_unperturbed, sim_man.dm[i+1], time_window=sim_man.time_aq)
+            f, ft = Fourier_Transform_Signal(FID, t, sim_man.frequency_left_bound, sim_man.frequency_right_bound)
+            Plot_Fourier_Transform(f, ft, square_modulus=sim_man.square_modulus, show=False)
+            self.NMR_spectrum[i].add_widget(FigureCanvasKivyAgg(plt.gcf()))   
+            
+            self.evolved_state[i] = BoxLayout()
+            Plot_Real_Density_Matrix(sim_man.dm[i+1], show=False)
+            self.evolved_state[i].add_widget(FigureCanvasKivyAgg(plt.gcf()))
+            
+            self.intermediate_layout[i].add_widget(self.NMR_spectrum[i])
+            self.intermediate_layout[i].add_widget(self.evolved_state[i])
+            
+            self.pulse_tab[i].add_widget(self.intermediate_layout[i])
+            
             self.add_widget(self.pulse_tab[i])
+            
 
 # Class of the object on top of the individual panels
 class Panels(TabbedPanel):
