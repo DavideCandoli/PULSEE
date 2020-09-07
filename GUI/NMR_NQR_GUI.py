@@ -55,7 +55,6 @@ from Simulation import Nuclear_System_Setup, \
                        Fourier_Transform_Signal, \
                        Plot_Fourier_Transform
 
-
 # This class defines the object responsible of the management of the inputs and outputs of the
 # simulation, mediating the interaction between the GUI and the computational core of the program.
 class Simulation_Manager:
@@ -77,8 +76,8 @@ class Simulation_Manager:
     pulse = np.ndarray(4, dtype=pd.DataFrame)
     
     for i in range(4):    
-        pulse[i] = pd.DataFrame([(0, 0, 0, 0, 0),
-                                 (0, 0, 0, 0, 0)], 
+        pulse[i] = pd.DataFrame([(0., 0., 0., 0., 0.),
+                                 (0., 0., 0., 0., 0.)], 
                                  columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
     pulse_time = np.zeros(4)
@@ -105,7 +104,7 @@ class Simulation_Manager:
     
     dm_initial = Density_Matrix(1)
     
-    relaxation_time = 300
+    relaxation_time = 100
     
     coil_theta = 0
     
@@ -606,34 +605,31 @@ class Pulse_Sequence(FloatLayout):
         self.remove_widget(self.RRF_phi[n-1])
         self.remove_widget(self.RRF_phi_unit[n-1])
     
-    # Defines what happens when the ToggleButton 'RRF' is down
+    # Defines what happens when the ToggleButton 'RRF' is pressed
     def set_RRF_evolution(self, n, y_shift, *args):
         if self.RRF_btn[n-1].state == 'down':
-            
             sim_man.evolution_algorithm[n-1] = 'RRF'
             self.IP_btn[n-1].state = 'normal'
             
             self.set_RRF_par(n, y_shift)
             
         else:
-            
             self.remove_RRF_par(n)
             
             sim_man.evolution_algorithm[n-1] = 'IP'
             self.IP_btn[n-1].state = 'down'
             
     
-    # Defines what happens when the ToggleButton 'IP' is down
+    # Defines what happens when the ToggleButton 'IP' is pressed
     def set_IP_evolution(self, n, y_shift, *args):
         if self.IP_btn[n-1].state == 'down':
-            
             self.remove_RRF_par(n)
             
-            sim_man.evolution_algorithm = 'IP'
+            sim_man.evolution_algorithm[n-1] = 'IP'
             self.RRF_btn[n-1].state = 'normal'
             
         else:
-            sim_man.evolution_algorithm = 'RRF'
+            sim_man.evolution_algorithm[n-1] = 'RRF'
             self.RRF_btn[n-1].state = 'down'
             
             self.set_RRF_par(n, y_shift)
@@ -701,8 +697,8 @@ class Pulse_Sequence(FloatLayout):
         self.phase[n-1][0] = TextInput(multiline=False, size_hint=(0.5, 0.75))
         self.single_pulse_table[n-1].add_widget(self.phase[n-1][0])
         
-        self.theta1[n-1][0] = TextInput(multiline=False, size_hint=(0.5, 0.75))
-        self.single_pulse_table[n-1].add_widget(self.theta1[n-1][0])
+        self.theta1[n-1, 0] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+        self.single_pulse_table[n-1].add_widget(self.theta1[n-1, 0])
         
         self.phi1[n-1][0] = TextInput(multiline=False, size_hint=(0.5, 0.75))
         self.single_pulse_table[n-1].add_widget(self.phi1[n-1][0])
@@ -767,16 +763,17 @@ class Pulse_Sequence(FloatLayout):
                 for j in range(self.n_modes[i]):
                     sim_man.pulse[i]['frequency'][j] = float(null_string(self.frequency[i][j].text))
                     sim_man.pulse[i]['amplitude'][j] = float(null_string(self.amplitude[i][j].text))
-                    sim_man.pulse[i]['phase'][j] = (float(null_string(self.phase[i][j].text))/180)*math.pi
-                    sim_man.pulse[i]['theta_p'][j] = (float(null_string(self.theta1[i][j].text))/180)*math.pi
-                    sim_man.pulse[i]['phi_p'][j] = (float(null_string(self.phi1[i][j].text))/180)*math.pi
-                    
-                sim_man.pulse_time[i] = float(null_string(self.pulse_times[i].text))
-                
+                    sim_man.pulse[i]['phase'][j] = (float(null_string(self.phase[i][j].text))*math.pi)/180
+                    sim_man.pulse[i]['theta_p'][j] = (float(null_string(self.theta1[i][j].text))*math.pi)/180
+                    sim_man.pulse_time[i] = float(null_string(self.pulse_times[i].text))
+                                
                 if self.RRF_btn[i].state == 'down':
-                    sim_man.RRF_par[i]['frequency'] = float(null_string(self.RRF_frequency[i].text))
-                    sim_man.RRF_par[i]['theta'] = (float(null_string(self.RRF_theta[i].text))/180)*math.pi
-                    sim_man.RRF_par[i]['phi'] = (float(null_string(self.RRF_phi[i].text))/180)*math.pi
+                    sim_man.evolution_algorithm[i] = 'RRF'
+                    sim_man.RRF_par[i]['omega_RRF'] = float(null_string(self.RRF_frequency[i].text))
+                    sim_man.RRF_par[i]['theta_RRF'] = (float(null_string(self.RRF_theta[i].text))/180)*math.pi
+                    sim_man.RRF_par[i]['phi_RRF'] = (float(null_string(self.RRF_phi[i].text))/180)*math.pi
+                else:
+                    sim_man.evolution_algorithm[i] = 'IP'
                     
             sim_man.n_pulses = self.n_pulses
             
@@ -873,7 +870,7 @@ class Evolution_Results(FloatLayout):
             self.remove_widget(self.error_simulation)
             self.remove_widget(self.tb_simulation)
             self.remove_widget(self.graphical_results)
-            
+                        
             sim_man.dm[0] = sim_man.dm_initial
                         
             for i in range(sim_man.n_pulses):
@@ -882,9 +879,56 @@ class Evolution_Results(FloatLayout):
                                          picture=sim_man.evolution_algorithm[i], \
                                          RRF_par=sim_man.RRF_par[i])
                 
+            # LOGGING
+            print("Spin quantum number = " + str(sim_man.spin_par['quantum number']))
+            print("Gyromagnetic ratio = " + str(sim_man.spin_par['gyromagnetic ratio']))
+            
+            print('\n')
+            
+            print("Field magnitude = " + str(sim_man.zeem_par['field magnitude']))
+            print("theta_z = " + str(sim_man.zeem_par['theta_z']))
+            print("phi_z = " + str(sim_man.zeem_par['phi_z']))
+            
+            print('\n')
+            
+            print("e2qQ = " + str(sim_man.quad_par['coupling constant']))
+            print("Asymmetry = " + str(sim_man.quad_par['asymmetry parameter']))
+            print("alpha_q = " + str(sim_man.quad_par['alpha_q']))
+            print("beta_q = " + str(sim_man.quad_par['beta_q']))
+            print("gamma_q = " + str(sim_man.quad_par['gamma_q']))
+            
+            print('\n')
+            
+            print("# pulses = " + str(sim_man.n_pulses))
+            for i in range(sim_man.n_pulses):
+                for j in range(2):
+                    print("frequency (pulse #"+str(i)+" mode #"+str(j)+") = "+str(sim_man.pulse[i]['frequency'][j]))
+                    print("amplitude (pulse #"+str(i)+" mode #"+str(j)+") = "+str(sim_man.pulse[i]['amplitude'][j]))
+                    print("phase (pulse #"+str(i)+" mode #"+str(j)+")"+" = "+str(sim_man.pulse[i]['phase'][j]))
+                    print("theta_p (pulse #"+str(i)+" mode #"+str(j)+")"+" = "+str(sim_man.pulse[i]['theta_p'][j]))
+                    print("phi_p (pulse #"+str(i)+" mode #"+str(j)+")"+" = "+str(sim_man.pulse[i]['phi_p'][j]))
+    
+                print("Pulse time (pulse #"+str(i) + ") = " + str(sim_man.pulse_time[i]))
+                print("Evolution algorithm (pulse #"+str(i) + ") = " + str(sim_man.evolution_algorithm[i]))
+                print("omega_RRF (pulse #"+str(i) + ") = " + str(sim_man.RRF_par[i]['omega_RRF']))
+                print("theta_RRF (pulse #"+str(i) + ") = " + str(sim_man.RRF_par[i]['theta_RRF']))
+                print("phi_RRF (pulse #"+str(i) + ") = " + str(sim_man.RRF_par[i]['phi_RRF']))
+                print('\n')
+    
+            print("Temperature = " + str(sim_man.temperature))
+            print("Initial density matrix = " + str(sim_man.dm_initial.matrix))
+            print("Relaxation time = " + str(sim_man.relaxation_time))    
+            print("theta_detection = " + str(sim_man.coil_theta))
+            print("phi_detection = " + str(sim_man.coil_phi))
+            print("Time of acquisition = " + str(sim_man.time_aq))
+            print("Square modulus of the NMR signal = " + str(sim_man.square_modulus))
+            print("Frequency domain left bound = " + str(sim_man.frequency_left_bound))
+            print("Frequency domain right bound = " + str(sim_man.frequency_right_bound))
+            print('\n')
+
             # Panels showing the graphical results of the simulation (i.e. the NMR spectrum and
             # the evolved density matrix)
-            self.graphical_results = Graphical_Results(size_hint=(0.9, 0.6), pos=(40, 0), do_default_tab=False, tab_width=150, tab_pos='top_mid')
+            self.graphical_results = Graphical_Results(size_hint=(0.95, 0.6), pos=(20, 0), do_default_tab=False, tab_width=150, tab_pos='top_mid')
             self.add_widget(self.graphical_results)
             
         except Exception as e:
@@ -994,7 +1038,7 @@ class Graphical_Results(TabbedPanel):
             self.intermediate_layout[i] = GridLayout(cols=2, size_hint=(1, 1))
             
             self.NMR_spectrum[i] = BoxLayout()
-            t, FID = FID_Signal(sim_man.spin, sim_man.h_unperturbed, sim_man.dm[i+1], time_window=sim_man.time_aq)
+            t, FID = FID_Signal(sim_man.spin, sim_man.h_unperturbed, sim_man.dm[i+1], time_window=sim_man.time_aq, theta=sim_man.coil_theta, phi=sim_man.coil_phi)
             f, ft = Fourier_Transform_Signal(FID, t, sim_man.frequency_left_bound, sim_man.frequency_right_bound)
             Plot_Fourier_Transform(f, ft, square_modulus=sim_man.square_modulus, show=False)
             self.NMR_spectrum[i].add_widget(FigureCanvasKivyAgg(plt.gcf()))   
