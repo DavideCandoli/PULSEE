@@ -58,18 +58,18 @@ from Simulation import Nuclear_System_Setup, \
 # This class defines the object responsible of the management of the inputs and outputs of the
 # simulation, mediating the interaction between the GUI and the computational core of the program.
 class Simulation_Manager:
-    spin_par = {'quantum number' : 0,
-                'gyromagnetic ratio' : 0}
+    spin_par = {'quantum number' : 0.,
+                'gyromagnetic ratio' : 0.}
     
-    zeem_par = {'field magnitude' : 0,
-                'theta_z' : 0,
-                'phi_z' : 0}
+    zeem_par = {'field magnitude' : 0.,
+                'theta_z' : 0.,
+                'phi_z' : 0.}
     
-    quad_par = {'coupling constant' : 0,
-                'asymmetry parameter' : 0,
-                'alpha_q' : 0,
-                'beta_q' : 0,
-                'gamma_q' : 0}
+    quad_par = {'coupling constant' : 0.,
+                'asymmetry parameter' : 0.,
+                'alpha_q' : 0.,
+                'beta_q' : 0.,
+                'gamma_q' : 0.}
     
     n_pulses = 1
     
@@ -82,7 +82,7 @@ class Simulation_Manager:
     
     pulse_time = np.zeros(4)
     
-    evolution_algorithm = np.ndarray(4, dtype=str)
+    evolution_algorithm = np.ndarray(4, dtype=object)
     
     for i in range(4):
         evolution_algorithm[i] = 'IP'
@@ -90,11 +90,11 @@ class Simulation_Manager:
     RRF_par = np.ndarray(4, dtype=dict)
     
     for i in range(4):
-        RRF_par[i] = {'omega_RRF': 0,
-                      'theta_RRF': 0,
-                      'phi_RRF': 0}
+        RRF_par[i] = {'omega_RRF': 0.,
+                      'theta_RRF': 0.,
+                      'phi_RRF': 0.}
     
-    temperature = 300
+    temperature = 300.
     
     dm_0 = 0
     
@@ -104,19 +104,19 @@ class Simulation_Manager:
     
     dm_initial = Density_Matrix(1)
     
-    relaxation_time = 100
+    relaxation_time = 100.
     
-    coil_theta = 0
+    coil_theta = 0.
     
-    coil_phi = 0
+    coil_phi = 0.
     
-    time_aq = 500
+    time_aq = 500.
     
     square_modulus = False
     
-    frequency_left_bound = 0
+    frequency_left_bound = 0.
     
-    frequency_right_bound = 10
+    frequency_right_bound = 10.
     
     dm = np.ndarray(5, dtype=Density_Matrix)
     
@@ -765,15 +765,16 @@ class Pulse_Sequence(FloatLayout):
                     sim_man.pulse[i]['amplitude'][j] = float(null_string(self.amplitude[i][j].text))
                     sim_man.pulse[i]['phase'][j] = (float(null_string(self.phase[i][j].text))*math.pi)/180
                     sim_man.pulse[i]['theta_p'][j] = (float(null_string(self.theta1[i][j].text))*math.pi)/180
+                    sim_man.pulse[i]['phi_p'][j] = (float(null_string(self.phi1[i][j].text))*math.pi)/180
                     sim_man.pulse_time[i] = float(null_string(self.pulse_times[i].text))
                                 
                 if self.RRF_btn[i].state == 'down':
-                    sim_man.evolution_algorithm[i] = 'RRF'
+                    sim_man.evolution_algorithm[i] = "RRF"
                     sim_man.RRF_par[i]['omega_RRF'] = float(null_string(self.RRF_frequency[i].text))
                     sim_man.RRF_par[i]['theta_RRF'] = (float(null_string(self.RRF_theta[i].text))/180)*math.pi
                     sim_man.RRF_par[i]['phi_RRF'] = (float(null_string(self.RRF_phi[i].text))/180)*math.pi
                 else:
-                    sim_man.evolution_algorithm[i] = 'IP'
+                    sim_man.evolution_algorithm[i] = "IP"
                     
             sim_man.n_pulses = self.n_pulses
             
@@ -878,7 +879,7 @@ class Evolution_Results(FloatLayout):
                                          sim_man.pulse[i], sim_man.pulse_time[i], \
                                          picture=sim_man.evolution_algorithm[i], \
                                          RRF_par=sim_man.RRF_par[i])
-                
+            
             # LOGGING
             print("Spin quantum number = " + str(sim_man.spin_par['quantum number']))
             print("Gyromagnetic ratio = " + str(sim_man.spin_par['gyromagnetic ratio']))
@@ -1038,7 +1039,7 @@ class Graphical_Results(TabbedPanel):
             self.intermediate_layout[i] = GridLayout(cols=2, size_hint=(1, 1))
             
             self.NMR_spectrum[i] = BoxLayout()
-            t, FID = FID_Signal(sim_man.spin, sim_man.h_unperturbed, sim_man.dm[i+1], time_window=sim_man.time_aq, theta=sim_man.coil_theta, phi=sim_man.coil_phi)
+            t, FID = FID_Signal(sim_man.spin, sim_man.h_unperturbed, sim_man.dm[i+1], time_window=sim_man.time_aq, T2=sim_man.relaxation_time, theta=sim_man.coil_theta, phi=sim_man.coil_phi)
             f, ft = Fourier_Transform_Signal(FID, t, sim_man.frequency_left_bound, sim_man.frequency_right_bound)
             Plot_Fourier_Transform(f, ft, square_modulus=sim_man.square_modulus, show=False)
             self.NMR_spectrum[i].add_widget(FigureCanvasKivyAgg(plt.gcf()))   
