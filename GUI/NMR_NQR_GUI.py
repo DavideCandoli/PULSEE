@@ -564,6 +564,12 @@ class Pulse_Sequence(FloatLayout):
             self.single_pulse_table[n-1].remove_widget(self.theta1[n-1][self.n_modes[n-1]])
             self.single_pulse_table[n-1].remove_widget(self.phi1[n-1][self.n_modes[n-1]])
             
+            sim_man.pulse[n-1]['frequency'][self.n_modes[n-1]]
+            sim_man.pulse[n-1]['amplitude'][self.n_modes[n-1]]
+            sim_man.pulse[n-1]['phase'][self.n_modes[n-1]]
+            sim_man.pulse[n-1]['theta_p'][self.n_modes[n-1]]
+            sim_man.pulse[n-1]['phi_p'][self.n_modes[n-1]]
+            
             self.single_pulse_table[n-1].size[1] = self.single_pulse_table[n-1].size[1] - 28
             self.single_pulse_table[n-1].pos[1] = self.single_pulse_table[n-1].pos[1] + 28
         else:
