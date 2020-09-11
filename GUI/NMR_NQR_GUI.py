@@ -227,7 +227,7 @@ class System_Parameters(FloatLayout):
             sim_man.zeem_par['field magnitude'] = float(null_string(self.field_mag.text))
             
             sim_man.zeem_par['theta_z'] = (float(null_string(self.theta_z.text))*math.pi)/180
-            
+                        
             sim_man.zeem_par['phi_z'] = (float(null_string(self.phi_z.text))*math.pi)/180
             
             sim_man.quad_par['coupling constant'] = float(null_string(self.coupling.text))
@@ -564,11 +564,11 @@ class Pulse_Sequence(FloatLayout):
             self.single_pulse_table[n-1].remove_widget(self.theta1[n-1][self.n_modes[n-1]])
             self.single_pulse_table[n-1].remove_widget(self.phi1[n-1][self.n_modes[n-1]])
             
-            sim_man.pulse[n-1]['frequency'][self.n_modes[n-1]]
-            sim_man.pulse[n-1]['amplitude'][self.n_modes[n-1]]
-            sim_man.pulse[n-1]['phase'][self.n_modes[n-1]]
-            sim_man.pulse[n-1]['theta_p'][self.n_modes[n-1]]
-            sim_man.pulse[n-1]['phi_p'][self.n_modes[n-1]]
+            sim_man.pulse[n-1]['frequency'][self.n_modes[n-1]] = 0
+            sim_man.pulse[n-1]['amplitude'][self.n_modes[n-1]] = 0
+            sim_man.pulse[n-1]['phase'][self.n_modes[n-1]] = 0
+            sim_man.pulse[n-1]['theta_p'][self.n_modes[n-1]] = 0
+            sim_man.pulse[n-1]['phi_p'][self.n_modes[n-1]] = 0
             
             self.single_pulse_table[n-1].size[1] = self.single_pulse_table[n-1].size[1] - 28
             self.single_pulse_table[n-1].pos[1] = self.single_pulse_table[n-1].pos[1] + 28
