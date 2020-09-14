@@ -17,7 +17,7 @@ from Nuclear_Spin import Nuclear_Spin
 # static field
 def H_Zeeman(spin, theta_z, phi_z, H_0):
     if H_0<0: raise ValueError("The modulus of the magnetic field must be a non-negative quantity")
-    h_Zeeman = -spin.gyromagnetic_ratio*H_0* \
+    h_Zeeman = -2*math.pi*spin.gyromagnetic_ratio*H_0* \
                 (math.sin(theta_z)*math.cos(phi_z)*spin.I['x'] + \
                  math.sin(theta_z)*math.sin(phi_z)*spin.I['y'] + \
                  math.cos(theta_z)*spin.I['z'])
@@ -30,7 +30,7 @@ def H_Quadrupole(spin, e2qQ, eta, alpha, beta, gamma):
     if eta<0 or eta>1: raise ValueError("The asymmetry parameter must fall in the interval [0, 1]")
     if math.isclose(spin.quantum_number, 1/2, rel_tol=1e-10):
         return Observable(spin.d)*0
-    h_quadrupole = (e2qQ/(spin.quantum_number*(2*spin.quantum_number-1)))* \
+    h_quadrupole = 2*math.pi*(e2qQ/(spin.quantum_number*(2*spin.quantum_number-1)))* \
                    ((1/2)*(3*(spin.I['z']**2) - \
                            Operator(spin.d)*spin.quantum_number*(spin.quantum_number+1))* \
                     V0(eta, alpha, beta, gamma) + \
@@ -64,10 +64,10 @@ def V1(sign, eta, alpha, beta, gamma):
     sign = np.sign(sign)
     v1 = (1/2)*\
          (
-          -sign*1j*math.sqrt(3/8)*math.sin(2*beta)*exp(sign*1j*alpha)+\
+          -1j*sign*math.sqrt(3/8)*math.sin(2*beta)*exp(sign*1j*alpha)+\
           1j*(eta/(math.sqrt(6)))*math.sin(beta)*\
           (
-           -((1+sign*math.cos(beta))/2)*exp(1j*(sign*alpha+2*gamma))+\
+           ((1+sign*math.cos(beta))/2)*exp(1j*(sign*alpha+2*gamma))-\
             ((1-sign*math.cos(beta))/2)*exp(1j*(sign*alpha-2*gamma))
           )
          )
@@ -79,7 +79,7 @@ def V2(sign, eta, alpha, beta, gamma):
     if eta<0 or eta>1: raise ValueError("The asymmetry parameter must fall in the interval [0, 1]")
     sign = np.sign(sign)
     v2 = (1/2)*\
-         (-math.sqrt(3/8)*((math.sin(beta))**2)*exp(sign*2j*alpha) +\
+         (math.sqrt(3/8)*((math.sin(beta))**2)*exp(sign*2j*alpha)+\
           (eta/math.sqrt(6))*exp(sign*2j*alpha)*\
            (
             exp(2j*gamma)*((1+sign*math.cos(beta))**2)/4 +\
@@ -94,12 +94,12 @@ def V2(sign, eta, alpha, beta, gamma):
 def H_Single_Mode_Pulse(spin, frequency, H_1, phase, theta, phi, t):
     if frequency < 0: raise ValueError("The angular frequency of the electromagnetic wave must be a positive quantity")
     if H_1 < 0: raise ValueError("The amplitude of the electromagnetic wave must be a positive quantity")
-    h_pulse = -spin.gyromagnetic_ratio*H_1*\
+    h_pulse = -2*math.pi*spin.gyromagnetic_ratio*H_1*\
               (math.sin(theta)*math.cos(phi)*spin.I['x'] +\
                math.sin(theta)*math.sin(phi)*spin.I['y'] +\
                math.cos(theta)*spin.I['z']
                )*\
-               math.cos(frequency*t-phase)
+               math.cos(2*math.pi*frequency*t-phase)
     return Observable(h_pulse.matrix)
 
 

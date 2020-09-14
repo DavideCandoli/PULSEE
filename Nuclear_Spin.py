@@ -31,7 +31,7 @@ class Nuclear_Spin:
                   'y': self.cartesian_operator()[1],
                   'z': self.cartesian_operator()[2]}
         try:
-            gamma = float(gamma)
+            gamma = float(gamma) # gamma/2*pi!
         except:
             raise TypeError("The given gyromagnetic ratio cannot be interpreted as a float")
         self.gyromagnetic_ratio = gamma
