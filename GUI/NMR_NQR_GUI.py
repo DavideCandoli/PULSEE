@@ -71,6 +71,8 @@ class Simulation_Manager:
                 'beta_q' : 0.,
                 'gamma_q' : 0.}
     
+    nu_q = 0
+    
     n_pulses = 1
     
     pulse = np.ndarray(4, dtype=pd.DataFrame)
@@ -164,6 +166,8 @@ class System_Parameters(FloatLayout):
     
     dm_graph_box = Widget()
     
+    nu_q_label = Label()
+    
     # Specifies the action of the checkbox 'Canonical', i.e. to toggle the TextInput widgets associated
     # with the temperature, the density matrix to be inserted manually and the related button
     def on_canonical_active(self, *args):
@@ -220,6 +224,8 @@ class System_Parameters(FloatLayout):
             
             self.remove_widget(self.dm_graph_box)
             
+            self.remove_widget(self.nu_q_label)
+            
             sim_man.spin_par['quantum number'] = float(Fraction(null_string(self.spin_qn.text)))
             
             sim_man.spin_par['gyromagnetic ratio'] = float(null_string(self.gyro.text))
@@ -241,6 +247,16 @@ class System_Parameters(FloatLayout):
             sim_man.quad_par['gamma_q'] = (float(null_string(self.gamma_q.text))*math.pi)/180
             
             sim_man.relaxation_time = float(null_string(self.relax.text))
+            
+            # Calculation of the parameter nu_q
+            sim_man.nu_q = 3*sim_man.quad_par['coupling constant']/\
+                          (2*sim_man.spin_par['quantum number']*\
+                          (2*sim_man.spin_par['quantum number']-1))*\
+                          math.sqrt(1+(sim_man.quad_par['asymmetry parameter']**2)/3)
+            
+            # Prints the value of nu_q on screen
+            self.nu_q_label = Label(text="\N{GREEK SMALL LETTER NU}Q = " + str(round(sim_man.nu_q, 2)) + "MHz", pos=(250, 140), size=(200, 200), font_size='15sp')
+            self.add_widget(self.nu_q_label)
             
             if self.canonical_checkbox.active:
                 sim_man.temperature = float(null_string(self.temperature.text))
