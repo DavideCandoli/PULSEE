@@ -2,7 +2,7 @@ import math
 import numpy as np
 from numpy.linalg import LinAlgError
 from scipy.linalg import expm, eig
-from scipy.constants import hbar, Boltzmann
+from scipy.constants import Planck, Boltzmann
 from scipy.integrate import quad
 import Pade_Exp
 
@@ -300,7 +300,7 @@ def Canonical_Density_Matrix(hamiltonian, temperature):
     if temperature <= 0:
         raise ValueError("The temperature must take a non negative value")
     
-    exponent = -(hbar*hamiltonian*1e6)/(Boltzmann*temperature)
+    exponent = -(Planck*hamiltonian*1e6)/(Boltzmann*temperature)
     numerator = exponent.exp()
     canonical_partition_function = numerator.trace()
     canonical_dm = numerator/canonical_partition_function
