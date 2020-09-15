@@ -50,7 +50,7 @@ def Nuclear_System_Setup(spin_par, zeem_par, quad_par, initial_state='canonical'
     h_unperturbed = Observable(h_zeeman.matrix + h_quadrupole.matrix)
     
     # Sets the density matrix of the system at time t=0, according to the value of 'initial_state'
-    if initial_state == 'canonical':
+    if isinstance(initial_state, str) and initial_state == 'canonical':
         dm_initial = Canonical_Density_Matrix(h_unperturbed, temperature)
     else:
         dm_initial = Density_Matrix(initial_state)
@@ -285,6 +285,26 @@ def Fourier_Transform_Signal(signal, times, frequency_start, frequency_stop):
     
     return frequencies, np.array(fourier)
 
+# Finds out the phase of displacement of the real and imaginary parts of the Fourier spectrum of the FID
+# with respect to the ideal absorptive/dispersive shapes
+def Calculate_Dephasing(frequencies, fourier, peak_frequency):
+    # Position of the specified peak in the list frequencies
+    peak_f = 0
+    
+    for f in frequencies:
+        if f>peak_frequency: break
+        peak_f = f
+    
+    # Real part of the Fourier spectrum at the peak
+    r = np.real(fourier[frequencies.index(peak_f)])
+    
+    # Imaginary part of the Fourier spectrum at the peak
+    i = np.imag(fourier[frequencies.index(peak_f)])
+    
+    # Dephasing
+    phase = math.atan(-i/r)
+    
+    return phase
 
 # Plots the Fourier transform of the signal
 def Plot_Fourier_Transform(frequencies, fourier, square_modulus=False, show=True, save=False, name='FTSignal', destination=''):
