@@ -336,7 +336,7 @@ class System_Parameters(FloatLayout):
         self.field_mag = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(x_shift+170, y_shift+535))
         self.add_widget(self.field_mag)
         
-        self.field_mag_unit = Label(text='G', size=(10, 5), pos=(x_shift-155, y_shift+50), font_size='15sp')
+        self.field_mag_unit = Label(text='T', size=(10, 5), pos=(x_shift-155, y_shift+50), font_size='15sp')
         self.add_widget(self.field_mag_unit)
         
         # Polar angle
@@ -680,7 +680,7 @@ class Pulse_Sequence(FloatLayout):
         self.frequency_unit[n-1] = Label(text='(MHz)', font_size='15sp')
         self.single_pulse_table[n-1].add_widget(self.frequency_unit[n-1])
         
-        self.amplitude_unit[n-1] = Label(text='(G)', font_size='15sp')
+        self.amplitude_unit[n-1] = Label(text='(T)', font_size='15sp')
         self.single_pulse_table[n-1].add_widget(self.amplitude_unit[n-1])
         
         self.phase_unit[n-1] = Label(text='(°)', font_size='15sp')
