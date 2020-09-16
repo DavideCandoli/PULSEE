@@ -132,7 +132,7 @@ def Plot_Real_Density_Matrix(dm, show=True, save=False, name='RealPartDensityMat
     # Flatten out the arrays so that they may be passed to "ax.bar3d".
     # Basically, ax.bar3d expects three one-dimensional arrays:
     # x_data, y_data, z_data. The following call boils down to picking
-    # one entry from each array and plotting a bar to from
+    # one entry from each array and plotting a bar from
     # (x_data[i], y_data[i], 0) to (x_data[i], y_data[i], z_data[i]).
     x_data = x_data.flatten()
     y_data = y_data.flatten()
@@ -276,33 +276,39 @@ def Fourier_Transform_Signal(signal, times, frequency_start, frequency_stop):
     fourier = []
     
     # The Fourier transform is evaluated through the conventional formula
-    # F = -(1/T)*int_0^T{sin(omega t) S(t) dt}
+    # F = int_0^T{exp(-i omega t) S(t) dt}
     for omega in frequencies:
         integral = 0
         for i in range(len(times)):
-            integral = integral - math.sin(omega*times[i])*signal[i]*dt
-        fourier.append((1/T)*integral)
+            integral = integral + np.exp(-1j*omega*times[i])*signal[i]*dt
+        fourier.append(integral)
     
     return frequencies, np.array(fourier)
 
 # Finds out the phase of displacement of the real and imaginary parts of the Fourier spectrum of the FID
 # with respect to the ideal absorptive/dispersive shapes
-def Calculate_Dephasing(frequencies, fourier, peak_frequency):
+def Calculate_Dephasing(frequencies, fourier, peak_frequency_hint, search_window=0.1):
     # Position of the specified peak in the list frequencies
-    peak_f = 0
+    peak_pos = 0
     
-    for f in frequencies:
-        if f>peak_frequency: break
-        peak_f = f
+    # Range where to look for the maximum of the square modulus of the Fourier spectrum
+    search_range = np.nonzero(np.isclose(frequencies, peak_frequency_hint, atol=search_window))[0]
     
+    # Search of the maximum of the square modulus of the Fourier spectrum
+    fourier2_max=0
+    for i in search_range:
+        if (np.absolute(fourier[i])**2)>fourier2_max:
+            fourier2_max = np.absolute(fourier[i])
+            peak_pos = i
+        
     # Real part of the Fourier spectrum at the peak
-    r = np.real(fourier[frequencies.index(peak_f)])
+    re = np.real(fourier[peak_pos])
     
     # Imaginary part of the Fourier spectrum at the peak
-    i = np.imag(fourier[frequencies.index(peak_f)])
+    im = np.imag(fourier[peak_pos])
     
     # Dephasing
-    phase = math.atan(-i/r)
+    phase = math.atan(-im/re)
     
     return phase
 
