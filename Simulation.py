@@ -285,14 +285,14 @@ def Fourier_Transform_Signal(signal, times, frequency_start, frequency_stop):
     return frequencies, np.array(fourier)
 
 
-# Finds out the phase of displacement of the real and imaginary parts of the Fourier spectrum of the FID
-# with respect to the ideal absorptive/dispersive shapes
-def Calculate_Dephasing(frequencies, fourier, peak_frequency_hint, search_window=0.1):
+# Finds out the phase responsible for the displacement of the real and imaginary parts of the Fourier
+# spectrum of the FID with respect to the ideal absorptive/dispersive shapes
+def Calculate_Phase_Shift(frequencies, fourier, peak_frequency_hint, search_window=0.1):
     # Position of the specified peak in the list frequencies
     peak_pos = 0
     
     # Range where to look for the maximum of the square modulus of the Fourier spectrum
-    search_range = np.nonzero(np.isclose(frequencies, peak_frequency_hint, atol=search_window))[0]
+    search_range = np.nonzero(np.isclose(frequencies, peak_frequency_hint, atol=search_window/2))[0]
     
     # Search of the maximum of the square modulus of the Fourier spectrum
     fourier2_max=0
@@ -307,7 +307,7 @@ def Calculate_Dephasing(frequencies, fourier, peak_frequency_hint, search_window
     # Imaginary part of the Fourier spectrum at the peak
     im = np.imag(fourier[peak_pos])
     
-    # Dephasing
+    # Phase shift
     phase = math.atan(-im/re)
     
     return phase
