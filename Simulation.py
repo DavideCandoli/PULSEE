@@ -287,7 +287,7 @@ def Fourier_Transform_Signal(signal, times, frequency_start, frequency_stop):
 
 # Finds out the phase responsible for the displacement of the real and imaginary parts of the Fourier
 # spectrum of the FID with respect to the ideal absorptive/dispersive shapes
-def Calculate_Phase_Shift(frequencies, fourier, peak_frequency_hint, search_window=0.1):
+def Fourier_Phase_Shift(frequencies, fourier, peak_frequency_hint, search_window=0.1):
     # Position of the specified peak in the list frequencies
     peak_pos = 0
     
