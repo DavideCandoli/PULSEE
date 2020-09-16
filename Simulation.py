@@ -218,7 +218,6 @@ def Plot_Transition_Spectrum(frequencies, probabilities, show=True, save=False, 
     return fig
 
 
-
 # Returns the free induction decay (FID) signal resulting from the free evolution of the component
 # of the magnetization on the plane specified by theta, phi of the LAB system. The state of the system
 # at the beginning of acquisition is given by the parameter dm, and the dynamics of the magnetization is 
@@ -285,6 +284,7 @@ def Fourier_Transform_Signal(signal, times, frequency_start, frequency_stop):
     
     return frequencies, np.array(fourier)
 
+
 # Finds out the phase of displacement of the real and imaginary parts of the Fourier spectrum of the FID
 # with respect to the ideal absorptive/dispersive shapes
 def Calculate_Dephasing(frequencies, fourier, peak_frequency_hint, search_window=0.1):
@@ -311,6 +311,7 @@ def Calculate_Dephasing(frequencies, fourier, peak_frequency_hint, search_window
     phase = math.atan(-im/re)
     
     return phase
+
 
 # Plots the Fourier transform of the signal
 def Plot_Fourier_Transform(frequencies, fourier, square_modulus=False, show=True, save=False, name='FTSignal', destination=''):
