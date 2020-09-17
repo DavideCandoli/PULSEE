@@ -70,7 +70,7 @@ def Evolve(spin, h_unperturbed, dm_initial, \
     
     # Selects the operator for the change of picture, according to the value of 'picture'
     if picture == 'IP':
-        o_change_of_picture = 2*math.pi*h_unperturbed
+        o_change_of_picture = h_unperturbed
     else:
         o_change_of_picture = RRF_Operator(spin, RRF_par)
     
@@ -104,9 +104,9 @@ def RRF_Operator(spin, RRF_par):
     nu = RRF_par['nu_RRF']
     theta = RRF_par['theta_RRF']
     phi = RRF_par['phi_RRF']
-    RRF_operator = 2*math.pi*nu*(spin.I['z']*math.cos(theta) + \
-                                 spin.I['x']*math.sin(theta)*math.cos(phi) + \
-                                 spin.I['y']*math.sin(theta)*math.sin(phi))
+    RRF_operator = nu*(spin.I['z']*math.cos(theta) + \
+                       spin.I['x']*math.sin(theta)*math.cos(phi) + \
+                       spin.I['y']*math.sin(theta)*math.sin(phi))
     return Observable(RRF_operator.matrix)
 
 

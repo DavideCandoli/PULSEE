@@ -49,7 +49,8 @@ def Spectrum_Pure_Zeeman():
                 'beta_q' : 0,
                 'gamma_q' : 0}
     
-    mode = pd.DataFrame([(10., 1., 0., math.pi/2, 0)], 
+    mode = pd.DataFrame([(10., 1., 0., math.pi/2, 0),
+                         (10., 1., math.pi/2, math.pi/2, -math.pi/2)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
     RRF_par = {'nu_RRF': 10,
@@ -58,9 +59,11 @@ def Spectrum_Pure_Zeeman():
     
     spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par)
     
+    Plot_Real_Density_Matrix(dm_0, save=False, name='DMPureZeeman')
+    
     dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
-                        mode=mode, pulse_time=math.pi, \
-                        picture = 'RRF', RRF_par=RRF_par)
+                        mode=mode, pulse_time=1/4, \
+                        picture = 'IP', RRF_par=RRF_par)
     
     Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMPureZeeman')
     
