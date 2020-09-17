@@ -63,7 +63,7 @@ def Nuclear_System_Setup(spin_par, zeem_par, quad_par, initial_state='canonical'
 # the argument
 def Evolve(spin, h_unperturbed, dm_initial, \
            mode, pulse_time, \
-           picture='RRF', RRF_par={'omega_RRF': 0,
+           picture='RRF', RRF_par={'nu_RRF': 0,
                                    'theta_RRF': 0,
                                    'phi_RRF': 0}, \
            n_points=10):
@@ -101,12 +101,12 @@ def Evolve(spin, h_unperturbed, dm_initial, \
 # Operator which generates a change of picture equivalent to moving to the rotating reference frame
 # (RRF)
 def RRF_Operator(spin, RRF_par):
-    omega = RRF_par['omega_RRF']
+    nu = RRF_par['nu_RRF']
     theta = RRF_par['theta_RRF']
     phi = RRF_par['phi_RRF']
-    RRF_operator = omega*(spin.I['z']*math.cos(theta) + \
-                          spin.I['x']*math.sin(theta)*math.cos(phi) + \
-                          spin.I['y']*math.sin(theta)*math.sin(phi))
+    RRF_operator = 2*math.pi*nu*(spin.I['z']*math.cos(theta) + \
+                                 spin.I['x']*math.sin(theta)*math.cos(phi) + \
+                                 spin.I['y']*math.sin(theta)*math.sin(phi))
     return Observable(RRF_operator.matrix)
 
 

@@ -52,14 +52,14 @@ def Spectrum_Pure_Zeeman():
     mode = pd.DataFrame([(10., 1., 0., math.pi/2, 0)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
-    RRF_par = {'omega_RRF': 10,
-               'theta_RRF': 0,
+    RRF_par = {'nu_RRF': 10,
+               'theta_RRF': math.pi,
                'phi_RRF': 0}
     
     spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par)
     
     dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
-                        mode=mode, pulse_time=20, \
+                        mode=mode, pulse_time=math.pi, \
                         picture = 'RRF', RRF_par=RRF_par)
     
     Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMPureZeeman')
@@ -68,7 +68,7 @@ def Spectrum_Pure_Zeeman():
     
     Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPureZeeman')
     
-    t, FID = FID_Signal(spin, h_unperturbed, dm_evolved, time_window=500, theta=0, phi=mode['frequency'][0]*20)
+    t, FID = FID_Signal(spin, h_unperturbed, dm_evolved, time_window=500, phi=math.pi/2)
         
     f, ft = Fourier_Transform_Signal(FID, t, 9.5, 10.5)
     
@@ -99,7 +99,7 @@ def Spectrum_Perturbed_Zeeman():
     mode = pd.DataFrame([(10., 5., 0., math.pi/2, 0)],
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
-    RRF_par = {'omega_RRF': 0,
+    RRF_par = {'nu_RRF': 0,
                'theta_RRF': 0,
                'phi_RRF': 0}
     
@@ -116,7 +116,7 @@ def Spectrum_Perturbed_Zeeman():
     
     Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPerturbedZeeman')
     
-    t, FID = FID_Signal(spin, h_unperturbed, dm_evolved, time_window=2000, T2=500)
+    t, FID = FID_Signal(spin, h_unperturbed, dm_evolved, time_window=2000, T2=500, phi=math.pi/2)
     
     f, ft = Fourier_Transform_Signal(FID, t, 9.8, 10.2)
     
@@ -140,21 +140,22 @@ def Spectrum_Pure_Symmetric_Quadrupole():
                 'beta_q' : 0,
                 'gamma_q' : 0}
     
-    mode = pd.DataFrame([(1., 1., 0., math.pi/2, 0)], 
+    mode = pd.DataFrame([(3., 1., 0., math.pi/2, 0),
+                         (3., 1., math.pi/2., math.pi/2, math.pi/2)],
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
-    RRF_par = {'omega_RRF': 1.,
+    RRF_par = {'nu_RRF': 3.,
                'theta_RRF': math.pi,
                'phi_RRF': 0}
     
     spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par, \
-                                                     initial_state='canonical', temperature=1e-4)
+                                                     initial_state='canonical', temperature=300)
     
     Plot_Real_Density_Matrix(dm_0, save=False, name='DMPureSymmetricQuadrupole')
     
     dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
-                        mode=mode, pulse_time=20, \
-                        picture = 'RRF', RRF_par=RRF_par, \
+                        mode=mode, pulse_time=2*math.pi/3, \
+                        picture = 'IP', RRF_par=RRF_par, \
                         n_points=10)
     
     Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMPureSymmetricQuadrupole')
@@ -191,7 +192,7 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
     mode = pd.DataFrame([(10, 1., 0., math.pi/2, 0)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
-    RRF_par = {'omega_RRF': 10,
+    RRF_par = {'nu_RRF': 10,
                'theta_RRF': math.pi,
                'phi_RRF': 0}
     
@@ -236,7 +237,7 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Half_Integer_Spin():
     mode = pd.DataFrame([(10, 3, 0., math.pi/2, 0.)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
-    RRF_par = {'omega_RRF': 10,
+    RRF_par = {'nu_RRF': 10,
                'theta_RRF': math.pi,
                'phi_RRF': 0}
     
@@ -281,7 +282,7 @@ def Spectrum_Perturbed_Quadrupole_Integer_Spin():
     mode = pd.DataFrame([(10, 1., 0., math.pi/2, 0.)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
-    RRF_par = {'omega_RRF': 10,
+    RRF_par = {'nu_RRF': 10,
                'theta_RRF': 0,
                'phi_RRF': 0}
     
@@ -326,12 +327,12 @@ def Spectrum_Perturbed_Quadrupole_Half_Integer_Spin():
     mode = pd.DataFrame([(10, 1., 0., math.pi/2, 0.)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
-    RRF_par = {'omega_RRF': 10,
+    RRF_par = {'nu_RRF': 10,
                'theta_RRF': 0,
                'phi_RRF': 0}
     
     spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par, \
-                                                     initial_state='canonical', temperature=1e-4)    
+                                                     initial_state='canonical', temperature=1e-3)    
     dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
                         mode=mode, pulse_time=20, \
                         picture = 'RRF', RRF_par=RRF_par)

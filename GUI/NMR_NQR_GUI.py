@@ -93,7 +93,7 @@ class Simulation_Manager:
     RRF_par = np.ndarray(4, dtype=dict)
     
     for i in range(4):
-        RRF_par[i] = {'omega_RRF': 0.,
+        RRF_par[i] = {'nu_RRF': 0.,
                       'theta_RRF': 0.,
                       'phi_RRF': 0.}
     
@@ -799,7 +799,7 @@ class Pulse_Sequence(FloatLayout):
                                 
                 if self.RRF_btn[i].state == 'down':
                     sim_man.evolution_algorithm[i] = "RRF"
-                    sim_man.RRF_par[i]['omega_RRF'] = float(null_string(self.RRF_frequency[i].text))
+                    sim_man.RRF_par[i]['nu_RRF'] = float(null_string(self.RRF_frequency[i].text))
                     sim_man.RRF_par[i]['theta_RRF'] = (float(null_string(self.RRF_theta[i].text))/180)*math.pi
                     sim_man.RRF_par[i]['phi_RRF'] = (float(null_string(self.RRF_phi[i].text))/180)*math.pi
                 else:
@@ -944,7 +944,7 @@ class Evolution_Results(FloatLayout):
     
                 print("Pulse time (pulse #"+str(i) + ") = " + str(sim_man.pulse_time[i]))
                 print("Evolution algorithm (pulse #"+str(i) + ") = " + str(sim_man.evolution_algorithm[i]))
-                print("omega_RRF (pulse #"+str(i) + ") = " + str(sim_man.RRF_par[i]['omega_RRF']))
+                print("nu_RRF (pulse #"+str(i) + ") = " + str(sim_man.RRF_par[i]['nu_RRF']))
                 print("theta_RRF (pulse #"+str(i) + ") = " + str(sim_man.RRF_par[i]['theta_RRF']))
                 print("phi_RRF (pulse #"+str(i) + ") = " + str(sim_man.RRF_par[i]['phi_RRF']))
                 print('\n')
