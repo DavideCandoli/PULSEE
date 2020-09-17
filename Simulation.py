@@ -70,7 +70,7 @@ def Evolve(spin, h_unperturbed, dm_initial, \
     
     # Selects the operator for the change of picture, according to the value of 'picture'
     if picture == 'IP':
-        o_change_of_picture = h_unperturbed
+        o_change_of_picture = 2*math.pi*h_unperturbed
     else:
         o_change_of_picture = RRF_Operator(spin, RRF_par)
     
