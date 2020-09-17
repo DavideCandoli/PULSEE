@@ -267,7 +267,7 @@ def Magnus_Expansion_1st_Term(h, time_step):
     for t in range(len(h)-2):
         integral = integral + 2*h[t+1].matrix
     integral = (integral + h[-1].matrix)*(time_step)/2
-    magnus_1st_term = Operator(-1j*integral)/(2*math.pi)
+    magnus_1st_term = Operator(-1j*(2*math.pi)*integral)
     return magnus_1st_term
 
 
@@ -277,7 +277,7 @@ def Magnus_Expansion_2nd_Term(h, time_step):
     for t1 in range(len(h)-1):
         for t2 in range(t1+1):
             integral = integral + (Commutator(h[t1], h[t2]).matrix)*(time_step**2)
-    magnus_2nd_term = Operator(-(1/(2*(2*math.pi)**2))*integral)
+    magnus_2nd_term = Operator(-(((2*math.pi)**2)/2)*integral)
     return magnus_2nd_term
 
 
@@ -290,7 +290,7 @@ def Magnus_Expansion_3rd_Term(h, time_step):
                 integral = integral + \
                            ((Commutator(h[t1], Commutator(h[t2], h[t3])) + \
                              Commutator(h[t3], Commutator(h[t2], h[t1]))).matrix)*(time_step**3)
-    magnus_3rd_term = Operator((1j/(6*(2*math.pi)**3))*integral)
+    magnus_3rd_term = Operator(((1j*(2*math.pi)**3)/6)*integral)
     return magnus_3rd_term
 
 
