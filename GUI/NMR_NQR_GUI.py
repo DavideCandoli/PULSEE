@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from fractions import Fraction
 
+import matplotlib
 import matplotlib.pylab as plt
 
 from kivy.config import Config
@@ -168,6 +169,8 @@ class System_Parameters(FloatLayout):
     
     nu_q_label = Label()
     
+    dm_initial_figure = matplotlib.figure.Figure()
+    
     # Specifies the action of the checkbox 'Canonical', i.e. to toggle the TextInput widgets associated
     # with the temperature, the density matrix to be inserted manually and the related button
     def on_canonical_active(self, *args):
@@ -225,6 +228,8 @@ class System_Parameters(FloatLayout):
             self.remove_widget(self.dm_graph_box)
             
             self.remove_widget(self.nu_q_label)
+            
+            plt.close(self.dm_initial_figure)
             
             sim_man.spin_par['quantum number'] = float(Fraction(null_string(self.spin_qn.text)))
             
@@ -288,7 +293,9 @@ class System_Parameters(FloatLayout):
             
             self.dm_graph_box = BoxLayout(size=(300, 300), size_hint=(None, None), pos=(470, 105))
             
-            self.dm_graph_box.add_widget(FigureCanvasKivyAgg(plt.gcf()))
+            self.dm_initial_figure = plt.gcf()
+            
+            self.dm_graph_box.add_widget(FigureCanvasKivyAgg(self.dm_initial_figure))
             
             self.add_widget(self.dm_graph_box)
             
@@ -861,6 +868,8 @@ class Evolution_Results(FloatLayout):
     tb_simulation = Button()
     
     graphical_results = Widget()
+        
+    NMR_spectrum_figure = matplotlib.figure.Figure()
     
     def set_last_par(self, *args):
         try:
@@ -893,7 +902,9 @@ class Evolution_Results(FloatLayout):
             self.remove_widget(self.error_simulation)
             self.remove_widget(self.tb_simulation)
             self.remove_widget(self.graphical_results)
-                        
+                
+            plt.close(self.NMR_spectrum_figure)
+                                    
             sim_man.dm[0] = sim_man.dm_initial
                         
             for i in range(sim_man.n_pulses):
@@ -954,14 +965,15 @@ class Evolution_Results(FloatLayout):
             self.graphical_results = Graphical_Results(size_hint=(0.5, 0.3), pos=(200, 725), do_default_tab=False, tab_width=150, tab_pos='top_mid')
             self.add_widget(self.graphical_results)
             
-            self.NMR_spectrum = BoxLayout(size_hint=(0.9, 0.3), pos=(35, 250))
+            self.NMR_spectrum = BoxLayout(size_hint=(0.9, 0.3), pos=(40, 250))
             t, FID = FID_Signal(sim_man.spin, sim_man.h_unperturbed, sim_man.dm[sim_man.n_pulses-1], \
                                 time_window=sim_man.time_aq, T2=sim_man.relaxation_time, \
                                 theta=sim_man.coil_theta, phi=sim_man.coil_phi)
             f, ft = Fourier_Transform_Signal(FID, t, sim_man.frequency_left_bound,\
                                              sim_man.frequency_right_bound)
             Plot_Fourier_Transform(f, ft, square_modulus=sim_man.square_modulus, show=False)
-            self.NMR_spectrum.add_widget(FigureCanvasKivyAgg(plt.gcf()))
+            self.NMR_spectrum_figure = plt.gcf()
+            self.NMR_spectrum.add_widget(FigureCanvasKivyAgg(self.NMR_spectrum_figure))
             self.add_widget(self.NMR_spectrum)
             
         except Exception as e:
@@ -1059,7 +1071,10 @@ class Evolution_Results(FloatLayout):
         
 # Class for the panels showing the graphical results of the simulation, to be embedded inside the
 # Evolve main panel
-class Graphical_Results(TabbedPanel): 
+class Graphical_Results(TabbedPanel):
+    
+    dm_evolved_figure = np.ndarray(4, dtype=matplotlib.figure.Figure)
+    
     def __init__(self, **kwargs):
         super(Graphical_Results, self).__init__(**kwargs)
         
@@ -1067,10 +1082,12 @@ class Graphical_Results(TabbedPanel):
         self.evolved_state = np.ndarray(sim_man.n_pulses, dtype=BoxLayout)
         
         for i in range(sim_man.n_pulses):
+            plt.close(self.dm_evolved_figure[i])
             self.pulse_tab[i] = TabbedPanelItem(text='Pulse '+str(i+1))
             self.evolved_state[i] = BoxLayout()
             Plot_Real_Density_Matrix(sim_man.dm[i+1], show=False)
-            self.evolved_state[i].add_widget(FigureCanvasKivyAgg(plt.gcf()))
+            self.dm_evolved_figure[i] = plt.gcf()
+            self.evolved_state[i].add_widget(FigureCanvasKivyAgg(self.dm_evolved_figure[i]))
             self.pulse_tab[i].add_widget(self.evolved_state[i])
             self.add_widget(self.pulse_tab[i])
             
