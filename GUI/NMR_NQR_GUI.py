@@ -39,7 +39,6 @@ from kivy.uix.popup import Popup
 
 from kivy.graphics import *
 
-
 sys.path.insert(1, '/home/davidecandoli/Documenti/Università/Thesis/NQR-NMRSimulationSoftware')
 
 from Operators import Observable, \
@@ -123,10 +122,6 @@ class Simulation_Manager:
     
     dm = np.ndarray(5, dtype=Density_Matrix)
     
-    
-sim_man = Simulation_Manager()
-
-
 # Function which specifies the action of various controls (stub)
 def on_enter(*args):
         pass
@@ -189,7 +184,7 @@ class System_Parameters(FloatLayout):
             
     
     # Specifies the action carried out after the validation of the spin quantum number
-    def set_quantum_number(self, *args):
+    def set_quantum_number(self, sim_man, *args):
         try:
             self.remove_widget(self.error_spin_qn)
             
@@ -218,7 +213,7 @@ class System_Parameters(FloatLayout):
             self.add_widget(self.error_spin_qn)
     
     # Builds up the objects representing the nuclear system
-    def build_system(self, *args):
+    def build_system(self, sim_man, *args):
         try:
             
             self.remove_widget(self.error_build_system)
@@ -308,7 +303,7 @@ class System_Parameters(FloatLayout):
             self.add_widget(self.tb_button)
     
     # Controls of the nuclear spin parameters
-    def nuclear_parameters(self, x_shift=0, y_shift=0):        
+    def nuclear_parameters(self, x_shift, y_shift, sim_man):        
         # Nuclear species dropdown list
         self.nuclear_species = Button(text='Nuclear species', size_hint=(0.15, 0.055), pos=(x_shift+50, y_shift+450))
         self.add_widget(self.nuclear_species)
@@ -329,7 +324,7 @@ class System_Parameters(FloatLayout):
         self.add_widget(self.spin_qn_label)
         
         self.spin_qn = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(x_shift+355, y_shift+460))
-        self.spin_qn.bind(on_text_validate=self.set_quantum_number)
+        self.spin_qn.bind(on_text_validate=partial(self.set_quantum_number, sim_man))
         self.add_widget(self.spin_qn)
         self.Cl_btn.bind(on_release=partial(clear_and_write_text, self.spin_qn, '3/2'))
         self.Na_btn.bind(on_release=partial(clear_and_write_text, self.spin_qn, '3/2'))
@@ -461,14 +456,14 @@ class System_Parameters(FloatLayout):
         
         self.add_widget(self.dm_par)
         
-    def __init__(self, **kwargs):
+    def __init__(self, sim_man, **kwargs):
         super(System_Parameters, self).__init__(**kwargs)
         
         # Label 'System parameters'
         self.parameters = Label(text='System parameters', size=(10, 5), pos=(0, 450), font_size='30sp')
         self.add_widget(self.parameters)
         
-        self.nuclear_parameters(0, 400)
+        self.nuclear_parameters(0, 400, sim_man=sim_man)
         
         self.magnetic_parameters(0, 200)
         
@@ -487,7 +482,7 @@ class System_Parameters(FloatLayout):
         self.initial_dm_parameters(0, -30)
         
         self.set_up_system = Button(text='Set up the system', font_size='16sp', size_hint_y=None, height=40, size_hint_x=None, width=200, pos=(535, 25))
-        self.set_up_system.bind(on_press=self.build_system)
+        self.set_up_system.bind(on_press=partial(self.build_system, sim_man))
         
         self.add_widget(self.set_up_system)
 
@@ -576,7 +571,7 @@ class Pulse_Sequence(FloatLayout):
             pass
     
     # Removes a line of TextInputs in the table of the n-th pulse
-    def remove_mode(self, n, *args):
+    def remove_mode(self, n, sim_man, *args):
         if self.n_modes[n-1]>1:
             
             self.n_modes[n-1] = self.n_modes[n-1]-1
@@ -666,7 +661,7 @@ class Pulse_Sequence(FloatLayout):
     
     # Creates the set of controls associated with the parameters of a single pulse in the sequence
     # n is an integer which labels successive pulses
-    def single_pulse_par(self, n, y_shift):
+    def single_pulse_par(self, n, y_shift, sim_man):
         
         # Label 'Pulse #n'
         self.pulse_label[n-1] = Label(text='Pulse #%r' % n, size=(10, 5), pos=(-285, y_shift), font_size='20sp')
@@ -739,7 +734,7 @@ class Pulse_Sequence(FloatLayout):
         
         # Button for the removal of a mode of radiation
         self.less_mode_btn[n-1] = Button(text='-', font_size = '15sp', size_hint=(None, None), size=(30, 30), pos=(517.5, y_shift+374))
-        self.less_mode_btn[n-1].bind(on_press=partial(self.remove_mode, n))
+        self.less_mode_btn[n-1].bind(on_press=partial(self.remove_mode, n, sim_man))
         self.add_widget(self.less_mode_btn[n-1])
         
         # Buttons which specify the methods of numerical evolution of the system: RRF and IP
@@ -753,7 +748,7 @@ class Pulse_Sequence(FloatLayout):
         self.add_widget(self.IP_btn[n-1])
     
     # Shows all the controls associated with the pulses in the sequence
-    def set_pulse_controls(self, *args):
+    def set_pulse_controls(self, sim_man, *args):
         try:
             self.remove_widget(self.error_n_pulses)
             
@@ -776,7 +771,7 @@ class Pulse_Sequence(FloatLayout):
             self.n_pulses = int(self.number_pulses.text)
         
             for i in range(1, self.n_pulses):
-                self.single_pulse_par(n=i+1, y_shift=400-i*200)
+                self.single_pulse_par(n=i+1, y_shift=400-i*200, sim_man=sim_man)
             
         except Exception as e:
             self.error_n_pulses=Label(text=e.args[0], pos=(200, 335), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
@@ -784,7 +779,7 @@ class Pulse_Sequence(FloatLayout):
     
     # Assigns the input values written on screen to the corresponding variables belonging to the
     # Simulation_Manager
-    def set_up_pulse(self, *args):
+    def set_up_pulse(self, sim_man, *args):
         try:
             self.remove_widget(self.error_set_up_pulse)
             
@@ -815,14 +810,14 @@ class Pulse_Sequence(FloatLayout):
             self.tb_button.bind(on_release=partial(print_traceback, e))
             self.add_widget(self.tb_button)
 
-    def __init__(self, **kwargs):
+    def __init__(self, sim_man, **kwargs):
         super(Pulse_Sequence, self).__init__(**kwargs)
         
         # Label 'Pulse sequence'
         self.pulse_sequence_label = Label(text='Pulse sequence', size=(10, 5), pos=(0, 450), font_size='30sp')
         self.add_widget(self.pulse_sequence_label)
         
-        self.single_pulse_par(n=1, y_shift=400)
+        self.single_pulse_par(n=1, y_shift=400, sim_man=sim_man)
         
         # Question mark connected with the explanation of RRF and IP buttons
         self.RRF_IP_mark = Label(text='[ref=?]?[/ref]', markup=True, size=(20, 20), pos=(280, 290), font_size='20sp')
@@ -849,11 +844,11 @@ class Pulse_Sequence(FloatLayout):
         self.add_widget(self.number_pulses_label)
         
         self.number_pulses = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(670, 850))
-        self.number_pulses.bind(on_text_validate=self.set_pulse_controls)
+        self.number_pulses.bind(on_text_validate=partial(self.set_pulse_controls, sim_man))
         self.add_widget(self.number_pulses)
         
         self.set_up_pulse_btn = Button(text='Set up the pulse sequence', font_size='16sp', size_hint_y=None, height=40, size_hint_x=None, width=220, pos=(535, 25))
-        self.set_up_pulse_btn.bind(on_press=self.set_up_pulse)
+        self.set_up_pulse_btn.bind(on_press=partial(self.set_up_pulse, sim_man))
         self.add_widget(self.set_up_pulse_btn)
         
 # Class of the page of the software which lists the results of the evolution
@@ -871,7 +866,7 @@ class Evolution_Results(FloatLayout):
         
     NMR_spectrum_figure = matplotlib.figure.Figure()
     
-    def set_last_par(self, *args):
+    def set_last_par(self, sim_man, *args):
         try:
             self.remove_widget(self.error_last_par)
             self.remove_widget(self.tb_last_par)
@@ -897,7 +892,7 @@ class Evolution_Results(FloatLayout):
             self.add_widget(self.tb_last_par)
             
     # Function that actually evolves the system through all the steps of the specified sequence
-    def launch_simulation(self, *args):
+    def launch_simulation(self, sim_man, *args):
         try:
             self.remove_widget(self.error_simulation)
             self.remove_widget(self.tb_simulation)
@@ -962,11 +957,11 @@ class Evolution_Results(FloatLayout):
 
             # Panels showing the graphical results of the simulation (i.e. the NMR spectrum and
             # the evolved density matrix)
-            self.graphical_results = Graphical_Results(size_hint=(0.5, 0.3), pos=(200, 725), do_default_tab=False, tab_width=150, tab_pos='top_mid')
+            self.graphical_results = Graphical_Results(size_hint=(0.5, 0.3), pos=(200, 725), do_default_tab=False, tab_width=150, tab_pos='top_mid', sim_man=sim_man)
             self.add_widget(self.graphical_results)
             
             self.NMR_spectrum = BoxLayout(size_hint=(0.9, 0.3), pos=(40, 250))
-            t, FID = FID_Signal(sim_man.spin, sim_man.h_unperturbed, sim_man.dm[sim_man.n_pulses-1], \
+            t, FID = FID_Signal(sim_man.spin, sim_man.h_unperturbed, sim_man.dm[sim_man.n_pulses], \
                                 time_window=sim_man.time_aq, T2=sim_man.relaxation_time, \
                                 theta=sim_man.coil_theta, phi=sim_man.coil_phi)
             f, ft = Fourier_Transform_Signal(FID, t, sim_man.frequency_left_bound,\
@@ -984,7 +979,7 @@ class Evolution_Results(FloatLayout):
             self.tb_simulation.bind(on_release=partial(print_traceback, e))
             self.add_widget(self.tb_simulation)
           
-    def acquisition_parameters(self, y_shift):
+    def acquisition_parameters(self, y_shift, sim_man):
         # Orientation of the detection coils
         self.coil_orientation_label = Label(text='Normal to the plane of the detection coils', size=(10, 5), pos=(-200, 180+y_shift), font_size='15sp')
         self.add_widget(self.coil_orientation_label)
@@ -1052,21 +1047,21 @@ class Evolution_Results(FloatLayout):
         # Button which assigns the values of the inputs above to the corresponding variables of the
         # Simulation_Manager
         self.set_last_par_btn = Button(text='Set up the acquisition parameters', font_size='16sp', size_hint_y=None, height=35, size_hint_x=None, width=260, pos=(475, 915+y_shift))
-        self.set_last_par_btn.bind(on_press=self.set_last_par)
+        self.set_last_par_btn.bind(on_press=partial(self.set_last_par, sim_man))
         self.add_widget(self.set_last_par_btn) 
     
-    def __init__(self, **kwargs):
+    def __init__(self, sim_man, **kwargs):
         super(Evolution_Results, self).__init__(**kwargs)
         
         # Label 'Results of the evolution'
         self.evo_res_label = Label(text='Results of the evolution', size=(10, 5), pos=(0, 700), font_size='30sp')
         self.add_widget(self.evo_res_label)
         
-        self.acquisition_parameters(y_shift=450)
+        self.acquisition_parameters(y_shift=450, sim_man=sim_man)
         
         # Button which launches the simulation
         self.launch_sim_btn = Button(text='Launch simulation', font_size='16sp', bold=True, background_normal = '', background_color=(0, 0.2, 1, 1), size_hint_y=None, height=35, size_hint_x=None, width=160, pos=(572.5, 1260))
-        self.launch_sim_btn.bind(on_press=self.launch_simulation)
+        self.launch_sim_btn.bind(on_press=partial(self.launch_simulation, sim_man))
         self.add_widget(self.launch_sim_btn)
         
 # Class for the panels showing the graphical results of the simulation, to be embedded inside the
@@ -1075,7 +1070,7 @@ class Graphical_Results(TabbedPanel):
     
     dm_evolved_figure = np.ndarray(4, dtype=matplotlib.figure.Figure)
     
-    def __init__(self, **kwargs):
+    def __init__(self, sim_man, **kwargs):
         super(Graphical_Results, self).__init__(**kwargs)
         
         self.pulse_tab = np.ndarray(sim_man.n_pulses, dtype=TabbedPanelItem)
@@ -1094,12 +1089,12 @@ class Graphical_Results(TabbedPanel):
 
 # Class of the object on top of the individual panels
 class Panels(TabbedPanel):
-    def __init__(self, **kwargs):
+    def __init__(self, sim_man, **kwargs):
         super(Panels, self).__init__(**kwargs)
         
         self.tab_sys_par = TabbedPanelItem(text='System')
         self.scroll_window =  ScrollView(size_hint=(1, None), size=(Window.width, 500))
-        self.sys_par = System_Parameters(size_hint=(1, None), size=(Window.width, 1000))
+        self.sys_par = System_Parameters(size_hint=(1, None), size=(Window.width, 1000), sim_man=sim_man)
         
         self.scroll_window.add_widget(self.sys_par)
         self.tab_sys_par.add_widget(self.scroll_window)
@@ -1107,7 +1102,7 @@ class Panels(TabbedPanel):
         
         self.tab_pulse_par = TabbedPanelItem(text='Pulse')
         self.scroll_window =  ScrollView(size_hint=(1, None), size=(Window.width, 500))
-        self.pulse_par = Pulse_Sequence(size_hint=(1, None), size=(Window.width, 1000))
+        self.pulse_par = Pulse_Sequence(size_hint=(1, None), size=(Window.width, 1000), sim_man=sim_man)
         
         self.scroll_window.add_widget(self.pulse_par)
         self.tab_pulse_par.add_widget(self.scroll_window)
@@ -1115,7 +1110,7 @@ class Panels(TabbedPanel):
         
         self.tab_evolve = TabbedPanelItem(text='Evolve')
         self.scroll_window =  ScrollView(size_hint=(1, None), size=(Window.width, 500))
-        self.evo_res_page = Evolution_Results(size_hint=(1, None), size=(Window.width, 1500))
+        self.evo_res_page = Evolution_Results(size_hint=(1, None), size=(Window.width, 1500), sim_man=sim_man)
         self.scroll_window.add_widget(self.evo_res_page)
         self.tab_evolve.add_widget(self.scroll_window)
         self.add_widget(self.tab_evolve)
@@ -1123,7 +1118,10 @@ class Panels(TabbedPanel):
         
 # Class of the application
 class PulseBit(App):
+    
+    sim_man = Simulation_Manager()
+    
     def build(self):
-        return Panels(size=(500, 500), do_default_tab=False, tab_pos='top_mid')
+        return Panels(size=(500, 500), do_default_tab=False, tab_pos='top_mid', sim_man=self.sim_man)
     
 PulseBit().run()
