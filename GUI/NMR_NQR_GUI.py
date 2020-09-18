@@ -1064,6 +1064,32 @@ class Evolution_Results(FloatLayout):
         self.launch_sim_btn.bind(on_press=partial(self.launch_simulation, sim_man))
         self.add_widget(self.launch_sim_btn)
         
+        # Set of controls for the phase adjustment of the NMR spectrum
+        self.phase_adjustment_label = Label(text='Phase adjustment', size=(10, 5), pos=(-265, -550), font_size='20sp')
+        self.add_widget(self.phase_adjustment_label)
+        
+        self.peak_frequency_label = Label(text='Peak frequency', size=(10, 5), pos=(-291, -590), font_size='15sp')
+        self.add_widget(self.peak_frequency_label)
+        
+        self.peak_frequency = TextInput(multiline=False, size_hint=(0.075, 0.02), pos=(175, 145))
+        self.add_widget(self.peak_frequency)
+        
+        self.peak_frequency_unit = Label(text='MHz', size=(10, 5), pos=(-140, -590), font_size='15sp')
+        self.add_widget(self.peak_frequency_unit)
+        
+        self.search_range_label = Label(text='Uncertainty', size=(10, 5), pos=(-50, -590), font_size='15sp')
+        self.add_widget(self.search_range_label)
+        
+        self.search_range = TextInput(multiline=False, size_hint=(0.075, 0.02), pos=(400, 145))
+        self.add_widget(self.search_range)
+        
+        self.search_range_unit = Label(text='MHz', size=(10, 5), pos=(85, -590), font_size='15sp')
+        self.add_widget(self.search_range_unit)
+        
+        self.phase_adj_btn = Button(text='Adjust phase', font_size='16sp', size_hint_y=None, height=35, size_hint_x=None, width=110, pos=(55, 90))
+        self.add_widget(self.phase_adj_btn)
+        
+        
 # Class for the panels showing the graphical results of the simulation, to be embedded inside the
 # Evolve main panel
 class Graphical_Results(TabbedPanel):
