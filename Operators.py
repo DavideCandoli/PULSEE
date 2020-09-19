@@ -200,7 +200,7 @@ class Density_Matrix(Operator):
     # Makes the Density_Matrix evolve under the effect of a stationary Hamiltonian throughout a time
     # interval 'time'
     def free_evolution(self, stat_hamiltonian, time):
-        iHt = (1j*stat_hamiltonian*float(time))
+        iHt = (1j*2*math.pi*stat_hamiltonian*float(time))
         evolved_dm = self.sim_trans(iHt, exp=True)
         return Density_Matrix(evolved_dm.matrix)
 
