@@ -53,6 +53,7 @@ from Simulation import Nuclear_System_Setup, \
                        Plot_Transition_Spectrum, \
                        FID_Signal, Plot_FID_Signal, \
                        Fourier_Transform_Signal, \
+                       Fourier_Phase_Shift, \
                        Plot_Fourier_Transform
 
 # This class defines the object responsible of the management of the inputs and outputs of the
@@ -121,6 +122,14 @@ class Simulation_Manager:
     frequency_right_bound = 10.
     
     dm = np.ndarray(5, dtype=Density_Matrix)
+
+    FID_times = np.ndarray(1)
+    
+    FID = np.ndarray(1)
+    
+    spectrum_frequencies = np.ndarray(1)
+    
+    spectrum_fourier = np.ndarray(1)
     
 # Function which specifies the action of various controls (stub)
 def on_enter(*args):
@@ -863,8 +872,14 @@ class Evolution_Results(FloatLayout):
     tb_simulation = Button()
     
     graphical_results = Widget()
+    
+    NMR_spectrum = Widget()
         
     NMR_spectrum_figure = matplotlib.figure.Figure()
+    
+    error_adj_phase = Widget()
+    
+    adj_phase_tb = Widget()
     
     def set_last_par(self, sim_man, *args):
         try:
@@ -961,12 +976,18 @@ class Evolution_Results(FloatLayout):
             self.add_widget(self.graphical_results)
             
             self.NMR_spectrum = BoxLayout(size_hint=(0.9, 0.3), pos=(40, 250))
-            t, FID = FID_Signal(sim_man.spin, sim_man.h_unperturbed, sim_man.dm[sim_man.n_pulses], \
-                                time_window=sim_man.time_aq, T2=sim_man.relaxation_time, \
-                                theta=sim_man.coil_theta, phi=sim_man.coil_phi)
-            f, ft = Fourier_Transform_Signal(FID, t, sim_man.frequency_left_bound,\
-                                             sim_man.frequency_right_bound)
-            Plot_Fourier_Transform(f, ft, square_modulus=sim_man.square_modulus, show=False)
+            sim_man.FID_times, sim_man.FID = FID_Signal(sim_man.spin, sim_man.h_unperturbed, \
+                                                        sim_man.dm[sim_man.n_pulses], \
+                                                        time_window=sim_man.time_aq, \
+                                                        T2=sim_man.relaxation_time, \
+                                                        theta=sim_man.coil_theta, \
+                                                        phi=sim_man.coil_phi)
+            sim_man.spectrum_frequencies, sim_man.spectrum_fourier = \
+                Fourier_Transform_Signal(sim_man.FID, sim_man.FID_times, \
+                                         sim_man.frequency_left_bound,\
+                                         sim_man.frequency_right_bound)
+            Plot_Fourier_Transform(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
+                                   square_modulus=sim_man.square_modulus, show=False)
             self.NMR_spectrum_figure = plt.gcf()
             self.NMR_spectrum.add_widget(FigureCanvasKivyAgg(self.NMR_spectrum_figure))
             self.add_widget(self.NMR_spectrum)
@@ -1048,8 +1069,41 @@ class Evolution_Results(FloatLayout):
         # Simulation_Manager
         self.set_last_par_btn = Button(text='Set up the acquisition parameters', font_size='16sp', size_hint_y=None, height=35, size_hint_x=None, width=260, pos=(475, 915+y_shift))
         self.set_last_par_btn.bind(on_press=partial(self.set_last_par, sim_man))
-        self.add_widget(self.set_last_par_btn) 
-    
+        self.add_widget(self.set_last_par_btn)
+        
+    # Corrects the phase of the NMR spectrum at the given peak frequency
+    def adjust_phase(self, sim_man, *args):
+        try:
+            self.remove_widget(self.error_adj_phase)
+            self.remove_widget(self.adj_phase_tb)
+            plt.close(self.NMR_spectrum_figure)
+            self.remove_widget(self.NMR_spectrum)
+            
+            peak_frequency_hint = float(null_string(self.peak_frequency.text))
+        
+            search_window = float(null_string(self.search_range.text))
+        
+            phi = Fourier_Phase_Shift(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
+                                      peak_frequency_hint, search_window)
+        
+            f, ft = Fourier_Transform_Signal(np.exp(1j*phi)*sim_man.FID, sim_man.FID_times, \
+                                             sim_man.frequency_left_bound, \
+                                             sim_man.frequency_right_bound)
+        
+            self.NMR_spectrum = BoxLayout(size_hint=(0.9, 0.3), pos=(40, 250))
+            Plot_Fourier_Transform(f, ft, show=False)
+            self.NMR_spectrum_figure = plt.gcf()
+            self.NMR_spectrum.add_widget(FigureCanvasKivyAgg(self.NMR_spectrum_figure))
+            self.add_widget(self.NMR_spectrum)
+            
+        except Exception as e:
+            self.error_adj_phase=Label(text=e.args[0], pos=(-212, -672), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+            self.add_widget(self.error_adj_phase)
+            
+            self.adj_phase_tb = Button(text='traceback', size_hint=(0.1, 0.02), pos=(54, 35))
+            self.adj_phase_tb.bind(on_release=partial(print_traceback, e))
+            self.add_widget(self.adj_phase_tb)
+
     def __init__(self, sim_man, **kwargs):
         super(Evolution_Results, self).__init__(**kwargs)
         
@@ -1087,6 +1141,7 @@ class Evolution_Results(FloatLayout):
         self.add_widget(self.search_range_unit)
         
         self.phase_adj_btn = Button(text='Adjust phase', font_size='16sp', size_hint_y=None, height=35, size_hint_x=None, width=110, pos=(55, 90))
+        self.phase_adj_btn.bind(on_press=partial(self.adjust_phase, sim_man))
         self.add_widget(self.phase_adj_btn)
         
         
