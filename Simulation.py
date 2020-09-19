@@ -275,11 +275,11 @@ def Fourier_Transform_Signal(signal, times, frequency_start, frequency_stop):
     fourier = []
     
     # The Fourier transform is evaluated through the conventional formula
-    # F = int_0^T{exp(-i omega t) S(t) dt}
-    for omega in frequencies:
+    # F = int_0^T{cos(2pi nu t) S(t) dt}
+    for nu in frequencies:
         integral = 0
         for i in range(len(times)):
-            integral = integral + np.exp(-1j*omega*times[i])*signal[i]*dt
+            integral = integral + math.cos(2*math.pi*nu*times[i])*signal[i]*dt
         fourier.append(integral)
     
     return frequencies, np.array(fourier)
@@ -308,7 +308,7 @@ def Fourier_Phase_Shift(frequencies, fourier, peak_frequency_hint, search_window
     im = np.imag(fourier[peak_pos])
     
     # Phase shift
-    phase = math.atan(-im/re)
+    phase = math.atan(-im/re)+math.pi
     
     return phase
 
