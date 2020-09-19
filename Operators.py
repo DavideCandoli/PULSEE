@@ -20,41 +20,29 @@ class Operator:
             d = int(x)
             self.matrix = np.identity(d, dtype=complex)
 
-    # Returns the dimensionality of the Hilbert space where the Operator acts
     def dimension(self):
         return self.matrix.shape[0]
 
-    # The definition of + and - operators is self-explanatory
     def __add__(self, addend):
         return Operator(self.matrix+addend.matrix)
 
     def __sub__(self, subtrahend):
         return Operator(self.matrix-subtrahend.matrix)
     
-    # Returns the Operator changed by sign
     def __neg__(self):
         return Operator(-self.matrix)
     
-    # The * operator is set up to handle both the product between Operator objects and the
-    # multiplication by a scalar
     def __mul__(self, factor):
         if isinstance(factor, Operator):
             return Operator(self.matrix@factor.matrix)
         else:
-            try:
-                factor = complex(factor)
-                return Operator(self.matrix*factor)
-            except:
-                raise ValueError("Invalid type for the right operand of *: the allowed ones are instances of the class Operator or numbers")
-    def __rmul__(self, factor):
-        try:
             factor = complex(factor)
-            return Operator(factor*self.matrix)
-        except:
-            raise ValueError("Invalid type for the right operand of *: the allowed ones are instances of the class Operator or numbers")
+            return Operator(self.matrix*factor)
+                
+    def __rmul__(self, factor):
+        factor = complex(factor)
+        return Operator(factor*self.matrix)
             
-    # The / operator acts between a Operator object (left) and a complex number (right) and returns the
-    # operator divided by a this latter
     def __truediv__(self, divisor):
         try:
             divisor = complex(divisor)
