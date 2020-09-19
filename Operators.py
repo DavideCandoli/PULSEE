@@ -49,8 +49,6 @@ class Operator:
             if divisor == 0:
                 raise ZeroDivisionError                
             return Operator(self.matrix/divisor)
-        except ValueError:
-            raise ValueError("Invalid type for the right operand of /: the divisor must be a complex number")
         except ZeroDivisionError:
             raise ZeroDivisionError("The division of an Operator by 0 makes no sense")
 
