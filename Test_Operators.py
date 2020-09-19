@@ -18,15 +18,16 @@ import hypothesis.strategies as st
 from hypothesis import given, note, assume
 
 # Checks that the constructor of the class Operator raises error when it receives an input array which is not a square matrix
-def test_Operator_Initialisation_with_Wrong_Dimensions():
+def test_operator_initialisation_with_wrong_dimensions():
     wrong_input = np.ones((1, 2))
     try:
         o = Operator(wrong_input)
         raise AssertionError
-    except IndexError:
-        pass
+    except IndexError as e:
+        if not "An Operator object should be initialised with a 2D square array" in e.args[0]:
+            raise AssertionError("No appropriate IndexError caused by the initialisation with a non-square array")
     except AssertionError:
-        raise AssertionError("No IndexError caused by the initialisation with a non-square array")
+        raise AssertionError("No appropriate IndexError caused by the initialisation with a non-square array")
 
 # Checks that the difference between identical operators returns a null square array
 @given(d = st.integers(min_value=1, max_value=16))
