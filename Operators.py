@@ -11,17 +11,13 @@ class Operator:
     
     def __init__(self, x):
         if isinstance(x, np.ndarray):
-            try:
-                if x.shape[0] != x.shape[1] or len(x.shape)>2:
-                    raise IndexError  # If x is not a square array, IndexError is raised
-            except IndexError:
+            if len(x.shape) != 2 or x.shape[0] != x.shape[1]:
                 raise IndexError("An Operator object should be initialised with a 2D square array")
             cast_array_into_complex = np.vectorize(complex)
             input_array = cast_array_into_complex(x)
-            self.matrix = input_array
+            self.matrix = input_array # Matrix representation of the operator (in the desired basis)
         else:
             d = int(x)
-            # Matrix representation of the operator (in the desired basis)
             self.matrix = np.identity(d, dtype=complex)
 
     # Returns the dimensionality of the Hilbert space where the Operator acts
