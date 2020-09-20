@@ -174,14 +174,12 @@ def random_operator(d):
     return Operator(random_array)
 
 
-# Generates a random Operator equal to its adjoint, whose elements are complex numbers with both real and imaginary parts in the range [-10., 10.)
 def random_observable(d):
     o_random = random_operator(d)
     o_hermitian_random = (o_random + o_random.dagger())*(1/2)
     return Observable(o_hermitian_random.matrix)
 
 
-# Generates a random Density_Matrix object, whose eigenvalues belong to the interval [0, 10.)
 def random_density_matrix(d):
     spectrum = np.random.random(d)
     spectrum_norm = spectrum/(spectrum.sum())
@@ -191,46 +189,41 @@ def random_density_matrix(d):
     return Density_Matrix(dm.matrix)
 
 
-# Computes the commutator of two Operator objects
-def Commutator(A, B):
+def commutator(A, B):
     return A*B - B*A
 
 
-# Computes the 1st order term of the Magnus expansion of the passed time-dependent Hamiltonian
-def Magnus_Expansion_1st_Term(h, time_step):
+def magnus_expansion_1st_term(h, time_step):
     integral = h[0].matrix
     for t in range(len(h)-2):
         integral = integral + 2*h[t+1].matrix
     integral = (integral + h[-1].matrix)*(time_step)/2
-    magnus_1st_term = 2*math.pi*Operator(-1j*integral)
+    magnus_1st_term = Operator(-1j*2*math.pi*integral)
     return magnus_1st_term
 
 
-# Computes the 2nd order term of the Magnus expansion of the passed time-dependent Hamiltonian
-def Magnus_Expansion_2nd_Term(h, time_step):
+def magnus_expansion_2nd_term(h, time_step):
     integral = (h[0]*0).matrix
     for t1 in range(len(h)-1):
         for t2 in range(t1+1):
-            integral = integral + (Commutator(h[t1], h[t2]).matrix)*(time_step**2)
+            integral = integral + (commutator(h[t1], h[t2]).matrix)*(time_step**2)
     magnus_2nd_term = ((2*math.pi)**2)*Operator(-(1/2)*integral)
     return magnus_2nd_term
 
 
-# Computes the 3rd order term of the Magnus expansion of the passed time-dependent Hamiltonian
-def Magnus_Expansion_3rd_Term(h, time_step):
+def magnus_expansion_3rd_term(h, time_step):
     integral = (h[0]*0).matrix
     for t1 in range(len(h)-1):
         for t2 in range(t1+1):
             for t3 in range(t2+1):
                 integral = integral + \
-                           ((Commutator(h[t1], Commutator(h[t2], h[t3])) + \
-                             Commutator(h[t3], Commutator(h[t2], h[t1]))).matrix)*(time_step**3)
-    magnus_3rd_term = ((2*math.pi)**3)*Operator((1j/6)*integral)
+                           ((commutator(h[t1], commutator(h[t2], h[t3])) + \
+                             commutator(h[t3], commutator(h[t2], h[t1]))).matrix)*(time_step**3)
+    magnus_3rd_term = Operator((1j/6)*((2*math.pi)**3)*integral)
     return magnus_3rd_term
 
 
-# Returns the Density_Matrix associated with a canonically distributed ensemble of nuclear spins
-def Canonical_Density_Matrix(hamiltonian, temperature):
+def canonical_density_matrix(hamiltonian, temperature):
     
     if temperature <= 0:
         raise ValueError("The temperature must take a non negative value")

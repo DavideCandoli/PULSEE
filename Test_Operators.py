@@ -1,9 +1,9 @@
 from Operators import Operator, Density_Matrix, \
                       Observable, random_operator, \
                       random_observable, random_density_matrix, \
-                      Commutator, \
-                      Magnus_Expansion_1st_Term, \
-                      Magnus_Expansion_2nd_Term, \
+                      commutator, \
+                      magnus_expansion_1st_term, \
+                      magnus_expansion_2nd_term, \
                       Canonical_Density_Matrix
 
 import math
@@ -215,7 +215,6 @@ def test_dmatrix_initialisation_not_positive():
     except AssertionError:
         raise AssertionError("No ValueError raised by the initialisation of a Density_Matrix with a square array which is not positive")
 
-# Checks that the method Density_Matrix.free_evolution conserves the defining properties of the Density_Matrix, i.e. it returns a valid Density_Matrix object.
 @given(d = st.integers(min_value=1, max_value=8))
 def test_free_evolution_conserves_dm_properties(d):
     dm = random_density_matrix(d)
@@ -230,10 +229,8 @@ def test_free_evolution_conserves_dm_properties(d):
             note("Hamiltonian = %r" % (h.matrix))
             raise AssertionError(error_message)
 
-# Checks that the algorithm used in function random_observable to initialise an Observable object 
-# actually yields a hermitian operator
 @given(d = st.integers(min_value=1, max_value=16))
-def test_random_observable(d):
+def test_random_observable_is_hermitian(d):
     try:
         ob_random = random_observable(d)
     except ValueError as ve:
@@ -241,9 +238,8 @@ def test_random_observable(d):
             note("Operator returned by random_observable = %r" % (ob_random.matrix))
             raise AssertionError("random_observable fails in the creation of hermitian matrices")
 
-# Checks that the Operator returned by the function random_density_matrix is actually a Density_Matrix
 @given(d = st.integers(min_value=1, max_value=16))
-def test_random_density_matrix(d):
+def test_random_density_matrix_satisfies_dm_properties(d):
     try:
         dm_random = random_density_matrix(d)
     except ValueError as ve:
@@ -254,10 +250,10 @@ def test_random_density_matrix(d):
 
 # Checks that the space of density matrices is a convex space, i.e. that the linear combination
 # a*dm1 + b*dm2
-# where dm1, dm2 are density matrices, a and b real numbers, is a density matrix iff
+# where dm1, dm2 are density matrices, a and b real numbers, is a density matrix if
 # a, b in [0, 1] and a + b = 1
 @given(d = st.integers(min_value=1, max_value=16))
-def test_Convexity_Density_Matrix_Space(d):
+def test_convexity_density_matrix_space(d):
     dm1 = random_density_matrix(d)
     dm2 = random_density_matrix(d)
     a = np.random.random()
@@ -270,18 +266,9 @@ def test_Convexity_Density_Matrix_Space(d):
             error_message = ve.args[0][49:]
             error_message = "The linear combination a*dm1 + (1-a)*dm2, a in [0, 1.), lacks the following properties: \n" + error_message
             raise AssertionError(error_message)
-    not_dm = dm1 + dm2
-    try:
-        not_dm.cast_to_density_matrix()
-        raise AssertionError
-    except ValueError:
-        pass
-    except AssertionError:
-        raise AssertionError("No ValueError raised when trying to cast the sum of two Density_Matrix object to Density_Matrix")
 
-# Checks that the evolution is linear, meaning that the evolution of a linear combination of two density matrices through a time t is the linear combination of the evolution of each of them through the same time interval.
 @given(d = st.integers(min_value=1, max_value=16))
-def test_Linearity_Evolution(d):
+def test_linearity_evolution(d):
     dm1 = random_density_matrix(d)
     dm2 = random_density_matrix(d)
     h = random_observable(d)
@@ -297,8 +284,7 @@ def test_Linearity_Evolution(d):
     note("Evolved dm1 + evolved dm2 = %r" % (right_hand_side))
     assert np.all(np.isclose(left_hand_side, right_hand_side, rtol=1e-10))
 
-# Checks that the constructor of the class Observable raises error when it is initialised with a square array which is not hermitian
-def test_Observable_Initialisation_Not_Hermitian():
+def test_observable_initialisation_not_hermitian():
     wrong_input = np.array([[1, 1], [0, 0]])
     try:
         dm = Observable(wrong_input)
@@ -308,9 +294,8 @@ def test_Observable_Initialisation_Not_Hermitian():
     except AssertionError:
         raise AssertionError("No ValueError raised by the initialisation of an Observable object with a square array which is not hermitian")
 
-# Checks that the expectation values of an Observable are always a real numbers
 @given(d = st.integers(min_value=1, max_value=16))
-def test_Real_Expectation_Values(d):
+def test_real_expectation_values(d):
     dm = random_density_matrix(d)
     ob = random_observable(d)
     exp_val = ob.expectation_value(dm)
@@ -320,7 +305,7 @@ def test_Real_Expectation_Values(d):
 # <(O-<O>)^2> = <O^2> - <O>^2
 # where O is an observable, and the angular brackets indicate the expectation value over some state
 @given(d = st.integers(min_value=1, max_value=16))
-def test_Variance_Formula(d):
+def test_variance_formula(d):
     ob = random_observable(d)
     i = Observable(d)
     dm = random_density_matrix(d)
@@ -341,7 +326,7 @@ def test_AntiHermitianity_Magnus_1st():
     times, time_step = np.linspace(0, 20, num=2001, retstep=True)
     Hamiltonian = np.vectorize(Observable_Function)
     hamiltonian = Hamiltonian(times)
-    magnus_1st = Magnus_Expansion_1st_Term(hamiltonian, time_step)
+    magnus_1st = magnus_expansion_1st_term(hamiltonian, time_step)
     magnus_1st_dagger = magnus_1st.dagger()
     assert np.all(np.isclose(magnus_1st_dagger.matrix, -magnus_1st.matrix, 1e-10))
 
@@ -350,7 +335,7 @@ def test_AntiHermitianity_Magnus_2nd():
     times, time_step = np.linspace(0, 5, num=501, retstep=True)
     Hamiltonian = np.vectorize(Observable_Function)
     hamiltonian = Hamiltonian(times)
-    magnus_2nd = Magnus_Expansion_2nd_Term(hamiltonian, time_step)
+    magnus_2nd = magnus_expansion_2nd_term(hamiltonian, time_step)
     magnus_2nd_dagger = magnus_2nd.dagger()
     assert np.all(np.isclose(magnus_2nd_dagger.matrix, -magnus_2nd.matrix, 1e-10))
     

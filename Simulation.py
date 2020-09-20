@@ -85,8 +85,8 @@ def Evolve(spin, h_unperturbed, dm_initial, \
         h_ip.append(H_Changed_Picture(spin, mode, h_unperturbed, o_change_of_picture, t))
     
     # Evaluation of the 1st and 2nd terms of the Magnus expansion for the Hamiltonian in the new picture
-    magnus_1st = Magnus_Expansion_1st_Term(h_ip, time_step)
-    magnus_2nd = Magnus_Expansion_2nd_Term(h_ip, time_step)
+    magnus_1st = magnus_expansion_1st_term(h_ip, time_step)
+    magnus_2nd = magnus_expansion_2nd_term(h_ip, time_step)
 
     # Density matrix of the system after evolution under the action of the pulse, expressed
     # in the new picture
