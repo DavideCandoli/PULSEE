@@ -41,7 +41,7 @@ def Quadrupole_Perturbation_Satellite_Frequency_Shift():
         
         h_unperturbed = Observable(h_zeeman.matrix + h_quadrupole.matrix)
         
-        energy_spectrum = h_unperturbed.diagonalise()[0]
+        energy_spectrum = h_unperturbed.diagonalisation()[0]
         
         energy_spectrum = np.sort(energy_spectrum)
         
@@ -84,7 +84,7 @@ def Quadrupole_Perturbation_Central_Frequency_Shift():
         
         h_unperturbed = Observable(h_zeeman.matrix + h_quadrupole.matrix)
         
-        energy_spectrum = h_unperturbed.diagonalise()[0]
+        energy_spectrum = h_unperturbed.diagonalisation()[0]
         
         energy_spectrum = np.sort(energy_spectrum)
                 

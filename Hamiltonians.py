@@ -121,7 +121,7 @@ def H_Multiple_Mode_Pulse(spin, mode, t):
 # the Operator o_change_of_picture
 def H_Changed_Picture(spin, mode, h_unperturbed, o_change_of_picture, t):
     h_cp = (h_unperturbed + H_Multiple_Mode_Pulse(spin, mode, t) - \
-            o_change_of_picture).change_picture(o_change_of_picture, t)
+            o_change_of_picture).changed_picture(o_change_of_picture, t)
     return Observable(h_cp.matrix)
 
 

@@ -17,7 +17,6 @@ from scipy.constants import Planck, Boltzmann
 import hypothesis.strategies as st
 from hypothesis import given, note, assume
 
-# Checks that the constructor of the class Operator raises error when it receives an input array which is not a square matrix
 def test_operator_initialisation_with_wrong_dimensions():
     wrong_input = np.ones((1, 2))
     try:
@@ -29,16 +28,14 @@ def test_operator_initialisation_with_wrong_dimensions():
     except AssertionError:
         raise AssertionError("No appropriate IndexError caused by the initialisation with a non-square array")
 
-# Checks that the difference between identical operators returns a null square array
 @given(d = st.integers(min_value=1, max_value=16))
-def test_Opposite_Operator(d):
+def test_opposite_operator(d):
     o = Random_Operator(d)
     note("o = %r" % (o.matrix))
     assert np.all(np.isclose((o-o).matrix, np.zeros((d,d)), rtol=1e-10))
 
-# Checks that the sum of operators is associative
 @given(d = st.integers(min_value=1, max_value=16))
-def test_Operator_Sum_Associativity(d):
+def test_associativity_sum_operators(d):
     a = Random_Operator(d)
     b = Random_Operator(d)
     c = Random_Operator(d)
@@ -51,9 +48,8 @@ def test_Operator_Sum_Associativity(d):
     note("a+(b+c) = %r" % (right_sum.matrix))
     assert np.all(np.isclose(left_sum.matrix, right_sum.matrix, rtol=1e-10))
 
-# Checks that the product of operators is associative
 @given(d = st.integers(min_value=1, max_value=16))
-def test_Operator_Product_Associativity(d):
+def test_associativity_product_operators(d):
     a = Random_Operator(d)
     b = Random_Operator(d)
     c = Random_Operator(d)
@@ -66,9 +62,8 @@ def test_Operator_Product_Associativity(d):
     note("a*(b*c) = %r" % (right_product.matrix))
     assert np.all(np.isclose(left_product.matrix, right_product.matrix, rtol=1e-10))
 
-# Checks that the distributive property is valid with the current definition of operators + and *
 @given(d = st.integers(min_value=1, max_value=16))
-def test_Operator_Distributivity(d):
+def test_distributivity_operators(d):
     a = Random_Operator(d)
     b = Random_Operator(d)
     c = Random_Operator(d)
@@ -77,13 +72,12 @@ def test_Operator_Distributivity(d):
     note("a = %r" % (a.matrix))
     note("b = %r" % (b.matrix))
     note("c = %r" % (c.matrix))
-    note("(a*(b+c) = %r" % (left_hand_side.matrix))
+    note("a*(b+c) = %r" % (left_hand_side.matrix))
     note("a*b+a*c = %r" % (right_hand_side.matrix))
     assert np.all(np.isclose(left_hand_side.matrix, right_hand_side.matrix, rtol=1e-10))
     
-# Checks that dividing an Operator by its trace makes it a unit trace operator
 @given(d = st.integers(min_value=1, max_value=16))
-def test_Operator_Trace_Normalisation(d):
+def test_operator_trace_normalisation(d):
     o = Random_Operator(d)
     o_trace = o.trace()
     o_norm = o/o_trace
@@ -94,9 +88,8 @@ def test_Operator_Trace_Normalisation(d):
     note("Trace of trace-normalised o = %r" % (o_norm_trace))
     assert np.all(np.isclose(o_norm_trace, 1, rtol=1e-10))
 
-# Checks that an Operator o to the power of -1 is the reciprocal of o
 @given(d = st.integers(min_value=1, max_value=16))
-def test_Reciprocal_Operator(d):
+def test_reciprocal_operator(d):
     o = Random_Operator(d)
     o_r = o**(-1)
     note("o = %r" % (o.matrix))
@@ -106,10 +99,10 @@ def test_Reciprocal_Operator(d):
 # Checks the fact that the eigenvalues of the exponential of an Operator o are the exponentials of
 # o's eigenvalues
 @given(d = st.integers(min_value=1, max_value=8))
-def test_Exponential_Operator_Eigenvalues(d):
+def test_exponential_operator_eigenvalues(d):
     o = Random_Operator(d)
-    o_e = o.diagonalise()[0]
-    exp_e = o.exp().diagonalise()[0]
+    o_e = o.diagonalisation()[0]
+    exp_e = o.exp().diagonalisation()[0]
     sorted_exp_o_e = np.sort(np.exp(o_e))
     sorted_exp_e = np.sort(exp_e)
     note("o = %r" % (o.matrix))
@@ -117,23 +110,19 @@ def test_Exponential_Operator_Eigenvalues(d):
     note("Eigenvalues of o = %r" % (np.sort(o_e)))
     note("Exponential of the eigenvalues of o = %r" % (sorted_exp_o_e))
     note("Eigenvalues of exp(o) = %r" % (sorted_exp_e))
-    assert np.all(np.isclose(sorted_exp_o_e, sorted_exp_e, rtol=1e-10)) # <--- Not always verified!?!
+    assert np.all(np.isclose(sorted_exp_o_e, sorted_exp_e, rtol=1e-10))
     
-# Checks that the eigenvalues of an Observable (computed with the method Operator.eigenvalues) are real
-# numbers
 @given(d = st.integers(min_value=1, max_value=16))
-def test_Observable_Real_Eigenvalues(d):
+def test_observable_real_eigenvalues(d):
     o = Random_Observable(d)
-    eig = o.diagonalise()[0]
+    eig = o.diagonalisation()[0]
     note("Eigenvalues of o = %r" % (eig))
     assert np.all(np.absolute(np.imag(eig)) < 1e-10)
 
-# Checks that the similarity transformation is equivalent to diagonalising an Operator o when the chosen 
-# change of basis operator has the eigenvectors of o as columns
 @given(d = st.integers(min_value=1, max_value=8))
-def test_Diagonalising_Change_Of_Basis(d):
+def test_diagonalising_change_of_basis(d):
     o = Random_Operator(d)
-    o_e, p = o.diagonalise()
+    o_e, p = o.diagonalisation()
     o_sim = o.sim_trans(p).matrix
     o_diag = np.diag(o_e)
     note("o = %r" % (o.matrix))
@@ -144,7 +133,7 @@ def test_Diagonalising_Change_Of_Basis(d):
     assert np.all(np.isclose(o_sim, o_diag, rtol=1e-10))
 
 @given(d = st.integers(min_value=1, max_value=16))
-def test_Trace_Invariance_Under_Similarity(d):
+def test_trace_invariance_under_similarity(d):
     o = Random_Operator(d)
     singularity = True
     while(singularity):
@@ -164,7 +153,7 @@ def test_Trace_Invariance_Under_Similarity(d):
 
 # Checks that the adjoint of an Operator o's exponential is the exponential of the adjoint of o
 @given(d = st.integers(min_value=1, max_value=16))
-def test_Adjoint_Exponential(d):
+def test_adjoint_exponential(d):
     o = Random_Operator(d)
     o_exp = o.exp()
     left_hand_side = (o_exp.dagger()).matrix
@@ -173,9 +162,10 @@ def test_Adjoint_Exponential(d):
     note("exp(o+) = %r" % (right_hand_side))    
     assert np.all(np.isclose(left_hand_side, right_hand_side, rtol=1e-10))
     
-# Checks that the inverse of the exponential of an Operator o is the same as the exponential of an operator o changed by sign
+# Checks that the inverse of the exponential of an Operator o is the same as the exponential of an
+# operator o changed by sign
 @given(d = st.integers(min_value=1, max_value=4))
-def test_Inverse_Exponential(d):
+def test_inverse_exponential(d):
     o = Random_Operator(d)
     o_exp = o.exp()
     left_hand_side = (o_exp**(-1)).matrix
@@ -184,20 +174,18 @@ def test_Inverse_Exponential(d):
     note("exp(-o) = %r" % (right_hand_side))    
     assert np.all(np.isclose(left_hand_side, right_hand_side, rtol=1e-2))
 
-# Checks the reversibility of the method Operator.change_picture, i.e. that the double application of this method with toggled argument `invert` leaves the Operator invariant
 @given(d = st.integers(min_value=1, max_value=4))
-def test_Reversibility_Change_Picture(d):
+def test_reversibility_change_picture(d):
     o = Random_Operator(d)
     h = Random_Operator(d)
-    o_ip = o.change_picture(h, 1, invert=False)
-    o1 = o_ip.change_picture(h, 1, invert=True)
+    o_ip = o.changed_picture(h, 1, invert=False)
+    o1 = o_ip.changed_picture(h, 1, invert=True)
     note("o = %r" % (o.matrix))
     note("o in the changed picture = %r" % (o_ip.matrix))
     note("o brought back from the changed picture = %r" % (o1.matrix))
     assert np.all(np.isclose(o.matrix, o1.matrix, rtol=1))
 
-# Checks that the constructor of the class Density_Matrix raises error when it is initialised with a non-hermitian square array
-def test_DMatrix_Initialisation_Non_Hermitian():
+def test_dmatrix_initialisation_non_hermitian():
     wrong_input = np.array([[1, 1], [0, 0]])
     try:
         dm = Density_Matrix(wrong_input)
@@ -207,8 +195,7 @@ def test_DMatrix_Initialisation_Non_Hermitian():
     except AssertionError:
         raise AssertionError("No ValueError raised by the initialisation of a Density_Matrix with a non-hermitian square array")
 
-# Checks that the constructor of the class Density_Matrix raises error when it is initialised with a square array with trace different from 1
-def test_DMatrix_Initialisation_Non_Unit_Trace():
+def test_dmatrix_initialisation_non_unit_trace():
     wrong_input = np.array([[1, 0], [0, 1]])
     try:
         dm = Density_Matrix(wrong_input)
@@ -218,8 +205,7 @@ def test_DMatrix_Initialisation_Non_Unit_Trace():
     except AssertionError:
         raise AssertionError("No ValueError raised by the initialisation of a Density_Matrix with a square array with trace different from 1")
 
-# Checks that the constructor of the class Density_Matrix raises error when it is initialised with a square array which is not positive
-def test_DMatrix_Initialisation_Not_Positive():
+def test_dmatrix_initialisation_not_positive():
     wrong_input = np.array([[2, 0], [0, -1]])
     try:
         dm = Density_Matrix(wrong_input)
@@ -231,7 +217,7 @@ def test_DMatrix_Initialisation_Not_Positive():
 
 # Checks that the method Density_Matrix.free_evolution conserves the defining properties of the Density_Matrix, i.e. it returns a valid Density_Matrix object.
 @given(d = st.integers(min_value=1, max_value=8))
-def test_Free_Evolution_Returns_DM(d):
+def test_free_evolution_conserves_dm_properties(d):
     dm = Random_Density_Matrix(d)
     h = Random_Observable(d)
     try:
@@ -278,7 +264,7 @@ def test_Convexity_Density_Matrix_Space(d):
     b = 1-a
     hyp_dm = a*dm1 + b*dm2
     try:
-        hyp_dm.cast_to_Density_Matrix()
+        hyp_dm.cast_to_density_matrix()
     except ValueError as ve:
         if "The input array lacks the following properties: \n" in ve.args[0]:
             error_message = ve.args[0][49:]
@@ -286,7 +272,7 @@ def test_Convexity_Density_Matrix_Space(d):
             raise AssertionError(error_message)
     not_dm = dm1 + dm2
     try:
-        not_dm.cast_to_Density_Matrix()
+        not_dm.cast_to_density_matrix()
         raise AssertionError
     except ValueError:
         pass

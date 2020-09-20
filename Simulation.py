@@ -93,7 +93,7 @@ def Evolve(spin, h_unperturbed, dm_initial, \
     dm_evolved_ip = dm_initial.sim_trans(-(magnus_1st+magnus_2nd), exp=True)
 
     # Evolved density matrix cast back in the Schroedinger picture
-    dm_evolved = dm_evolved_ip.change_picture(o_change_of_picture, pulse_time, invert=True)
+    dm_evolved = dm_evolved_ip.changed_picture(o_change_of_picture, pulse_time, invert=True)
     
     return Density_Matrix(dm_evolved.matrix)
 
@@ -172,7 +172,7 @@ def Plot_Real_Density_Matrix(dm, show=True, save=False, name='RealPartDensityMat
 def Transition_Spectrum(spin, h_unperturbed, normalized=True, dm_initial=0):
     
     # Energy levels and eigenstates of the unperturbed Hamiltonian
-    energies, o_change_of_basis = h_unperturbed.diagonalise()
+    energies, o_change_of_basis = h_unperturbed.diagonalisation()
     
     transition_frequency = []
     

@@ -59,7 +59,7 @@ class Operator:
         exp_matrix = Pade_Exp.expm(self.matrix, 45)
         return Operator(exp_matrix)
     
-    def diagonalise(self):
+    def diagonalisation(self):
         eigenvalues, change_of_basis = np.linalg.eig(self.matrix)
         return eigenvalues, Operator(change_of_basis)
         
@@ -74,58 +74,47 @@ class Operator:
             new_basis_operator = (change_of_basis_operator**(-1))*self*change_of_basis_operator
         return new_basis_operator
 
-    # Computes the trace of the Operator
     def trace(self):
         trace = 0
         for i in range(self.dimension()):
-            trace = trace + self.matrix[i][i]
+            trace = trace + self.matrix[i, i]
         return trace
 
-    # Returns the adjoint of the Operators
     def dagger(self):
         adjoint_matrix = (np.conj(self.matrix)).T
         return Operator(adjoint_matrix)
 
-    # Returns the same Operator expressed in the interaction (or Dirac) picture induced by the
-    # (stationary) unperturbed_hamiltonian which is passed as an argument.
-    # Passing a parameter `invert=True` yields the opposite transformation, bringing an Operator in the
-    # Dirac picture to the traditional Schroedinger one
-    def change_picture(self, o_change_of_picture, time, invert=False):
-        T = 2*math.pi*o_change_of_picture*(-1j*float(time))
+    # Returns the same Operator expressed in the quantum dynamical picture induced by the
+    # Operator h_change_of_picture which is passed as an argument.
+    # Passing a parameter `invert=True` yields the opposite transformation, bringing an Operator back
+    # to the traditional Schroedinger picture
+    def changed_picture(self, h_change_of_picture, time, invert=False):
+        T = -1j*2*math.pi*h_change_of_picture*time
         if invert: T = -T
         return self.sim_trans(T, exp=True)
 
-    # Checks if the Operator is hermitian
-    def check_hermitianity(self):
+    def hermitianity(self):
         return np.all(np.isclose(self.matrix, self.dagger().matrix, rtol=1e-10))
 
-    # Checks if the Operator has unit trace
-    def check_unit_trace(self):
+    def unit_trace(self):
         return np.isclose(self.trace(), 1, rtol=1e-10)
 
-    # Checks if the Operator is positive
-    def check_positivity(self):
+    def positivity(self):
         eigenvalues = eig(self.matrix)[0]
         return np.all(np.real(eigenvalues) >= -1e-10)
     
-    # Casts the Operator into the type of the subclass xix (if all requirements are met)
-    def cast_to_Density_Matrix(self):
+    def cast_to_density_matrix(self):
         return Density_Matrix(self.matrix)
     
-    # Casts the Operator into the type of the subclass Observable (if it is hermitian)
-    def cast_to_Observable(self):
+    def cast_to_observable(self):
         return Observable(self.matrix)
 
-    # Tries to cast the Operator into a Density_Matrix object, and if this step succeeds it performs the
-    # evolution under the effect of a stationary Hamiltonian throughout a time interval 'time'
     def free_evolution(self, stat_hamiltonian, time):
-        dm = self.cast_to_Density_Matrix()
+        dm = self.cast_to_density_matrix()
         return dm.free_evolution(stat_hamiltonian, time)
     
-    # Tries to cast the Operator into an Observable object, and if this step succeeds it computes the
-    # expectation value of this Observable in the state represented by the given density matrix
     def expectation_value(self, density_matrix):
-        ob = self.cast_to_Observable()
+        ob = self.cast_to_observable()
         return ob.expectation_value(density_matrix)
 
 
@@ -135,21 +124,16 @@ class Operator:
 # iii) Positivity
 class Density_Matrix(Operator):
 
-    # An instance of Density_Matrix is constructed in the same way as an Operator, with two differences:
-    # 1) When x is a square array, the constructor checks the validity of the defining properties of a
-    #    density matrix and raises error when any of them is not verified.
-    # 2) When x is an integer, the matrix attribute is initialised by default with a maximally entangled
-    #    density matrix, which means the identity matrix divided by its dimensions
     def __init__(self, x):
         d_m_operator = Operator(x)
         if isinstance(x, np.ndarray):
             error_message = "The input array lacks the following properties: \n"
             em = error_message
-            if not d_m_operator.check_hermitianity():
+            if not d_m_operator.hermitianity():
                 em = em + "- hermitianity \n"
-            if not d_m_operator.check_unit_trace():
+            if not d_m_operator.unit_trace():
                 em = em + "- unit trace \n"                
-            if not d_m_operator.check_positivity():
+            if not d_m_operator.positivity():
                 em = em + "- positivity \n"
             if em != error_message:
                 raise ValueError(em)
@@ -158,10 +142,8 @@ class Density_Matrix(Operator):
             d_m_operator = d_m_operator*(1/d)
         self.matrix = d_m_operator.matrix
 
-    # Makes the Density_Matrix evolve under the effect of a stationary Hamiltonian throughout a time
-    # interval 'time'
-    def free_evolution(self, stat_hamiltonian, time):
-        iHt = (1j*2*math.pi*stat_hamiltonian*float(time))
+    def free_evolution(self, static_hamiltonian, time):
+        iHt = (1j*2*math.pi*static_hamiltonian*time)
         evolved_dm = self.sim_trans(iHt, exp=True)
         return Density_Matrix(evolved_dm.matrix)
 
@@ -170,13 +152,10 @@ class Density_Matrix(Operator):
 # system.
 class Observable(Operator):
     
-    # An instance of Observable is initialised in the same way as an Operator, the only difference being
-    # that when a square array is passed to the constructor, this latter checks if it is hermitian and
-    # raises error if it is not
     def __init__(self, x):
         ob_operator = Operator(x)
         if isinstance(x, np.ndarray):
-            if not ob_operator.check_hermitianity():
+            if not ob_operator.hermitianity():
                 raise ValueError("The input array is not hermitian")
         self.matrix = ob_operator.matrix
         
@@ -184,7 +163,7 @@ class Observable(Operator):
     # If the modulus of the imaginary part of the result is lower than 10^(-10), it returns a real
     # number
     def expectation_value(self, density_matrix):
-        dm = density_matrix.cast_to_Density_Matrix()
+        dm = density_matrix.cast_to_density_matrix()
         exp_val = (self*density_matrix).trace()
         if np.absolute(np.imag(exp_val)) < 1e-10: exp_val = np.real(exp_val)
         return exp_val
