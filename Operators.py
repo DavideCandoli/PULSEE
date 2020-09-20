@@ -159,19 +159,14 @@ class Observable(Operator):
                 raise ValueError("The input array is not hermitian")
         self.matrix = ob_operator.matrix
         
-    # Computes the expectation value of the observable in the state represented by 'density_matrix'
-    # If the modulus of the imaginary part of the result is lower than 10^(-10), it returns a real
-    # number
     def expectation_value(self, density_matrix):
         dm = density_matrix.cast_to_density_matrix()
-        exp_val = (self*density_matrix).trace()
+        exp_val = (self*dm).trace()
         if np.absolute(np.imag(exp_val)) < 1e-10: exp_val = np.real(exp_val)
         return exp_val
 
 
-# Generates a random Operator whose elements are complex numbers with real and imaginary parts in the
-# range [-10., 10.)
-def Random_Operator(d):
+def random_operator(d):
     round_elements = np.vectorize(round)
     real_part = round_elements(20*(np.random.random_sample(size=(d, d))-1/2), 2)
     imaginary_part = 1j*round_elements(20*(np.random.random_sample(size=(d, d))-1/2), 2)
@@ -180,18 +175,18 @@ def Random_Operator(d):
 
 
 # Generates a random Operator equal to its adjoint, whose elements are complex numbers with both real and imaginary parts in the range [-10., 10.)
-def Random_Observable(d):
-    o_random = Random_Operator(d)
+def random_observable(d):
+    o_random = random_operator(d)
     o_hermitian_random = (o_random + o_random.dagger())*(1/2)
     return Observable(o_hermitian_random.matrix)
 
 
 # Generates a random Density_Matrix object, whose eigenvalues belong to the interval [0, 10.)
-def Random_Density_Matrix(d):
+def random_density_matrix(d):
     spectrum = np.random.random(d)
     spectrum_norm = spectrum/(spectrum.sum())
     dm_diag = Density_Matrix(np.diag(spectrum_norm))
-    cob = (1j*Random_Observable(d))  # The exponential of this matrix is a generic unitary transformation
+    cob = (1j*random_observable(d))  # The exponential of this matrix is a generic unitary transformation
     dm = dm_diag.sim_trans(cob, exp=True)
     return Density_Matrix(dm.matrix)
 

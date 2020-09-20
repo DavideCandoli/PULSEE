@@ -2,8 +2,8 @@ import math
 import numpy as np
 
 from Operators import Operator, Density_Matrix, Observable, \
-                      Random_Density_Matrix, \
-                      Random_Operator
+                      random_density_matrix, \
+                      random_operator
 
 from Many_Body import Tensor_Product_Operator, Partial_Trace
 
@@ -14,8 +14,8 @@ from hypothesis import given, note
 # properties of density matrices, i.e. hermitianity, unit trace and positivity
 @given(d = st.integers(min_value=1, max_value=8))
 def test_Tensor_Product_Conserves_Density_Matrix_Properties(d):
-    A = Random_Density_Matrix(d)
-    B = Random_Density_Matrix(d)
+    A = random_density_matrix(d)
+    B = random_density_matrix(d)
     
     try:
         C = Tensor_Product_Operator(A, B)
@@ -31,11 +31,11 @@ def test_Tensor_Product_Conserves_Density_Matrix_Properties(d):
 # by Tensor_Product_Operator when they act on unit trace operators
 @given(d = st.integers(min_value=2, max_value=6))
 def test_Partial_Trace_Inverse_Tensor_Product(d):
-    A = Random_Operator(d-1)
+    A = random_operator(d-1)
     A = A/A.trace()
-    B = Random_Operator(d)
+    B = random_operator(d)
     B = B/B.trace()
-    C = Random_Operator(d+1)
+    C = random_operator(d+1)
     C = C/C.trace()
     
     AB = Tensor_Product_Operator(A, B)

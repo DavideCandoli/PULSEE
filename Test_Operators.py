@@ -1,6 +1,6 @@
 from Operators import Operator, Density_Matrix, \
-                      Observable, Random_Operator, \
-                      Random_Observable, Random_Density_Matrix, \
+                      Observable, random_operator, \
+                      random_observable, random_density_matrix, \
                       Commutator, \
                       Magnus_Expansion_1st_Term, \
                       Magnus_Expansion_2nd_Term, \
@@ -30,15 +30,15 @@ def test_operator_initialisation_with_wrong_dimensions():
 
 @given(d = st.integers(min_value=1, max_value=16))
 def test_opposite_operator(d):
-    o = Random_Operator(d)
+    o = random_operator(d)
     note("o = %r" % (o.matrix))
     assert np.all(np.isclose((o-o).matrix, np.zeros((d,d)), rtol=1e-10))
 
 @given(d = st.integers(min_value=1, max_value=16))
 def test_associativity_sum_operators(d):
-    a = Random_Operator(d)
-    b = Random_Operator(d)
-    c = Random_Operator(d)
+    a = random_operator(d)
+    b = random_operator(d)
+    c = random_operator(d)
     left_sum = (a+b)+c
     right_sum = a+(b+c)
     note("a = %r" % (a.matrix))
@@ -50,9 +50,9 @@ def test_associativity_sum_operators(d):
 
 @given(d = st.integers(min_value=1, max_value=16))
 def test_associativity_product_operators(d):
-    a = Random_Operator(d)
-    b = Random_Operator(d)
-    c = Random_Operator(d)
+    a = random_operator(d)
+    b = random_operator(d)
+    c = random_operator(d)
     left_product = (a*b)*c
     right_product = a*(b*c)
     note("a = %r" % (a.matrix))
@@ -64,9 +64,9 @@ def test_associativity_product_operators(d):
 
 @given(d = st.integers(min_value=1, max_value=16))
 def test_distributivity_operators(d):
-    a = Random_Operator(d)
-    b = Random_Operator(d)
-    c = Random_Operator(d)
+    a = random_operator(d)
+    b = random_operator(d)
+    c = random_operator(d)
     left_hand_side = a*(b+c)
     right_hand_side = a*b+a*c
     note("a = %r" % (a.matrix))
@@ -78,7 +78,7 @@ def test_distributivity_operators(d):
     
 @given(d = st.integers(min_value=1, max_value=16))
 def test_operator_trace_normalisation(d):
-    o = Random_Operator(d)
+    o = random_operator(d)
     o_trace = o.trace()
     o_norm = o/o_trace
     o_norm_trace = o_norm.trace()
@@ -90,7 +90,7 @@ def test_operator_trace_normalisation(d):
 
 @given(d = st.integers(min_value=1, max_value=16))
 def test_reciprocal_operator(d):
-    o = Random_Operator(d)
+    o = random_operator(d)
     o_r = o**(-1)
     note("o = %r" % (o.matrix))
     note("o_r = %r" % (o_r.matrix))
@@ -100,7 +100,7 @@ def test_reciprocal_operator(d):
 # o's eigenvalues
 @given(d = st.integers(min_value=1, max_value=8))
 def test_exponential_operator_eigenvalues(d):
-    o = Random_Operator(d)
+    o = random_operator(d)
     o_e = o.diagonalisation()[0]
     exp_e = o.exp().diagonalisation()[0]
     sorted_exp_o_e = np.sort(np.exp(o_e))
@@ -114,14 +114,14 @@ def test_exponential_operator_eigenvalues(d):
     
 @given(d = st.integers(min_value=1, max_value=16))
 def test_observable_real_eigenvalues(d):
-    o = Random_Observable(d)
+    o = random_observable(d)
     eig = o.diagonalisation()[0]
     note("Eigenvalues of o = %r" % (eig))
     assert np.all(np.absolute(np.imag(eig)) < 1e-10)
 
 @given(d = st.integers(min_value=1, max_value=8))
 def test_diagonalising_change_of_basis(d):
-    o = Random_Operator(d)
+    o = random_operator(d)
     o_e, p = o.diagonalisation()
     o_sim = o.sim_trans(p).matrix
     o_diag = np.diag(o_e)
@@ -134,10 +134,10 @@ def test_diagonalising_change_of_basis(d):
 
 @given(d = st.integers(min_value=1, max_value=16))
 def test_trace_invariance_under_similarity(d):
-    o = Random_Operator(d)
+    o = random_operator(d)
     singularity = True
     while(singularity):
-        p = Random_Operator(d)
+        p = random_operator(d)
         try:
             o_sim = o.sim_trans(p)
             singularity = False
@@ -154,7 +154,7 @@ def test_trace_invariance_under_similarity(d):
 # Checks that the adjoint of an Operator o's exponential is the exponential of the adjoint of o
 @given(d = st.integers(min_value=1, max_value=16))
 def test_adjoint_exponential(d):
-    o = Random_Operator(d)
+    o = random_operator(d)
     o_exp = o.exp()
     left_hand_side = (o_exp.dagger()).matrix
     right_hand_side = ((o.dagger()).exp()).matrix
@@ -166,7 +166,7 @@ def test_adjoint_exponential(d):
 # operator o changed by sign
 @given(d = st.integers(min_value=1, max_value=4))
 def test_inverse_exponential(d):
-    o = Random_Operator(d)
+    o = random_operator(d)
     o_exp = o.exp()
     left_hand_side = (o_exp**(-1)).matrix
     right_hand_side = ((-o).exp()).matrix
@@ -176,8 +176,8 @@ def test_inverse_exponential(d):
 
 @given(d = st.integers(min_value=1, max_value=4))
 def test_reversibility_change_picture(d):
-    o = Random_Operator(d)
-    h = Random_Operator(d)
+    o = random_operator(d)
+    h = random_operator(d)
     o_ip = o.changed_picture(h, 1, invert=False)
     o1 = o_ip.changed_picture(h, 1, invert=True)
     note("o = %r" % (o.matrix))
@@ -218,8 +218,8 @@ def test_dmatrix_initialisation_not_positive():
 # Checks that the method Density_Matrix.free_evolution conserves the defining properties of the Density_Matrix, i.e. it returns a valid Density_Matrix object.
 @given(d = st.integers(min_value=1, max_value=8))
 def test_free_evolution_conserves_dm_properties(d):
-    dm = Random_Density_Matrix(d)
-    h = Random_Observable(d)
+    dm = random_density_matrix(d)
+    h = random_observable(d)
     try:
         evolved_dm = dm.free_evolution(h, 4)
     except ValueError as ve:
@@ -230,22 +230,22 @@ def test_free_evolution_conserves_dm_properties(d):
             note("Hamiltonian = %r" % (h.matrix))
             raise AssertionError(error_message)
 
-# Checks that the algorithm used in function Random_Observable to initialise an Observable object 
+# Checks that the algorithm used in function random_observable to initialise an Observable object 
 # actually yields a hermitian operator
 @given(d = st.integers(min_value=1, max_value=16))
-def test_Random_Observable(d):
+def test_random_observable(d):
     try:
-        ob_random = Random_Observable(d)
+        ob_random = random_observable(d)
     except ValueError as ve:
         if "The input array is not hermitian" in ve.args[0]:
-            note("Operator returned by Random_Observable = %r" % (ob_random.matrix))
-            raise AssertionError("Random_Observable fails in the creation of hermitian matrices")
+            note("Operator returned by random_observable = %r" % (ob_random.matrix))
+            raise AssertionError("random_observable fails in the creation of hermitian matrices")
 
-# Checks that the Operator returned by the function Random_Density_Matrix is actually a Density_Matrix
+# Checks that the Operator returned by the function random_density_matrix is actually a Density_Matrix
 @given(d = st.integers(min_value=1, max_value=16))
-def test_Random_Density_Matrix(d):
+def test_random_density_matrix(d):
     try:
-        dm_random = Random_Density_Matrix(d)
+        dm_random = random_density_matrix(d)
     except ValueError as ve:
         if "The input array lacks the following properties: \n" in ve.args[0]:
             error_message = ve.args[0][49:]
@@ -258,8 +258,8 @@ def test_Random_Density_Matrix(d):
 # a, b in [0, 1] and a + b = 1
 @given(d = st.integers(min_value=1, max_value=16))
 def test_Convexity_Density_Matrix_Space(d):
-    dm1 = Random_Density_Matrix(d)
-    dm2 = Random_Density_Matrix(d)
+    dm1 = random_density_matrix(d)
+    dm2 = random_density_matrix(d)
     a = np.random.random()
     b = 1-a
     hyp_dm = a*dm1 + b*dm2
@@ -282,9 +282,9 @@ def test_Convexity_Density_Matrix_Space(d):
 # Checks that the evolution is linear, meaning that the evolution of a linear combination of two density matrices through a time t is the linear combination of the evolution of each of them through the same time interval.
 @given(d = st.integers(min_value=1, max_value=16))
 def test_Linearity_Evolution(d):
-    dm1 = Random_Density_Matrix(d)
-    dm2 = Random_Density_Matrix(d)
-    h = Random_Observable(d)
+    dm1 = random_density_matrix(d)
+    dm2 = random_density_matrix(d)
+    h = random_observable(d)
     dm_sum = 0.5*(dm1+dm2)
     evolved_dm_sum = dm_sum.free_evolution(h, 5)
     evolved_dm1 = dm1.free_evolution(h, 5)
@@ -311,8 +311,8 @@ def test_Observable_Initialisation_Not_Hermitian():
 # Checks that the expectation values of an Observable are always a real numbers
 @given(d = st.integers(min_value=1, max_value=16))
 def test_Real_Expectation_Values(d):
-    dm = Random_Density_Matrix(d)
-    ob = Random_Observable(d)
+    dm = random_density_matrix(d)
+    ob = random_observable(d)
     exp_val = ob.expectation_value(dm)
     assert np.imag(exp_val) == 0
     
@@ -321,9 +321,9 @@ def test_Real_Expectation_Values(d):
 # where O is an observable, and the angular brackets indicate the expectation value over some state
 @given(d = st.integers(min_value=1, max_value=16))
 def test_Variance_Formula(d):
-    ob = Random_Observable(d)
+    ob = random_observable(d)
     i = Observable(d)
-    dm = Random_Density_Matrix(d)
+    dm = random_density_matrix(d)
     ob_ev = ob.expectation_value(dm)
     sq_dev = (ob - ob_ev*i)**2
     left_hand_side = sq_dev.expectation_value(dm)
@@ -358,7 +358,7 @@ def test_AntiHermitianity_Magnus_2nd():
 # to (1 - hbar*H_0/(k_B*T))/Z when the temperature T gets very large
 @given(d = st.integers(min_value=1, max_value=16))
 def test_Canonical_Density_Matrix_Large_T_Approximation(d):
-    h0 = Random_Observable(d)
+    h0 = random_observable(d)
     can_dm = Canonical_Density_Matrix(h0, 300)
     exp = -(Planck*h0*1e6)/(Boltzmann*300)
     num = exp.exp()
