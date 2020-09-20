@@ -52,16 +52,13 @@ class Operator:
         except ZeroDivisionError:
             raise ZeroDivisionError("The division of an Operator by 0 makes no sense")
 
-    # The definition of the ** operator is self-explanatory
-    def __pow__(self, exponent:int):
+    def __pow__(self, exponent):
         return Operator(np.linalg.matrix_power(self.matrix, exponent))
     
-    # Returns the exponential of the Operator
     def exp(self):
         exp_matrix = Pade_Exp.expm(self.matrix, 45)
         return Operator(exp_matrix)
     
-    # Returns the eigenvalues and the Operator for the diagonalisation of the Operator object
     def diagonalise(self):
         eigenvalues, change_of_basis = np.linalg.eig(self.matrix)
         return eigenvalues, Operator(change_of_basis)
@@ -69,21 +66,13 @@ class Operator:
     # Performs a similarity transformation P^(-1)*M*P on the Operator M according to the given Operator
     # P for the change of basis
     def sim_trans(self, change_of_basis_operator, exp=False):
-        try:
-            if not isinstance(change_of_basis_operator, Operator):
-                raise TypeError
-            if exp==True:
-                left_exp = (-change_of_basis_operator).exp()
-                right_exp = change_of_basis_operator.exp()
-                new_basis_operator = left_exp*self*right_exp
-            else:
-                new_basis_operator = (change_of_basis_operator**(-1))*self*change_of_basis_operator
-            return Operator(new_basis_operator.matrix)
-        except TypeError:
-            raise TypeError("Invalid type for the matrix of the change of basis: it should be an Operator object")
-        except LinAlgError as e:
-            if "Singular matrix" in e.args[0]:
-                raise LinAlgError("The matrix for the change of basis must be invertible")
+        if exp==True:
+            left_exp = (-change_of_basis_operator).exp()
+            right_exp = change_of_basis_operator.exp()
+            new_basis_operator = left_exp*self*right_exp
+        else:
+            new_basis_operator = (change_of_basis_operator**(-1))*self*change_of_basis_operator
+        return new_basis_operator
 
     # Computes the trace of the Operator
     def trace(self):
