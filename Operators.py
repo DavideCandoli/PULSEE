@@ -226,7 +226,7 @@ def magnus_expansion_3rd_term(h, time_step):
 def canonical_density_matrix(hamiltonian, temperature):
     
     if temperature <= 0:
-        raise ValueError("The temperature must take a non negative value")
+        raise ValueError("The temperature must take a positive value")
     
     exponent = -(Planck*hamiltonian*1e6)/(Boltzmann*temperature)
     numerator = exponent.exp()

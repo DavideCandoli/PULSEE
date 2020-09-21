@@ -4,7 +4,7 @@ from Operators import Operator, Density_Matrix, \
                       commutator, \
                       magnus_expansion_1st_term, \
                       magnus_expansion_2nd_term, \
-                      Canonical_Density_Matrix
+                      canonical_density_matrix
 
 import math
 from numpy import log
@@ -315,40 +315,45 @@ def test_variance_formula(d):
     right_hand_side = (ob**2).expectation_value(dm)-ob_ev**2
     assert np.all(np.isclose(left_hand_side, right_hand_side, 1e-10))
 
-# Generic function which takes a single parameter and returns Observable objects
-def Observable_Function(x):
+def observable_function(x):
     matrix = np.array([[x, 1+1j*x**2],[1-1j*x**2, x**3]])
     o = Observable(matrix)
     return o
 
-# Checks that the function Magnus_Expansion_1st_Term returns an anti-hermitian operator as expected
-def test_AntiHermitianity_Magnus_1st():
+def test_antihermitianity_magnus_1st_term():
     times, time_step = np.linspace(0, 20, num=2001, retstep=True)
-    Hamiltonian = np.vectorize(Observable_Function)
-    hamiltonian = Hamiltonian(times)
-    magnus_1st = magnus_expansion_1st_term(hamiltonian, time_step)
+    t_dep_hamiltonian = np.vectorize(observable_function)
+    sampled_hamiltonian = t_dep_hamiltonian(times)
+    magnus_1st = magnus_expansion_1st_term(sampled_hamiltonian, time_step)
     magnus_1st_dagger = magnus_1st.dagger()
     assert np.all(np.isclose(magnus_1st_dagger.matrix, -magnus_1st.matrix, 1e-10))
 
-# Checks that the function Magnus_Expansion_2nd_Term returns an anti-hermitian operator as expected
-def test_AntiHermitianity_Magnus_2nd():
+def test_antihermitianity_magnus_2nd_term():
     times, time_step = np.linspace(0, 5, num=501, retstep=True)
-    Hamiltonian = np.vectorize(Observable_Function)
-    hamiltonian = Hamiltonian(times)
-    magnus_2nd = magnus_expansion_2nd_term(hamiltonian, time_step)
+    t_dep_hamiltonian = np.vectorize(observable_function)
+    sampled_hamiltonian = t_dep_hamiltonian(times)
+    magnus_2nd = magnus_expansion_2nd_term(sampled_hamiltonian, time_step)
     magnus_2nd_dagger = magnus_2nd.dagger()
     assert np.all(np.isclose(magnus_2nd_dagger.matrix, -magnus_2nd.matrix, 1e-10))
     
-# Checks that the canonical density matrix computed with the function Canonical_Density_Matrix reduces
-# to (1 - hbar*H_0/(k_B*T))/Z when the temperature T gets very large
+def test_antihermitianity_magnus_3rd_term():
+    times, time_step = np.linspace(0, 1, num=101, retstep=True)
+    t_dep_hamiltonian = np.vectorize(observable_function)
+    sampled_hamiltonian = t_dep_hamiltonian(times)
+    magnus_3rd = magnus_expansion_3rd_term(sampled_hamiltonian, time_step)
+    magnus_3rd_dagger = magnus_3rd.dagger()
+    assert np.all(np.isclose(magnus_3rd_dagger.matrix, -magnus_3rd.matrix, 1e-10))
+    
+# Checks that the canonical density matrix computed with the function canonical_density_matrix reduces
+# to (1 - h*H_0/(k_B*T))/Z when the temperature T gets very large
 @given(d = st.integers(min_value=1, max_value=16))
-def test_Canonical_Density_Matrix_Large_T_Approximation(d):
+def test_canonical_density_matrix_large_temperature_approximation(d):
     h0 = random_observable(d)
-    can_dm = Canonical_Density_Matrix(h0, 300)
+    can_dm = canonical_density_matrix(h0, 300)
     exp = -(Planck*h0*1e6)/(Boltzmann*300)
     num = exp.exp()
-    can_p_f = num.trace()   
-    can_dm_apx = (Operator(d)+exp)/can_p_f
+    can_partition_function = num.trace()   
+    can_dm_apx = (Operator(d)+exp)/can_partition_function
     assert np.all(np.isclose(can_dm.matrix, can_dm_apx.matrix, rtol=1e-10))
 
 
