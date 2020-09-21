@@ -3,8 +3,7 @@ import numpy as np
 
 from Operators import Operator, Density_Matrix, Observable
 
-# Returns the tensor product of two operators
-def Tensor_Product_Operator(A, B):
+def tensor_product_operator(A, B):
     
     d_A = A.dimension()
     d_B = B.dimension()
@@ -27,17 +26,16 @@ def Tensor_Product_Operator(A, B):
     else:
         return Operator(A_tensor_B)
     
-# Returns the partial trace of an operator
-def Partial_Trace(operator, subspace_dimensions, index_position):
+def partial_trace(operator, subspaces_dimensions, index_position):
     m = operator.matrix
     
-    d = subspace_dimensions
+    d = subspaces_dimensions
     
     i = index_position
     
-    n = len(subspace_dimensions)
+    n = len(d)
     
-    d_downhill = int(np.prod(d[i+1:n+1]))
+    d_downhill = int(np.prod(d[i+1:n]))
         
     d_block = d[i]*d_downhill
         
