@@ -3,15 +3,9 @@ from cmath import exp
 import numpy as np
 import pandas as pd
 
-from Operators import Operator, Density_Matrix, \
-                      Observable, random_operator, \
-                      random_observable, random_density_matrix, \
-                      commutator, \
-                      magnus_expansion_1st_term, \
-                      magnus_expansion_2nd_term
+from Operators import *
 
-from Nuclear_Spin import Nuclear_Spin
-
+from Nuclear_Spin import *
 
 def h_zeeman(spin, theta_z, phi_z, H_0):
     if H_0<0: raise ValueError("The modulus of the magnetic field must be a non-negative quantity")
@@ -22,64 +16,53 @@ def h_zeeman(spin, theta_z, phi_z, H_0):
     return Observable(h_z.matrix)
 
 def h_quadrupole(spin, e2qQ, eta, alpha_q, beta_q, gamma_q):
-    if eta<0 or eta>1: raise ValueError("The asymmetry parameter must fall in the interval [0, 1]")
     if math.isclose(spin.quantum_number, 1/2, rel_tol=1e-10):
         return Observable(spin.d)*0
     I = spin.quantum_number
     h_q = (e2qQ/(I*(2*I-1)))* \
-          ((1/2)*(3*(spin.I['z']**2) - Operator(spin.d)*I*(I+1))*V0(eta, alpha_q, beta_q, gamma_q) + \
+          ((1/2)*(3*(spin.I['z']**2) - Operator(spin.d)*I*(I+1))*v0_EFG(eta, alpha_q, beta_q, gamma_q)+\
            (math.sqrt(6)/4)*
            ((spin.I['z']*spin.I['+'] + spin.I['+']*spin.I['z'])*\
-                             V1(-1, eta, alpha_q, beta_q, gamma_q) + \
+                             v1_EFG(-1, eta, alpha_q, beta_q, gamma_q) + \
             (spin.I['z']*spin.I['-'] + spin.I['-']*spin.I['z'])*\
-                             V1(+1, eta, alpha_q, beta_q, gamma_q) + \
+                             v1_EFG(+1, eta, alpha_q, beta_q, gamma_q) + \
             (spin.I['+']**2)*\
-            V2(-2, eta, alpha_q, beta_q, gamma_q) + \
+            v2_EFG(-2, eta, alpha_q, beta_q, gamma_q) + \
             (spin.I['-']**2)*\
-            V2(2, eta, alpha_q, beta_q, gamma_q)))
+            v2_EFG(2, eta, alpha_q, beta_q, gamma_q)))
     return Observable(h_q.matrix)
 
-
-# Returns the spherical component V^0 of the EFG tensor
-def V0(eta, alpha, beta, gamma):
+def v0_EFG(eta, alpha_q, beta_q, gamma_q):
     if eta<0 or eta>1: raise ValueError("The asymmetry parameter must fall in the interval [0, 1]")
-    v0 = (1/2)*\
-         (
-          ((3*(math.cos(beta))**2-1)/2) - (eta*(math.sin(beta))**2)*(math.cos(2*gamma))/2
-         )
+    v0 = (1/2)*(((3*(math.cos(beta_q))**2-1)/2) - (eta*(math.sin(beta_q))**2)*(math.cos(2*gamma_q))/2)
     return v0
 
-
-# Returns the spherical components V^{+/-1} of the EFG tensor
-def V1(sign, eta, alpha, beta, gamma):
+def v1_EFG(sign, eta, alpha_q, beta_q, gamma_q):
     if eta<0 or eta>1: raise ValueError("The asymmetry parameter must fall in the interval [0, 1]")
     sign = np.sign(sign)
     v1 = (1/2)*\
          (
-          -1j*sign*math.sqrt(3/8)*math.sin(2*beta)*exp(sign*1j*alpha)+\
-          1j*(eta/(math.sqrt(6)))*math.sin(beta)*\
+          -1j*sign*math.sqrt(3/8)*math.sin(2*beta_q)*exp(sign*1j*alpha_q)+\
+          1j*(eta/(math.sqrt(6)))*math.sin(beta_q)*\
           (
-           ((1+sign*math.cos(beta))/2)*exp(1j*(sign*alpha+2*gamma))-\
-            ((1-sign*math.cos(beta))/2)*exp(1j*(sign*alpha-2*gamma))
+           ((1+sign*math.cos(beta_q))/2)*exp(1j*(sign*alpha_q+2*gamma_q))-\
+            ((1-sign*math.cos(beta_q))/2)*exp(1j*(sign*alpha_q-2*gamma_q))
           )
          )
     return v1
 
-
-# Returns the spherical components V^{+/-2} of the EFG tensor
-def V2(sign, eta, alpha, beta, gamma):
+def v2_EFG(sign, eta, alpha_q, beta_q, gamma_q):
     if eta<0 or eta>1: raise ValueError("The asymmetry parameter must fall in the interval [0, 1]")
     sign = np.sign(sign)
     v2 = (1/2)*\
-         (math.sqrt(3/8)*((math.sin(beta))**2)*exp(sign*2j*alpha)+\
-          (eta/math.sqrt(6))*exp(sign*2j*alpha)*\
+         (math.sqrt(3/8)*((math.sin(beta_q))**2)*exp(sign*2j*alpha_q)+\
+          (eta/math.sqrt(6))*exp(sign*2j*alpha_q)*\
            (
-            exp(2j*gamma)*((1+sign*math.cos(beta))**2)/4 +\
-            exp(-2j*gamma)*((1-sign*math.cos(beta))**2)/4
+            exp(2j*gamma_q)*((1+sign*math.cos(beta_q))**2)/4 +\
+            exp(-2j*gamma_q)*((1-sign*math.cos(beta_q))**2)/4
            )
          )
     return v2
-
 
 # Returns the Observable object representing the Hamiltonian of the interaction between the nucleus
 # and a time-dependent, monochromatic and linearly polarized electromagnetic pulse

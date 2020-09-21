@@ -2,20 +2,11 @@ import math
 import numpy as np
 import pandas as pd
 
-from Operators import Operator, Density_Matrix, \
-                      Observable, random_operator, \
-                      random_observable, random_density_matrix, \
-                      commutator, \
-                      magnus_expansion_1st_term, \
-                      magnus_expansion_2nd_term
+from Operators import *
 
-from Nuclear_Spin import Nuclear_Spin
+from Nuclear_Spin import *
 
-from Hamiltonians import h_zeeman, h_quadrupole, \
-                         V0, V1, V2, \
-                         H_Single_Mode_Pulse, \
-                         H_Multiple_Mode_Pulse, \
-                         H_Changed_Picture
+from Hamiltonians import *
 
 import hypothesis.strategies as st
 from hypothesis import given, note
@@ -40,25 +31,20 @@ def test_h_quadrupole_independent_of_gamma_when_EFG_is_symmetric(gamma):
     note("h_quadrupole(gamma2) = %r" % (h_q2.matrix))
     assert np.all(np.absolute(h_q1.matrix-h_q2.matrix) < 1e-10)
     
-# Checks that the formula for V^0 reduces to the 1/2 when the Euler angles are set to 0
 @given(eta = st.floats(min_value=0, max_value=1))
-def test_V0_Reduces_To_Half(eta):
-    v0 = V0(eta, 0, 0, 0)
+def test_v0_reduces_to_one_half_when_angles_are_0(eta):
+    v0 = v0_EFG(eta, 0, 0, 0)
     assert math.isclose(1/2, v0, rel_tol=1e-10)
     
-# Checks that the formula for V^{+/-1} reduces to 0 when the Euler angles are set to 0
-def test_V1_Reduces_To_0():
+def test_v1_reduces_to_0_when_angles_are_0():
     for sign in [-1, +1]:
-        v1 = V1(sign, 0.5, 0, 0, 0)
+        v1 = v1_EFG(sign, 0.5, 0, 0, 0)
         assert np.absolute(v1) < 1e-10
         
-# Checks that the formula for V^{+/-2} reduces to
-# (1/(2*sqrt(6)))*eta
-# when the Euler angles are set to 0
 @given(eta = st.floats(min_value=0, max_value=1))
-def test_V2_Reduces_To_eta(eta):
+def test_v2_becomes_proportional_to_eta_when_angles_are_0(eta):
     for sign in [-2, +2]:
-        v2 = V2(sign, eta, 0, 0, 0)
+        v2 = v2_EFG(sign, eta, 0, 0, 0)
         assert np.isclose(v2, eta/(2*math.sqrt(6)), rtol=1e-10)
         
 # Checks that the Hamiltonians returned by H_Single_Mode_Pulse at times which differ by an integer
