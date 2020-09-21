@@ -58,12 +58,12 @@ def test_periodicity_pulse_hamiltonian(n):
     note("h_single_mode_pulse(t1) = %r" % (h_p1.matrix))
     note("h_single_mode_pulse(t2) = %r" % (h_p2.matrix))
     assert np.all(np.isclose(h_p1.matrix, h_p2.matrix, rtol=1e-10))
-    
+
 # Checks that the superposition of two orthogonal pulses with the same frequency and a phase difference
 # of pi/2 is equivalent to the time-reversed superposition of the two same pulses with one of them
 # changed by sign
 @given(t = st.floats(min_value=0, max_value=20))
-def test_Time_Reversal_Equivalent_Opposite_Circular_Polarization(t):
+def test_time_reversal_equivalent_opposite_circular_polarization(t):
     spin = Nuclear_Spin(1., 1.)
     mode_forward = pd.DataFrame([(5., 10., 0., 0., 0.),
                                  (5., 10., math.pi/2, math.pi/2, 0.)], 
@@ -71,19 +71,19 @@ def test_Time_Reversal_Equivalent_Opposite_Circular_Polarization(t):
     mode_backward = pd.DataFrame([(5., 10., 0., 0., 0.),
                                   (5., 10., -math.pi/2, math.pi/2, 0.)], 
                                  columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
-    h_p_forward = H_Multiple_Mode_Pulse(spin, mode_forward, t)
-    h_p_backward = H_Multiple_Mode_Pulse(spin, mode_backward, -t)
+    h_p_forward = h_multiple_mode_pulse(spin, mode_forward, t)
+    h_p_backward = h_multiple_mode_pulse(spin, mode_backward, -t)
     assert np.all(np.isclose(h_p_forward.matrix, h_p_backward.matrix, rtol=1e-10))
     
-# Checks that the Hamiltonian of the pulse expressed in a new picture is equal to that in the
-# Schroedinger picture when this latter commutes with the operator for the change of picture
-def test_Invariant_IP_Pulse_Hamiltonian_When_Commutation_Holds():
+# Checks that the Hamiltonian of the pulse expressed in the interaction picture is equal to that in the
+# Schroedinger picture when it commutes with the unperturbed Hamiltonian
+def test_interaction_picture_leaves_pulse_hamiltonian_unaltered_when_commutative_property_holds():
     spin = Nuclear_Spin(1., 1.)
     mode = pd.DataFrame([(5., 10., 0., math.pi/2, 0.)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
-    h_change_of_picture = 5.*spin.I['x']
-    h_pulse = H_Multiple_Mode_Pulse(spin, mode, 10.)
-    h_pulse_ip = H_Changed_Picture(spin, mode, h_change_of_picture, h_change_of_picture, 10.)
+    h_unperturbed = 5.*spin.I['x']
+    h_pulse = h_multiple_mode_pulse(spin, mode, 10.)
+    h_pulse_ip = h_changed_picture(spin, mode, h_unperturbed, h_unperturbed, 10.)
     assert np.all(np.isclose(h_pulse.matrix, h_pulse_ip.matrix, rtol=1e-10))
 
     
