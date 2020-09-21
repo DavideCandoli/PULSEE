@@ -5,65 +5,40 @@ import hypothesis.strategies as st
 from hypothesis import given, note
 
 from Operators import Operator, Density_Matrix, \
-                      Observable, Random_Operator, \
-                      Random_Observable, Random_Density_Matrix, \
+                      Observable, random_operator, \
+                      random_observable, random_density_matrix, \
                       commutator, \
-                      Magnus_Expansion_1st_Term, \
-                      Magnus_Expansion_2nd_Term
+                      magnus_expansion_1st_term, \
+                      magnus_expansion_2nd_term
 
 from Nuclear_Spin import Nuclear_Spin
-
-# Checks that the constructor of the class Nuclear_Spin raises an appropriate error when a string is
-# passed as the first argument
-def test_Spin_Quantum_Number_Initialisation_with_Wrong_Type():
-    wrong_input = 'a'
-    try:
-        I = Nuclear_Spin(wrong_input)
-        raise AssertionError
-    except TypeError:
-        pass
-    except AssertionError:
-        raise AssertionError("No TypeError caused by the initialisation of the spin quantum number with a string")
         
-# Checks that the constructor of the class Nuclear_Spin raises an appropriate error when a non-half-
-# integer is passed as the first argument
-def test_Spin_Quantum_Number_Initialisation_with_Non_Half_Integer():
+
+def test_spin_quantum_number_initialisation_with_non_half_integer():
     wrong_input = 2.6
     try:
         I = Nuclear_Spin(wrong_input)
         raise AssertionError
-    except ValueError:
-        pass
+    except ValueError as ve:
+        if not "The given spin quantum number is not a half-integer number" in ve.args[0]:
+            raise AssertionError("No ValueError caused by the initialisation of the spin quantum number with a non-half-integer number")
     except AssertionError:
         raise AssertionError("No ValueError caused by the initialisation of the spin quantum number with a non-half-integer number")
         
-# Checks that the constructor of the class Nuclear_Spin raises an appropriate error when a string is
-# passed as the second argument
-def test_Gyromagnetic_Ratio_Initialisation_with_Wrong_Type():
-    wrong_input = 'a'
-    try:
-        I = Nuclear_Spin(3/2, wrong_input)
-        raise AssertionError
-    except TypeError:
-        pass
-    except AssertionError:
-        raise AssertionError("No TypeError caused by the initialisation of the gyromagnetic ratio with a string")
-        
-# Checks that the raising and lowering operators are hermitian conjugate
 @given(s = st.integers(min_value=1, max_value=14))
-def test_Nuclear_Spin_Raising_Lowering_Hermitian_Conjugate(s):
+def test_spin_raising_lowering_operators_are_hermitian_conjugate(s):
     n_s = Nuclear_Spin(s/2)
     raising_dagger = n_s.I['+'].dagger()
     lowering = n_s.I['-']
     note("Adjoint of I_raising = %r" % (raising_dagger.matrix))
     note("I_lowering = %r" % (lowering.matrix))
     assert np.all(np.isclose(raising_dagger.matrix, lowering.matrix, rtol=1e-10))
-    
+
 # Checks the well-known commutation relation
-# [I_x, I_y] = i hbar I_z
-# between the cartesian components of the spin (for computational purposes, we have set hbar=1)
+# [I_x, I_y] = i I_z
+# between the cartesian components of the spin
 @given(s = st.integers(min_value=1, max_value=14))
-def test_Nuclear_Spin_Commutation_Relation(s):
+def test_spin_commutation_relation(s):
     n_s = Nuclear_Spin(s/2)
     left_hand_side = commutator(n_s.I['x'], n_s.I['y'])
     right_hand_side = 1j*n_s.I['z']
