@@ -64,10 +64,8 @@ def v2_EFG(sign, eta, alpha_q, beta_q, gamma_q):
          )
     return v2
 
-# Returns the Observable object representing the Hamiltonian of the interaction between the nucleus
-# and a time-dependent, monochromatic and linearly polarized electromagnetic pulse
-def H_Single_Mode_Pulse(spin, frequency, H_1, phase, theta, phi, t):
-    if frequency < 0: raise ValueError("The angular frequency of the electromagnetic wave must be a positive quantity")
+def h_single_mode_pulse(spin, frequency, H_1, phase, theta, phi, t):
+    if frequency < 0: raise ValueError("The modulus of the angular frequency of the electromagnetic wave must be a positive quantity")
     if H_1 < 0: raise ValueError("The amplitude of the electromagnetic wave must be a positive quantity")
     h_pulse = -spin.gyro_ratio_over_2pi*H_1*\
               (math.sin(theta)*math.cos(phi)*spin.I['x'] +\
@@ -76,7 +74,6 @@ def H_Single_Mode_Pulse(spin, frequency, H_1, phase, theta, phi, t):
                )*\
                math.cos(2*math.pi*frequency*t-phase)
     return Observable(h_pulse.matrix)
-
 
 # Returns the Hamiltonian of interaction between the nucleus and multiple single-mode electromagnetic
 # pulses
@@ -88,7 +85,7 @@ def H_Multiple_Mode_Pulse(spin, mode, t):
     theta = mode['theta_p']
     phi = mode['phi_p']
     for i in mode.index:
-        h_pulse = h_pulse + H_Single_Mode_Pulse(spin, omega[i], H[i], phase[i], theta[i], phi[i], t)
+        h_pulse = h_pulse + h_single_mode_pulse(spin, omega[i], H[i], phase[i], theta[i], phi[i], t)
     return Observable(h_pulse.matrix)
 
 

@@ -47,18 +47,16 @@ def test_v2_becomes_proportional_to_eta_when_angles_are_0(eta):
         v2 = v2_EFG(sign, eta, 0, 0, 0)
         assert np.isclose(v2, eta/(2*math.sqrt(6)), rtol=1e-10)
         
-# Checks that the Hamiltonians returned by H_Single_Mode_Pulse at times which differ by an integer
-# multiple of the period of the electromagnetic wave is the same
 @given(n = st.integers(min_value=-20, max_value=20))
-def test_Periodical_Pulse_Hamiltonian(n):
+def test_periodicity_pulse_hamiltonian(n):
     spin = Nuclear_Spin(1., 1.)
     nu = 5.
     t1 = 1.
     t2 = t1 + n/nu
-    h_p1 = H_Single_Mode_Pulse(spin, nu, 10., 0, math.pi/2, 0, t1)
-    h_p2 = H_Single_Mode_Pulse(spin, nu, 10., 0, math.pi/2, 0, t2)
-    note("H_Single_Mode_Pulse(t1) = %r" % (h_p1.matrix))
-    note("H_Single_Mode_Pulse(t2) = %r" % (h_p2.matrix))
+    h_p1 = h_single_mode_pulse(spin, nu, 10., 0, math.pi/2, 0, t1)
+    h_p2 = h_single_mode_pulse(spin, nu, 10., 0, math.pi/2, 0, t2)
+    note("h_single_mode_pulse(t1) = %r" % (h_p1.matrix))
+    note("h_single_mode_pulse(t2) = %r" % (h_p2.matrix))
     assert np.all(np.isclose(h_p1.matrix, h_p2.matrix, rtol=1e-10))
     
 # Checks that the superposition of two orthogonal pulses with the same frequency and a phase difference
