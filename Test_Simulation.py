@@ -10,15 +10,15 @@ import hypothesis.strategies as st
 from hypothesis import given, assume
 
 from Operators import Operator, Density_Matrix, \
-                      Observable, Random_Operator, \
-                      Random_Observable, Random_Density_Matrix, \
-                      Commutator, \
-                      Magnus_Expansion_1st_Term, \
-                      Magnus_Expansion_2nd_Term
+                      Observable, random_operator, \
+                      random_observable, random_density_matrix, \
+                      commutator, \
+                      magnus_expansion_1st_term, \
+                      magnus_expansion_2nd_term
 
 from Nuclear_Spin import Nuclear_Spin
 
-from Hamiltonians import H_Zeeman, H_Quadrupole, H_Changed_Picture
+from Hamiltonians import h_zeeman, h_quadrupole, H_Changed_Picture
 
 from Simulation import Nuclear_System_Setup, Evolve, \
                        RRF_Operator, \
@@ -71,12 +71,12 @@ def test_Evolution_Identity_Matrix():
     identity = np.identity(6)/6
     
     spin, h_unperturbed, dm_initial = Nuclear_System_Setup(spin_par, zeem_par, quad_par, \
-                                                     initial_state=identity, temperature=1e-3)
+                                                     initial_state=identity)
     
     mode = pd.DataFrame([(10., 1., 0., math.pi/2, 0)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
-    RRF_par={'omega_RRF': 10,
+    RRF_par={'nu_RRF': 10,
              'theta_RRF': 0,
              'phi_RRF': 0}
     
@@ -93,7 +93,7 @@ def test_RRF_Operator_Proportional_To_Iz():
     
     spin = Nuclear_Spin(3/2, 1.)
     
-    RRF_par = {'omega_RRF': 10,
+    RRF_par = {'nu_RRF': 10,
               'theta_RRF': 0,
               'phi_RRF': 0}
     
@@ -226,13 +226,13 @@ def test_Two_Methods_Phase_Adjustment():
     
     t, fid = FID_Signal(spin, h_unperturbed, dm_evolved, time_window=500)
     f, fourier0 = Fourier_Transform_Signal(fid, t, 9, 11)
-        
+            
     phi = Fourier_Phase_Shift(f, fourier0, peak_frequency_hint=10)
     f, fourier1 = Fourier_Transform_Signal(np.exp(1j*phi)*fid, t, 9, 11)
-        
+            
     t, fid_rephased = FID_Signal(spin, h_unperturbed, dm_evolved, time_window=500, phi=-phi)
     f, fourier2 = Fourier_Transform_Signal(fid_rephased, t, 9, 11)
-    
+        
     assert np.all(np.isclose(fourier1, fourier2, rtol=1e-10))
 
 

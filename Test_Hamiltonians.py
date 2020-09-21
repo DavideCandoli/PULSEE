@@ -11,7 +11,7 @@ from Operators import Operator, Density_Matrix, \
 
 from Nuclear_Spin import Nuclear_Spin
 
-from Hamiltonians import h_zeeman, H_Quadrupole, \
+from Hamiltonians import h_zeeman, h_quadrupole, \
                          V0, V1, V2, \
                          H_Single_Mode_Pulse, \
                          H_Multiple_Mode_Pulse, \
@@ -31,15 +31,13 @@ def test_zeeman_hamiltonian_changes_sign_when_magnetic_field_is_flipped(par):
     note("h_zeeman(pi-theta, phi+pi)+h_zeeman(theta, phi) = %r" % (np.absolute(h_z1.matrix+h_z2.matrix)))
     assert np.all(np.absolute(h_z1.matrix+h_z2.matrix) < 1e-10)
     
-# Checks that the object returned by the method H_Quadrupole is independent of the Euler angle gamma when
-# the asymmetry parameter eta=0
 @given(gamma = st.lists(st.floats(min_value=0, max_value=2*math.pi), min_size=2, max_size=2))
-def test_Symmetrical_EFG(gamma):
+def test_h_quadrupole_independent_of_gamma_when_EFG_is_symmetric(gamma):
     spin = Nuclear_Spin()
-    h_q1 = H_Quadrupole(spin, 1, 0, 1, 1, gamma[0])
-    h_q2 = H_Quadrupole(spin, 1, 0, 1, 1, gamma[1])
-    note("H_Quadrupole(gamma1) = %r" % (h_q1.matrix))
-    note("H_Quadrupole(gamma2) = %r" % (h_q2.matrix))
+    h_q1 = h_quadrupole(spin, 1, 0, 1, 1, gamma[0])
+    h_q2 = h_quadrupole(spin, 1, 0, 1, 1, gamma[1])
+    note("h_quadrupole(gamma1) = %r" % (h_q1.matrix))
+    note("h_quadrupole(gamma2) = %r" % (h_q2.matrix))
     assert np.all(np.absolute(h_q1.matrix-h_q2.matrix) < 1e-10)
     
 # Checks that the formula for V^0 reduces to the 1/2 when the Euler angles are set to 0

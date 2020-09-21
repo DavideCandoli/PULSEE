@@ -21,28 +21,23 @@ def h_zeeman(spin, theta_z, phi_z, H_0):
            math.cos(theta_z)*spin.I['z'])
     return Observable(h_z.matrix)
 
-# Returns the Observable object representing the Hamiltonian for the interaction between the quadrupole
-# moment of the nucleus and the electric field gradient
-def H_Quadrupole(spin, e2qQ, eta, alpha, beta, gamma):
+def h_quadrupole(spin, e2qQ, eta, alpha_q, beta_q, gamma_q):
     if eta<0 or eta>1: raise ValueError("The asymmetry parameter must fall in the interval [0, 1]")
     if math.isclose(spin.quantum_number, 1/2, rel_tol=1e-10):
         return Observable(spin.d)*0
-    h_quadrupole = (e2qQ/(spin.quantum_number*(2*spin.quantum_number-1)))* \
-                   ((1/2)*(3*(spin.I['z']**2) - \
-                           Operator(spin.d)*spin.quantum_number*(spin.quantum_number+1))* \
-                    V0(eta, alpha, beta, gamma) + \
-                    (math.sqrt(6)/4)* \
-                    ((spin.I['z']*spin.I['+'] + \
-                      spin.I['+']*spin.I['z'])* \
-                     V1(-1, eta, alpha, beta, gamma) + \
-                     (spin.I['z']*spin.I['-'] + \
-                      spin.I['-']*spin.I['z'])* \
-                     V1(+1, eta, alpha, beta, gamma) + \
-                     (spin.I['+']**2)* \
-                      V2(-2, eta, alpha, beta, gamma) + \
-                     (spin.I['-']**2)* \
-                      V2(2, eta, alpha, beta, gamma)))
-    return Observable(h_quadrupole.matrix)
+    I = spin.quantum_number
+    h_q = (e2qQ/(I*(2*I-1)))* \
+          ((1/2)*(3*(spin.I['z']**2) - Operator(spin.d)*I*(I+1))*V0(eta, alpha_q, beta_q, gamma_q) + \
+           (math.sqrt(6)/4)*
+           ((spin.I['z']*spin.I['+'] + spin.I['+']*spin.I['z'])*\
+                             V1(-1, eta, alpha_q, beta_q, gamma_q) + \
+            (spin.I['z']*spin.I['-'] + spin.I['-']*spin.I['z'])*\
+                             V1(+1, eta, alpha_q, beta_q, gamma_q) + \
+            (spin.I['+']**2)*\
+            V2(-2, eta, alpha_q, beta_q, gamma_q) + \
+            (spin.I['-']**2)*\
+            V2(2, eta, alpha_q, beta_q, gamma_q)))
+    return Observable(h_q.matrix)
 
 
 # Returns the spherical component V^0 of the EFG tensor

@@ -16,7 +16,7 @@ from Operators import Operator, Density_Matrix, \
 
 from Nuclear_Spin import Nuclear_Spin
 
-from Hamiltonians import h_zeeman, H_Quadrupole, \
+from Hamiltonians import h_zeeman, h_quadrupole, \
                          H_Single_Mode_Pulse, \
                          H_Multiple_Mode_Pulse, \
                          H_Changed_Picture, \
@@ -35,19 +35,19 @@ def Nuclear_System_Setup(spin_par, zeem_par, quad_par, initial_state='canonical'
     
     # Zeeman term of the Hamiltonian
     h_z = h_zeeman(spin, zeem_par['theta_z'], \
-                              zeem_par['phi_z'], \
-                              zeem_par['field magnitude'])
+                         zeem_par['phi_z'], \
+                         zeem_par['field magnitude'])
     
     # Quadrupole term of the Hamiltonian
-    h_quadrupole = H_Quadrupole(spin, quad_par['coupling constant'], \
-                                      quad_par['asymmetry parameter'], \
-                                      quad_par['alpha_q'], \
-                                      quad_par['beta_q'], \
-                                      quad_par['gamma_q'])
+    h_q = h_quadrupole(spin, quad_par['coupling constant'], \
+                             quad_par['asymmetry parameter'], \
+                             quad_par['alpha_q'], \
+                             quad_par['beta_q'], \
+                             quad_par['gamma_q'])
     
     # Computes the unperturbed Hamiltonian of the system, namely the sum of the Zeeman and quadrupole
     # contributions
-    h_unperturbed = Observable(h_z.matrix + h_quadrupole.matrix)
+    h_unperturbed = Observable(h_z.matrix + h_q.matrix)
     
     # Sets the density matrix of the system at time t=0, according to the value of 'initial_state'
     if isinstance(initial_state, str) and initial_state == 'canonical':

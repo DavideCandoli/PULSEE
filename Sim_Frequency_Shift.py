@@ -14,7 +14,7 @@ from Operators import Operator, Density_Matrix, \
 
 from Nuclear_Spin import Nuclear_Spin
 
-from Hamiltonians import h_zeeman, H_Quadrupole, \
+from Hamiltonians import h_zeeman, h_quadrupole, \
                          H_Single_Mode_Pulse, \
                          H_Multiple_Mode_Pulse, \
                          H_Changed_Picture, \
@@ -37,9 +37,9 @@ def Quadrupole_Perturbation_Satellite_Frequency_Shift():
     
     for theta_q in field_crystal_angles:
         
-        h_quadrupole = H_Quadrupole(spin, 0.1, 0., 0., theta_q, 0.)
+        h_q = h_quadrupole(spin, 0.1, 0., 0., theta_q, 0.)
         
-        h_unperturbed = Observable(h_z.matrix + h_quadrupole.matrix)
+        h_unperturbed = Observable(h_z.matrix + h_q.matrix)
         
         energy_spectrum = h_unperturbed.diagonalisation()[0]
         
@@ -80,9 +80,9 @@ def Quadrupole_Perturbation_Central_Frequency_Shift():
     
     for theta_q in field_crystal_angles:
         
-        h_quadrupole = H_Quadrupole(spin, 0.1, 0., 0., theta_q, 0.)
+        h_q = h_quadrupole(spin, 0.1, 0., 0., theta_q, 0.)
         
-        h_unperturbed = Observable(h_z.matrix + h_quadrupole.matrix)
+        h_unperturbed = Observable(h_z.matrix + h_q.matrix)
         
         energy_spectrum = h_unperturbed.diagonalisation()[0]
         
