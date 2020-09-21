@@ -4,6 +4,7 @@ from Operators import Operator, Density_Matrix, \
                       commutator, \
                       magnus_expansion_1st_term, \
                       magnus_expansion_2nd_term, \
+                      magnus_expansion_3rd_term, \
                       canonical_density_matrix
 
 import math
