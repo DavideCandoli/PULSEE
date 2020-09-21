@@ -1,11 +1,9 @@
 import math
 import numpy as np
 
-from Operators import Operator, Density_Matrix, Observable, \
-                      random_density_matrix, \
-                      random_operator
+from Operators import *
 
-from Many_Body import tensor_product_operator, partial_trace
+from Many_Body import *
 
 import hypothesis.strategies as st
 from hypothesis import given, note

@@ -4,30 +4,13 @@ import math
 
 import matplotlib.pylab as plt
 
-from Operators import Operator, Density_Matrix, \
-                      Observable, Random_Operator, \
-                      Random_Observable, Random_Density_Matrix, \
-                      Commutator, \
-                      Magnus_Expansion_1st_Term, \
-                      Magnus_Expansion_2nd_Term, \
-                      Canonical_Density_Matrix
+from Operators import *
 
-from Nuclear_Spin import Nuclear_Spin
+from Nuclear_Spin import *
 
-from Hamiltonians import H_Zeeman, H_Quadrupole, \
-                         H_Single_Mode_Pulse, \
-                         H_Multiple_Mode_Pulse, \
-                         H_Changed_Picture, \
-                         V0, V1, V2
+from Hamiltonians import *
 
-from Simulation import Nuclear_System_Setup, \
-                       Evolve, \
-                       Transition_Spectrum, \
-                       Plot_Real_Density_Matrix, \
-                       Plot_Transition_Spectrum, \
-                       FID_Signal, Plot_FID_Signal, \
-                       Fourier_Transform_Signal, \
-                       Plot_Fourier_Transform
+from Simulation import *
 
 
 # Plots:
@@ -99,7 +82,7 @@ def Spectrum_Perturbed_Zeeman():
                 'beta_q' : math.pi/4,
                 'gamma_q' : math.pi/4}
     
-    mode = pd.DataFrame([(10., 5., 0., math.pi/2, 0)],
+    mode = pd.DataFrame([(10., 1., 0., math.pi/2, 0)],
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
     RRF_par = {'nu_RRF': 0,
@@ -110,7 +93,7 @@ def Spectrum_Perturbed_Zeeman():
                                                      initial_state='canonical', temperature=300)
     
     dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
-                        mode=mode, pulse_time=2*math.pi/5, \
+                        mode=mode, pulse_time=0.5, \
                         picture = 'IP', RRF_par=RRF_par)
     
     Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMPerturbedZeeman')

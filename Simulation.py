@@ -6,21 +6,11 @@ import matplotlib.pylab as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.pyplot import xticks, yticks
 
-from Operators import Operator, Density_Matrix, \
-                      Observable, random_operator, \
-                      random_observable, random_density_matrix, \
-                      commutator, \
-                      magnus_expansion_1st_term, \
-                      magnus_expansion_2nd_term, \
-                      canonical_density_matrix
+from Operators import *
 
-from Nuclear_Spin import Nuclear_Spin
+from Nuclear_Spin import *
 
-from Hamiltonians import h_zeeman, h_quadrupole, \
-                         H_Single_Mode_Pulse, \
-                         H_Multiple_Mode_Pulse, \
-                         H_Changed_Picture, \
-                         V0, V1, V2
+from Hamiltonians import *
 
 
 # Sets up and returns the following elements of the system under study:
@@ -82,7 +72,7 @@ def Evolve(spin, h_unperturbed, dm_initial, \
     times, time_step = np.linspace(0, pulse_time, num=int(pulse_time*n_points), retstep=True)
     h_ip = []
     for t in times:
-        h_ip.append(H_Changed_Picture(spin, mode, h_unperturbed, o_change_of_picture, t))
+        h_ip.append(h_changed_picture(spin, mode, h_unperturbed, o_change_of_picture, t))
     
     # Evaluation of the 1st and 2nd terms of the Magnus expansion for the Hamiltonian in the new picture
     magnus_1st = magnus_expansion_1st_term(h_ip, time_step)

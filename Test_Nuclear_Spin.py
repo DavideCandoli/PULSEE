@@ -4,14 +4,9 @@ import numpy as np
 import hypothesis.strategies as st
 from hypothesis import given, note
 
-from Operators import Operator, Density_Matrix, \
-                      Observable, random_operator, \
-                      random_observable, random_density_matrix, \
-                      commutator, \
-                      magnus_expansion_1st_term, \
-                      magnus_expansion_2nd_term
+from Operators import *
 
-from Nuclear_Spin import Nuclear_Spin
+from Nuclear_Spin import *
         
 
 def test_spin_quantum_number_initialisation_with_non_half_integer():
