@@ -3,15 +3,15 @@ import numpy as np
 import pandas as pd
 
 from Operators import Operator, Density_Matrix, \
-                      Observable, Random_Operator, \
-                      Random_Observable, Random_Density_Matrix, \
-                      Commutator, \
-                      Magnus_Expansion_1st_Term, \
-                      Magnus_Expansion_2nd_Term
+                      Observable, random_operator, \
+                      random_observable, random_density_matrix, \
+                      commutator, \
+                      magnus_expansion_1st_term, \
+                      magnus_expansion_2nd_term
 
 from Nuclear_Spin import Nuclear_Spin
 
-from Hamiltonians import H_Zeeman, H_Quadrupole, \
+from Hamiltonians import h_zeeman, H_Quadrupole, \
                          V0, V1, V2, \
                          H_Single_Mode_Pulse, \
                          H_Multiple_Mode_Pulse, \
@@ -20,17 +20,15 @@ from Hamiltonians import H_Zeeman, H_Quadrupole, \
 import hypothesis.strategies as st
 from hypothesis import given, note
 
-# Checks that the Observable object returned by the method H_Zeeman changes sign when the angular
-# coordinates of the magnetic field undergo the following change
-# theta -> pi - theta    phi -> phi + pi
+
 @given(par = st.lists(st.floats(min_value=0, max_value=20), min_size=3, max_size=3))
-def test_Zeeman_Hamiltonian_Flipped_Magnetic_Field(par):
+def test_zeeman_hamiltonian_changes_sign_when_magnetic_field_is_flipped(par):
     spin = Nuclear_Spin()
-    h_z1 = H_Zeeman(spin, par[0], par[1], par[2])
-    h_z2 = H_Zeeman(spin, math.pi-par[0], par[1]+math.pi, par[2])
-    note("H_Zeeman(theta, phi) = %r" % (h_z1.matrix))
-    note("H_Zeeman(pi-theta, phi+pi) = %r" % (h_z2.matrix))
-    note("H_Zeeman(pi-theta, phi+pi)+H_Zeeman(theta, phi) = %r" % (np.absolute(h_z1.matrix+h_z2.matrix)))
+    h_z1 = h_zeeman(spin, par[0], par[1], par[2])
+    h_z2 = h_zeeman(spin, math.pi-par[0], par[1]+math.pi, par[2])
+    note("h_zeeman(theta, phi) = %r" % (h_z1.matrix))
+    note("h_zeeman(pi-theta, phi+pi) = %r" % (h_z2.matrix))
+    note("h_zeeman(pi-theta, phi+pi)+h_zeeman(theta, phi) = %r" % (np.absolute(h_z1.matrix+h_z2.matrix)))
     assert np.all(np.absolute(h_z1.matrix+h_z2.matrix) < 1e-10)
     
 # Checks that the object returned by the method H_Quadrupole is independent of the Euler angle gamma when
@@ -70,11 +68,11 @@ def test_V2_Reduces_To_eta(eta):
 @given(n = st.integers(min_value=-20, max_value=20))
 def test_Periodical_Pulse_Hamiltonian(n):
     spin = Nuclear_Spin(1., 1.)
-    omega = 5.
+    nu = 5.
     t1 = 1.
-    t2 = t1 + n*(2*math.pi)/omega
-    h_p1 = H_Single_Mode_Pulse(spin, omega, 10., 0, math.pi/2, 0, t1)
-    h_p2 = H_Single_Mode_Pulse(spin, omega, 10., 0, math.pi/2, 0, t2)
+    t2 = t1 + n/nu
+    h_p1 = H_Single_Mode_Pulse(spin, nu, 10., 0, math.pi/2, 0, t1)
+    h_p2 = H_Single_Mode_Pulse(spin, nu, 10., 0, math.pi/2, 0, t2)
     note("H_Single_Mode_Pulse(t1) = %r" % (h_p1.matrix))
     note("H_Single_Mode_Pulse(t2) = %r" % (h_p2.matrix))
     assert np.all(np.isclose(h_p1.matrix, h_p2.matrix, rtol=1e-10))

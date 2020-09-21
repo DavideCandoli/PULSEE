@@ -7,16 +7,16 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.pyplot import xticks, yticks
 
 from Operators import Operator, Density_Matrix, \
-                      Observable, Random_Operator, \
-                      Random_Observable, Random_Density_Matrix, \
-                      Commutator, \
-                      Magnus_Expansion_1st_Term, \
-                      Magnus_Expansion_2nd_Term, \
-                      Canonical_Density_Matrix
+                      Observable, random_operator, \
+                      random_observable, random_density_matrix, \
+                      commutator, \
+                      magnus_expansion_1st_term, \
+                      magnus_expansion_2nd_term, \
+                      canonical_density_matrix
 
 from Nuclear_Spin import Nuclear_Spin
 
-from Hamiltonians import H_Zeeman, H_Quadrupole, \
+from Hamiltonians import h_zeeman, H_Quadrupole, \
                          H_Single_Mode_Pulse, \
                          H_Multiple_Mode_Pulse, \
                          H_Changed_Picture, \
@@ -34,7 +34,7 @@ def Nuclear_System_Setup(spin_par, zeem_par, quad_par, initial_state='canonical'
                         spin_par['gyromagnetic ratio'])
     
     # Zeeman term of the Hamiltonian
-    h_zeeman = H_Zeeman(spin, zeem_par['theta_z'], \
+    h_z = h_zeeman(spin, zeem_par['theta_z'], \
                               zeem_par['phi_z'], \
                               zeem_par['field magnitude'])
     
@@ -47,11 +47,11 @@ def Nuclear_System_Setup(spin_par, zeem_par, quad_par, initial_state='canonical'
     
     # Computes the unperturbed Hamiltonian of the system, namely the sum of the Zeeman and quadrupole
     # contributions
-    h_unperturbed = Observable(h_zeeman.matrix + h_quadrupole.matrix)
+    h_unperturbed = Observable(h_z.matrix + h_quadrupole.matrix)
     
     # Sets the density matrix of the system at time t=0, according to the value of 'initial_state'
     if isinstance(initial_state, str) and initial_state == 'canonical':
-        dm_initial = Canonical_Density_Matrix(h_unperturbed, temperature)
+        dm_initial = canonical_density_matrix(h_unperturbed, temperature)
     else:
         dm_initial = Density_Matrix(initial_state)
     
@@ -187,7 +187,7 @@ def Transition_Spectrum(spin, h_unperturbed, normalized=True, dm_initial=0):
             if i < j:
                 omega = np.absolute(energies[j] - energies[i])
                 transition_frequency.append(omega)
-                magnetization_eig = spin.gyromagnetic_ratio*spin.I['x'].sim_trans(o_change_of_basis)
+                magnetization_eig = spin.gyro_ratio_over_2pi*spin.I['x'].sim_trans(o_change_of_basis)
                 
                 P_omega = omega*(np.absolute(magnetization_eig.matrix[j, i]))**2
                 

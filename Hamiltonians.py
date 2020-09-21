@@ -4,25 +4,22 @@ import numpy as np
 import pandas as pd
 
 from Operators import Operator, Density_Matrix, \
-                      Observable, Random_Operator, \
-                      Random_Observable, Random_Density_Matrix, \
-                      Commutator, \
-                      Magnus_Expansion_1st_Term, \
-                      Magnus_Expansion_2nd_Term
+                      Observable, random_operator, \
+                      random_observable, random_density_matrix, \
+                      commutator, \
+                      magnus_expansion_1st_term, \
+                      magnus_expansion_2nd_term
 
 from Nuclear_Spin import Nuclear_Spin
 
 
-# Returns the Observable object representing the Hamiltonian for the Zeeman interaction with an external
-# static field
-def H_Zeeman(spin, theta_z, phi_z, H_0):
+def h_zeeman(spin, theta_z, phi_z, H_0):
     if H_0<0: raise ValueError("The modulus of the magnetic field must be a non-negative quantity")
-    h_Zeeman = -spin.gyromagnetic_ratio*H_0* \
-                (math.sin(theta_z)*math.cos(phi_z)*spin.I['x'] + \
-                 math.sin(theta_z)*math.sin(phi_z)*spin.I['y'] + \
-                 math.cos(theta_z)*spin.I['z'])
-    return Observable(h_Zeeman.matrix)
-
+    h_z = -spin.gyro_ratio_over_2pi*H_0* \
+          (math.sin(theta_z)*math.cos(phi_z)*spin.I['x'] + \
+           math.sin(theta_z)*math.sin(phi_z)*spin.I['y'] + \
+           math.cos(theta_z)*spin.I['z'])
+    return Observable(h_z.matrix)
 
 # Returns the Observable object representing the Hamiltonian for the interaction between the quadrupole
 # moment of the nucleus and the electric field gradient
@@ -94,7 +91,7 @@ def V2(sign, eta, alpha, beta, gamma):
 def H_Single_Mode_Pulse(spin, frequency, H_1, phase, theta, phi, t):
     if frequency < 0: raise ValueError("The angular frequency of the electromagnetic wave must be a positive quantity")
     if H_1 < 0: raise ValueError("The amplitude of the electromagnetic wave must be a positive quantity")
-    h_pulse = -spin.gyromagnetic_ratio*H_1*\
+    h_pulse = -spin.gyro_ratio_over_2pi*H_1*\
               (math.sin(theta)*math.cos(phi)*spin.I['x'] +\
                math.sin(theta)*math.sin(phi)*spin.I['y'] +\
                math.cos(theta)*spin.I['z']
