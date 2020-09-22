@@ -977,7 +977,7 @@ class Evolution_Results(FloatLayout):
                 fourier_transform_signal(sim_man.FID, sim_man.FID_times, \
                                          sim_man.frequency_left_bound,\
                                          sim_man.frequency_right_bound)
-            Plot_Fourier_Transform(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
+            plot_fourier_transform(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
                                    square_modulus=sim_man.square_modulus, show=False)
             self.NMR_spectrum_figure = plt.gcf()
             self.NMR_spectrum.add_widget(FigureCanvasKivyAgg(self.NMR_spectrum_figure))
@@ -1082,7 +1082,7 @@ class Evolution_Results(FloatLayout):
                                              sim_man.frequency_right_bound)
         
             self.NMR_spectrum = BoxLayout(size_hint=(0.9, 0.3), pos=(40, 250))
-            Plot_Fourier_Transform(f, ft, show=False)
+            plot_fourier_transform(f, ft, show=False)
             self.NMR_spectrum_figure = plt.gcf()
             self.NMR_spectrum.add_widget(FigureCanvasKivyAgg(self.NMR_spectrum_figure))
             self.add_widget(self.NMR_spectrum)

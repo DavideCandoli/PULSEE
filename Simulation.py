@@ -262,7 +262,7 @@ def fourier_phase_shift(frequencies, fourier, peak_frequency_hint, search_window
     return phase
 
 
-def Plot_Fourier_Transform(frequencies, fourier, square_modulus=False, show=True, save=False, name='FTSignal', destination=''):
+def plot_fourier_transform(frequencies, fourier, square_modulus=False, show=True, save=False, name='FTSignal', destination=''):
     fig = plt.figure()
     
     if not square_modulus:

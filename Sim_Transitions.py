@@ -58,9 +58,9 @@ def Spectrum_Pure_Zeeman():
         
     f, ft = fourier_transform_signal(FID, t, 9.5, 10.5)
     
-    Plot_Fourier_Transform(f, ft)
+    plot_fourier_transform(f, ft)
     
-    Plot_Fourier_Transform(f, ft, square_modulus=True)
+    plot_fourier_transform(f, ft, square_modulus=True)
 
 
 # Plots:
@@ -106,9 +106,9 @@ def Spectrum_Perturbed_Zeeman():
     
     f, ft = fourier_transform_signal(FID, t, 9.8, 10.2)
     
-    Plot_Fourier_Transform(f, ft)
+    plot_fourier_transform(f, ft)
     
-    Plot_Fourier_Transform(f, ft, square_modulus=True)
+    plot_fourier_transform(f, ft, square_modulus=True)
 
 
 # Plots the transition spectrum for a pure quadrupole Hamiltonian, where the EFG is axially symmetric
@@ -154,9 +154,9 @@ def Spectrum_Pure_Symmetric_Quadrupole():
         
     f, ft = fourier_transform_signal(FID, t, 0, 4)
     
-    Plot_Fourier_Transform(f, ft)
+    plot_fourier_transform(f, ft)
     
-    Plot_Fourier_Transform(f, ft, square_modulus=True)
+    plot_fourier_transform(f, ft, square_modulus=True)
 
 
 # Plots the transition spectrum of an integer spin nucleus with a pure quadrupole Hamiltonian where the
@@ -199,9 +199,9 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
     
     f, ft = fourier_transform_signal(FID, t, 0, 10)
     
-    Plot_Fourier_Transform(f, ft)
+    plot_fourier_transform(f, ft)
     
-    Plot_Fourier_Transform(f, ft, square_modulus=True)
+    plot_fourier_transform(f, ft, square_modulus=True)
 
 
 # Plots the transition spectrum of a half-integer spin nucleus with a pure quadrupole Hamiltonian where
@@ -244,9 +244,9 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Half_Integer_Spin():
     
     f, ft = fourier_transform_signal(FID, t, 9, 11)
     
-    Plot_Fourier_Transform(f, ft)
+    plot_fourier_transform(f, ft)
     
-    Plot_Fourier_Transform(f, ft, square_modulus=True)
+    plot_fourier_transform(f, ft, square_modulus=True)
 
 
 # Plots the transition spectrum of an integer spin nucleus with a Zeeman perturbed quadrupole
@@ -289,9 +289,9 @@ def Spectrum_Perturbed_Quadrupole_Integer_Spin():
         
     f, ft = fourier_transform_signal(FID, t, 1, 8)
     
-    Plot_Fourier_Transform(f, ft)
+    plot_fourier_transform(f, ft)
     
-    Plot_Fourier_Transform(f, ft, square_modulus=True)
+    plot_fourier_transform(f, ft, square_modulus=True)
 
 
 # Plots the transition spectrum of a half-integer spin nucleus with a Zeeman perturbed quadrupole
@@ -333,7 +333,7 @@ def Spectrum_Perturbed_Quadrupole_Half_Integer_Spin():
     
     f, ft = fourier_transform_signal(FID, t, 1, 10)
     
-    Plot_Fourier_Transform(f, ft)
+    plot_fourier_transform(f, ft)
     
-    Plot_Fourier_Transform(f, ft, square_modulus=True)
+    plot_fourier_transform(f, ft, square_modulus=True)
     
