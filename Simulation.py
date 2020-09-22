@@ -182,27 +182,20 @@ def plot_power_absorption_spectrum(frequencies, intensities, show=True, save=Fal
     return fig
 
 
-# Returns the free induction decay (FID) signal resulting from the free evolution of the component
-# of the magnetization on the plane specified by theta, phi of the LAB system. The state of the system
-# at the beginning of acquisition is given by the parameter dm, and the dynamics of the magnetization is 
-# recorded for a time time_window. The relaxation time T2 is passed as an argument.
-def FID_Signal(spin, h_unperturbed, dm, time_window, T2=100, theta=0, phi=0):
+def FID_signal(spin, h_unperturbed, dm, acquisition_time, T2=100, theta=0, phi=0):
     
-    # Sampling of the time window [0, time_window] (microseconds) where the free evolution takes place
-    times = np.linspace(start=0, stop=time_window, num=int(time_window*10))
+    times = np.linspace(start=0, stop=acquisition_time, num=int(acquisition_time*10))
     
-    # FID signal to be sampled
     FID = []
     
-    # Computes the FID assuming that the detection coil records the time-dependence of the magnetization
-    # on the plane perpendicular to (sin(theta)cos(phi), sin(theta)sin(phi), cos(theta)), given by
-    # FID = Tr[dm(t) e^{i phi I_z} e^{i theta I_y} I+ e^{-i theta I_y} e^{-i phi I_z} e^{-t/T2}]
+    # Computes the FID assuming that the detection coils record the time-dependence of the
+    # magnetization on the plane perpendicular to (sin(theta)cos(phi), sin(theta)sin(phi), cos(theta))
+    Iz = spin.I['z']
+    Iy = spin.I['y']
+    I_plus_rotated = (1j*phi*Iz).exp()*(1j*theta*Iy).exp()*spin.I['+']*(-1j*theta*Iy).exp()*(-1j*phi*Iz).exp()
     for t in times:
         dm_t = dm.free_evolution(h_unperturbed, t)
-        Iz = spin.I['z']
-        Iy = spin.I['y']
-        I_plus_rotated = (1j*phi*Iz).exp()*(1j*theta*Iy).exp()*spin.I['+']*(-1j*theta*Iy).exp()*(-1j*phi*Iz).exp()
-        FID.append((dm_t*I_plus_rotated).trace()*np.exp(-t/T2))
+        FID.append((dm_t*I_plus_rotated*np.exp(-t/T2)).trace())
     
     return times, np.array(FID)
 

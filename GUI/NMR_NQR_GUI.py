@@ -967,9 +967,9 @@ class Evolution_Results(FloatLayout):
             self.add_widget(self.graphical_results)
             
             self.NMR_spectrum = BoxLayout(size_hint=(0.9, 0.3), pos=(40, 250))
-            sim_man.FID_times, sim_man.FID = FID_Signal(sim_man.spin, sim_man.h_unperturbed, \
+            sim_man.FID_times, sim_man.FID = FID_signal(sim_man.spin, sim_man.h_unperturbed, \
                                                         sim_man.dm[sim_man.n_pulses], \
-                                                        time_window=sim_man.time_aq, \
+                                                        acquisition_time=sim_man.time_aq, \
                                                         T2=sim_man.relaxation_time, \
                                                         theta=sim_man.coil_theta, \
                                                         phi=sim_man.coil_phi)
