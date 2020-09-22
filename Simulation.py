@@ -13,33 +13,23 @@ from Nuclear_Spin import *
 from Hamiltonians import *
 
 
-# Sets up and returns the following elements of the system under study:
-# - Nuclear spin
-# - Unperturbed Hamiltonian
-# - State of the system at t=0
-def Nuclear_System_Setup(spin_par, zeem_par, quad_par, initial_state='canonical', temperature=1e-4):
+def nuclear_system_setup(spin_par, zeem_par, quad_par, initial_state='canonical', temperature=1e-4):
     
-    # Nuclear spin under study
     spin = Nuclear_Spin(spin_par['quantum number'], \
-                        spin_par['gyromagnetic ratio'])
+                        spin_par['gamma/2pi'])
     
-    # Zeeman term of the Hamiltonian
     h_z = h_zeeman(spin, zeem_par['theta_z'], \
                          zeem_par['phi_z'], \
                          zeem_par['field magnitude'])
     
-    # Quadrupole term of the Hamiltonian
     h_q = h_quadrupole(spin, quad_par['coupling constant'], \
                              quad_par['asymmetry parameter'], \
                              quad_par['alpha_q'], \
                              quad_par['beta_q'], \
                              quad_par['gamma_q'])
     
-    # Computes the unperturbed Hamiltonian of the system, namely the sum of the Zeeman and quadrupole
-    # contributions
     h_unperturbed = Observable(h_z.matrix + h_q.matrix)
     
-    # Sets the density matrix of the system at time t=0, according to the value of 'initial_state'
     if isinstance(initial_state, str) and initial_state == 'canonical':
         dm_initial = canonical_density_matrix(h_unperturbed, temperature)
     else:

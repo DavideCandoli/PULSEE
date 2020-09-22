@@ -46,7 +46,7 @@ from Operators import Observable, \
 
 from Nuclear_Spin import Nuclear_Spin
 
-from Simulation import Nuclear_System_Setup, \
+from Simulation import nuclear_system_setup, \
                        Evolve, \
                        Transition_Spectrum, \
                        Plot_Real_Density_Matrix, \
@@ -60,7 +60,7 @@ from Simulation import Nuclear_System_Setup, \
 # simulation, mediating the interaction between the GUI and the computational core of the program.
 class Simulation_Manager:
     spin_par = {'quantum number' : 0.,
-                'gyromagnetic ratio' : 0.}
+                'gamma/2pi' : 0.}
     
     zeem_par = {'field magnitude' : 0.,
                 'theta_z' : 0.,
@@ -237,7 +237,7 @@ class System_Parameters(FloatLayout):
             
             sim_man.spin_par['quantum number'] = float(Fraction(null_string(self.spin_qn.text)))
             
-            sim_man.spin_par['gyromagnetic ratio'] = float(null_string(self.gyro.text))
+            sim_man.spin_par['gamma/2pi'] = float(null_string(self.gyro.text))
             
             sim_man.zeem_par['field magnitude'] = float(null_string(self.field_mag.text))
             
@@ -270,7 +270,7 @@ class System_Parameters(FloatLayout):
             if self.canonical_checkbox.active:
                 sim_man.temperature = float(null_string(self.temperature.text))
                 sim_man.spin, sim_man.h_unperturbed, sim_man.dm_initial = \
-                Nuclear_System_Setup(sim_man.spin_par, \
+                nuclear_system_setup(sim_man.spin_par, \
                                      sim_man.zeem_par, \
                                      sim_man.quad_par, \
                                      initial_state='canonical', \
@@ -287,7 +287,7 @@ class System_Parameters(FloatLayout):
                             sim_man.dm_0[i, j] = complex(self.dm_elements[i, j].text)
             
                 sim_man.spin, sim_man.h_unperturbed, sim_man.dm_initial = \
-                Nuclear_System_Setup(sim_man.spin_par, \
+                nuclear_system_setup(sim_man.spin_par, \
                                      sim_man.zeem_par, \
                                      sim_man.quad_par, \
                                      initial_state=sim_man.dm_0, \
@@ -339,7 +339,7 @@ class System_Parameters(FloatLayout):
         self.Na_btn.bind(on_release=partial(clear_and_write_text, self.spin_qn, '3/2'))
         
         # Gyromagnetic Ratio
-        self.gyro_label = Label(text='Gyromagnetic ratio', size=(10, 5), pos=(x_shift+100, y_shift-25), font_size='15sp')
+        self.gyro_label = Label(text='\N{GREEK SMALL LETTER GAMMA}/2\N{GREEK SMALL LETTER PI}', size=(10, 5), pos=(x_shift+100, y_shift-25), font_size='15sp')
         self.add_widget(self.gyro_label)
         
         self.gyro = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(x_shift+575, y_shift+460))
@@ -925,7 +925,7 @@ class Evolution_Results(FloatLayout):
             
             # LOGGING
             print("Spin quantum number = " + str(sim_man.spin_par['quantum number']))
-            print("Gyromagnetic ratio = " + str(sim_man.spin_par['gyromagnetic ratio']))
+            print("gamma/2pi = " + str(sim_man.spin_par['gamma/2pi']))
             
             print('\n')
             

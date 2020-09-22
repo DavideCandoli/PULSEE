@@ -20,7 +20,7 @@ from Simulation import *
 # for a pure Zeeman Hamiltonian nucleus
 def Spectrum_Pure_Zeeman():
     spin_par = {'quantum number' : 3/2,
-                'gyromagnetic ratio' : 1.}
+                'gamma/2pi' : 1.}
     
     zeem_par = {'field magnitude' : 10.,
                 'theta_z' : 0,
@@ -40,7 +40,7 @@ def Spectrum_Pure_Zeeman():
                'theta_RRF': math.pi,
                'phi_RRF': 0}
     
-    spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par)
+    spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par)
     
     Plot_Real_Density_Matrix(dm_0, save=False, name='DMPureZeeman')
     
@@ -70,7 +70,7 @@ def Spectrum_Pure_Zeeman():
 # for a nucleus where the quadrupole interaction is a perturbation of the Zeeman energy
 def Spectrum_Perturbed_Zeeman():
     spin_par = {'quantum number' : 5/2,
-                'gyromagnetic ratio' : 1.}
+                'gamma/2pi' : 1.}
     
     zeem_par = {'field magnitude' : 10.,
                 'theta_z' : 0,
@@ -89,7 +89,7 @@ def Spectrum_Perturbed_Zeeman():
                'theta_RRF': 0,
                'phi_RRF': 0}
     
-    spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par, \
+    spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par, \
                                                      initial_state='canonical', temperature=300)
     
     dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
@@ -114,7 +114,7 @@ def Spectrum_Perturbed_Zeeman():
 # Plots the transition spectrum for a pure quadrupole Hamiltonian, where the EFG is axially symmetric
 def Spectrum_Pure_Symmetric_Quadrupole():
     spin_par = {'quantum number' : 2,
-                'gyromagnetic ratio' : 1.}
+                'gamma/2pi' : 1.}
     
     zeem_par = {'field magnitude' : 0.,
                 'theta_z' : 0,
@@ -134,7 +134,7 @@ def Spectrum_Pure_Symmetric_Quadrupole():
                'theta_RRF': math.pi,
                'phi_RRF': 0}
     
-    spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par, \
+    spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par, \
                                                      initial_state='canonical', temperature=300)
     
     Plot_Real_Density_Matrix(dm_0, save=False, name='DMPureSymmetricQuadrupole')
@@ -163,7 +163,7 @@ def Spectrum_Pure_Symmetric_Quadrupole():
 # EFG is axially asymmetric
 def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
     spin_par = {'quantum number' : 1,
-                'gyromagnetic ratio' : 1.}
+                'gamma/2pi' : 1.}
     
     zeem_par = {'field magnitude' : 0.,
                 'theta_z' : 0,
@@ -182,7 +182,7 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
                'theta_RRF': math.pi,
                'phi_RRF': 0}
     
-    spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par, \
+    spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par, \
                                                      initial_state='canonical', temperature=1e-3)
     
     dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
@@ -208,7 +208,7 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
 # the EFG is axially asymmetric
 def Spectrum_Pure_Asymmetric_Quadrupole_Half_Integer_Spin():
     spin_par = {'quantum number' : 3/2,
-                'gyromagnetic ratio' : 1.}
+                'gamma/2pi' : 1.}
     
     zeem_par = {'field magnitude' : 0.,
                 'theta_z' : 0,
@@ -227,7 +227,7 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Half_Integer_Spin():
                'theta_RRF': math.pi,
                'phi_RRF': 0}
     
-    spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par, \
+    spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par, \
                                                      initial_state='canonical', temperature=1e-6)
     
     dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
@@ -253,7 +253,7 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Half_Integer_Spin():
 # Hamiltonian where the EFG is axially symmetric
 def Spectrum_Perturbed_Quadrupole_Integer_Spin():
     spin_par = {'quantum number' : 1,
-                'gyromagnetic ratio' : 1.}
+                'gamma/2pi' : 1.}
     
     zeem_par = {'field magnitude' : math.sqrt(2),
                 'theta_z' : math.pi/4,
@@ -272,7 +272,7 @@ def Spectrum_Perturbed_Quadrupole_Integer_Spin():
                'theta_RRF': 0,
                'phi_RRF': 0}
     
-    spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par, \
+    spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par, \
                                                      initial_state='canonical', temperature=1e-4)
     
     dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
@@ -298,7 +298,7 @@ def Spectrum_Perturbed_Quadrupole_Integer_Spin():
 # Hamiltonian where the EFG is axially symmetric
 def Spectrum_Perturbed_Quadrupole_Half_Integer_Spin():
     spin_par = {'quantum number' : 3/2,
-                'gyromagnetic ratio' : 1.}
+                'gamma/2pi' : 1.}
     
     zeem_par = {'field magnitude' : 1/(math.cos(math.atan(math.sqrt(3)/2))),
                 'theta_z' : math.atan(math.sqrt(3)/2),
@@ -317,7 +317,7 @@ def Spectrum_Perturbed_Quadrupole_Half_Integer_Spin():
                'theta_RRF': 0,
                'phi_RRF': 0}
     
-    spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par, \
+    spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par, \
                                                      initial_state='canonical', temperature=1e-3)    
     dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
                         mode=mode, pulse_time=20, \

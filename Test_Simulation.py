@@ -21,7 +21,7 @@ from Simulation import *
 # is null if the passed spin's gyromagnetic ratio is 0, even if the Zeeman parameters are not vanishing
 def test_Null_Zeeman_Contribution_For_0_Gyromagnetic_Ratio():
     spin_par = {'quantum number' : 3/2,
-                'gyromagnetic ratio' : 0.}
+                'gamma/2pi' : 0.}
     
     zeem_par = {'field magnitude' : 10.,
                 'theta_z' : 0,
@@ -33,7 +33,7 @@ def test_Null_Zeeman_Contribution_For_0_Gyromagnetic_Ratio():
                 'beta_q' : 0,
                 'gamma_q' : 0}
     
-    h_unperturbed = Nuclear_System_Setup(spin_par, zeem_par, quad_par)[1]
+    h_unperturbed = nuclear_system_setup(spin_par, zeem_par, quad_par)[1]
     
     null_matrix = np.zeros((4, 4))
     
@@ -43,7 +43,7 @@ def test_Null_Zeeman_Contribution_For_0_Gyromagnetic_Ratio():
 # returned by the function Evolve will be as well close to the identity
 def test_Evolution_Identity_Matrix():
     spin_par = {'quantum number' : 5/2,
-                'gyromagnetic ratio' : 1.}
+                'gamma/2pi' : 1.}
     
     zeem_par = {'field magnitude' : 10.,
                 'theta_z' : math.pi,
@@ -57,7 +57,7 @@ def test_Evolution_Identity_Matrix():
     
     identity = np.identity(6)/6
     
-    spin, h_unperturbed, dm_initial = Nuclear_System_Setup(spin_par, zeem_par, quad_par, \
+    spin, h_unperturbed, dm_initial = nuclear_system_setup(spin_par, zeem_par, quad_par, \
                                                      initial_state=identity)
     
     mode = pd.DataFrame([(10., 1., 0., math.pi/2, 0)], 
@@ -99,7 +99,7 @@ def test_RRF_Operator_Proportional_To_Iz():
 def test_Number_Lines_Transition_Spectrum(s):
     
     spin_par = {'quantum number' : s/2,
-                'gyromagnetic ratio' : 1.}
+                'gamma/2pi' : 1.}
     
     zeem_par = {'field magnitude' : 10.,
                 'theta_z' : math.pi/4,
@@ -111,7 +111,7 @@ def test_Number_Lines_Transition_Spectrum(s):
                 'beta_q' : math.pi/5,
                 'gamma_q' : 0}
     
-    spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par)
+    spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par)
     
     f, p = Transition_Spectrum(spin, h_unperturbed, normalized=False, dm_initial=dm_0)
     
@@ -120,7 +120,7 @@ def test_Number_Lines_Transition_Spectrum(s):
 # Checks that for very short relaxation times, the FID signal goes rapidly to 0
 def test_Fast_Decay_FID_Signal():
     spin_par = {'quantum number' : 2,
-                'gyromagnetic ratio' : 1.}
+                'gamma/2pi' : 1.}
     
     zeem_par = {'field magnitude' : 10.,
                 'theta_z' : math.pi/4,
@@ -135,7 +135,7 @@ def test_Fast_Decay_FID_Signal():
     initial_matrix = np.zeros((5, 5))
     initial_matrix[0, 0] = 1
     
-    spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par,
+    spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par,
                                                      initial_state=initial_matrix)
     
     t, signal = FID_Signal(spin, h_unperturbed, dm_0, time_window=100, T2=1)
@@ -146,7 +146,7 @@ def test_Fast_Decay_FID_Signal():
 # opposite of the other
 def test_Opposite_Decay_Signal():
     spin_par = {'quantum number' : 3,
-                'gyromagnetic ratio' : 1.}
+                'gamma/2pi' : 1.}
     
     zeem_par = {'field magnitude' : 10.,
                 'theta_z' : math.pi/4,
@@ -161,7 +161,7 @@ def test_Opposite_Decay_Signal():
     initial_matrix = np.zeros((7, 7))
     initial_matrix[0, 0] = 1
     
-    spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par,
+    spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par,
                                                      initial_state=initial_matrix)
     
     mode = pd.DataFrame([(10., 1., 0., math.pi/2, 0)], 
@@ -185,7 +185,7 @@ def test_Opposite_Decay_Signal():
 # same angle
 def test_Two_Methods_Phase_Adjustment():
     spin_par = {'quantum number' : 3/2,
-                'gyromagnetic ratio' : 1.}
+                'gamma/2pi' : 1.}
     
     zeem_par = {'field magnitude' : 10.,
                 'theta_z' : 0,
@@ -200,7 +200,7 @@ def test_Two_Methods_Phase_Adjustment():
     initial_matrix = np.zeros((4, 4))
     initial_matrix[0, 0] = 1
     
-    spin, h_unperturbed, dm_0 = Nuclear_System_Setup(spin_par, zeem_par, quad_par,
+    spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par,
                                                      initial_state=initial_matrix)
     
     mode = pd.DataFrame([(10., 1., 0., math.pi/2, 0)], 
