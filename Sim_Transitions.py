@@ -50,7 +50,7 @@ def Spectrum_Pure_Zeeman():
     
     plot_real_part_density_matrix(dm_evolved, save=False, name='DMPureZeeman')
     
-    f, p = Transition_Spectrum(spin, h_unperturbed, normalized=True)
+    f, p = power_absorption_spectrum(spin, h_unperturbed, normalized=True)
     
     Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPureZeeman')
     
@@ -98,7 +98,7 @@ def Spectrum_Perturbed_Zeeman():
     
     plot_real_part_density_matrix(dm_evolved, save=False, name='DMPerturbedZeeman')
     
-    f, p = Transition_Spectrum(spin, h_unperturbed)
+    f, p = power_absorption_spectrum(spin, h_unperturbed)
     
     Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPerturbedZeeman')
     
@@ -146,7 +146,7 @@ def Spectrum_Pure_Symmetric_Quadrupole():
     
     plot_real_part_density_matrix(dm_evolved, save=False, name='DMPureSymmetricQuadrupole')
     
-    f, p = Transition_Spectrum(spin, h_unperturbed)
+    f, p = power_absorption_spectrum(spin, h_unperturbed)
     
     Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPureSymmetricQuadrupole')
     
@@ -191,7 +191,7 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
     
     plot_real_part_density_matrix(dm_evolved, save=False, name='DMPureAsymmetricQuadrupoleInt')
     
-    f, p = Transition_Spectrum(spin, h_unperturbed)
+    f, p = power_absorption_spectrum(spin, h_unperturbed)
     
     Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPureAsymmetricQuadrupoleInt')
     
@@ -236,7 +236,7 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Half_Integer_Spin():
     
     plot_real_part_density_matrix(dm_evolved, save=False, name='DMPureAsymmetricQuadrupoleHalfInt')
     
-    f, p = Transition_Spectrum(spin, h_unperturbed)
+    f, p = power_absorption_spectrum(spin, h_unperturbed)
     
     Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPureAsymmetricQuadrupoleHalfInt')
     
@@ -281,7 +281,7 @@ def Spectrum_Perturbed_Quadrupole_Integer_Spin():
     
     plot_real_part_density_matrix(dm_evolved, save=False, name='DMSpectrumPerturbedQuadrupoleInt')
     
-    f, p = Transition_Spectrum(spin, h_unperturbed)
+    f, p = power_absorption_spectrum(spin, h_unperturbed)
     
     Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPerturbedQuadrupoleInt')
     
@@ -325,7 +325,7 @@ def Spectrum_Perturbed_Quadrupole_Half_Integer_Spin():
     
     plot_real_part_density_matrix(dm_evolved, save=False, name='DMSpectrumPerturbedQuadrupoleHalfInt')
     
-    f, p = Transition_Spectrum(spin, h_unperturbed)
+    f, p = power_absorption_spectrum(spin, h_unperturbed)
     
     Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPerturbedQuadrupoleHalfInt')
     

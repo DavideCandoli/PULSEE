@@ -68,9 +68,8 @@ def test_pi_pulse_yields_population_inversion():
         
     assert np.all(np.isclose(dm_evolved.matrix[5, 5], 1, rtol=1e-1))
     
-# Checks that the Observable returned by RRF_Operator is proportional to the Operator I['z'] of the spin
-# when the angle theta_RRF is set to 0
-def test_RRF_Operator_Proportional_To_Iz():
+
+def test_RRF_operator_proportional_to_Iz_for_theta_0():
     
     spin = Nuclear_Spin(3/2, 1.)
     
@@ -78,19 +77,18 @@ def test_RRF_Operator_Proportional_To_Iz():
               'theta_RRF': 0,
               'phi_RRF': 0}
     
-    rrf_o = RRF_Operator(spin, RRF_par)
+    RRF_o = RRF_operator(spin, RRF_par)
     
-    rrf_matrix = rrf_o.matrix
+    RRF_matrix = RRF_o.matrix
     Iz_matrix = spin.I['z'].matrix
     
-    c = rrf_matrix[0, 0]/Iz_matrix[0, 0]
+    c = RRF_matrix[0, 0]/Iz_matrix[0, 0]
     
-    assert np.all(np.isclose(rrf_matrix, c*Iz_matrix, rtol=1e-10))
+    assert np.all(np.isclose(RRF_matrix, c*Iz_matrix, rtol=1e-10))
     
-# Checks that the number of frequencies of transition computed by Transition_Spectrum coincides with
-# (2I)*(2I+1)/2
+    
 @given(s = st.integers(min_value=1, max_value=14))
-def test_Number_Lines_Transition_Spectrum(s):
+def test_correct_number_lines_power_absorption_spectrum(s):
     
     spin_par = {'quantum number' : s/2,
                 'gamma/2pi' : 1.}
@@ -107,7 +105,7 @@ def test_Number_Lines_Transition_Spectrum(s):
     
     spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par)
     
-    f, p = Transition_Spectrum(spin, h_unperturbed, normalized=False, dm_initial=dm_0)
+    f, p = power_absorption_spectrum(spin, h_unperturbed, normalized=False, dm_initial=dm_0)
     
     assert len(f)==(spin.d)*(spin.d-1)/2
     

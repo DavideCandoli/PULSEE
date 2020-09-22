@@ -130,41 +130,41 @@ def plot_real_part_density_matrix(dm, show=True, save=False, name='RealPartDensi
     return fig
     
 
-# Computes the spectrum of power absorption due to x-polarized single-mode pulses, appealing to the
-# formula derived using Fermi's golden rule. If normalized=False, the state of initial preparation of
-# the ensemble is taken into account for the calculation of the spectrum
-def Transition_Spectrum(spin, h_unperturbed, normalized=True, dm_initial=0):
+def power_absorption_spectrum(spin, h_unperturbed, normalized=True, dm_initial='none'):
     
-    # Energy levels and eigenstates of the unperturbed Hamiltonian
     energies, o_change_of_basis = h_unperturbed.diagonalisation()
     
     transition_frequency = []
     
-    transition_probability = []
+    transition_intensity = []
     
     d = h_unperturbed.dimension()
     
-    # In the following loop, the frequencies and the respective intensities of the spectrum are computed
-    # and recorded in the appropriate lists
     for i in range(d):
         for j in range(d):
             if i < j:
-                omega = np.absolute(energies[j] - energies[i])
-                transition_frequency.append(omega)
-                magnetization_eig = spin.gyro_ratio_over_2pi*spin.I['x'].sim_trans(o_change_of_basis)
+                nu = np.absolute(energies[j] - energies[i])
+                transition_frequency.append(nu)
                 
-                P_omega = omega*(np.absolute(magnetization_eig.matrix[j, i]))**2
+                # Operator of the magnetic moment of the spin expressed in the basis of energy
+                # eigenstates, defined in order to extract the matrix elements required by Fermi's
+                # golden rule
+                magnetization_in_basis_of_eigenstates=\
+                    spin.gyro_ratio_over_2pi*spin.I['x'].sim_trans(o_change_of_basis)
+                
+                intensity_nu = nu*\
+                    (np.absolute(magnetization_in_basis_of_eigenstates.matrix[j, i]))**2
                 
                 if not normalized:
                     p_i = dm_initial.matrix[i, i]
                     p_j = dm_initial.matrix[j, j]
-                    P_omega = np.absolute(p_i-p_j)*P_omega
+                    intensity_nu = np.absolute(p_i-p_j)*intensity_nu
                     
-                transition_probability.append(P_omega)
+                transition_intensity.append(intensity_nu)
             else:
                 pass
     
-    return transition_frequency, transition_probability
+    return transition_frequency, transition_intensity
 
 
 def Plot_Transition_Spectrum(frequencies, probabilities, show=True, save=False, name='TransitionSpectrum', destination=''):
