@@ -200,14 +200,13 @@ def FID_signal(spin, h_unperturbed, dm, acquisition_time, T2=100, theta=0, phi=0
     return times, np.array(FID)
 
 
-# Plots the the real part of the FID signal as a function of time
-def Plot_FID_Signal(times, FID, show=True, save=False, name='FIDSignal', destination=''):
+def plot_real_part_FID_signal(times, FID, show=True, save=False, name='FIDSignal', destination=''):
     fig = plt.figure()
     
     plt.plot(times, np.real(FID))
     
     plt.xlabel("time (\N{GREEK SMALL LETTER MU}s)")    
-    plt.ylabel("FID (a. u.)")
+    plt.ylabel("Re(FID) (a. u.)")
     
     if save: plt.savefig(destination + name)
     
