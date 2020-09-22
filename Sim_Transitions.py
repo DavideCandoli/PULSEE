@@ -44,7 +44,7 @@ def Spectrum_Pure_Zeeman():
     
     Plot_Real_Density_Matrix(dm_0, save=False, name='DMPureZeeman')
     
-    dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
+    dm_evolved = evolve(spin, h_unperturbed, dm_0, \
                         mode=mode, pulse_time=1/4, \
                         picture = 'IP', RRF_par=RRF_par)
     
@@ -92,7 +92,7 @@ def Spectrum_Perturbed_Zeeman():
     spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par, \
                                                      initial_state='canonical', temperature=300)
     
-    dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
+    dm_evolved = evolve(spin, h_unperturbed, dm_0, \
                         mode=mode, pulse_time=0.5, \
                         picture = 'IP', RRF_par=RRF_par)
     
@@ -139,7 +139,7 @@ def Spectrum_Pure_Symmetric_Quadrupole():
     
     Plot_Real_Density_Matrix(dm_0, save=False, name='DMPureSymmetricQuadrupole')
     
-    dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
+    dm_evolved = evolve(spin, h_unperturbed, dm_0, \
                         mode=mode, pulse_time=2*math.pi/3, \
                         picture = 'IP', RRF_par=RRF_par, \
                         n_points=10)
@@ -185,7 +185,7 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
     spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par, \
                                                      initial_state='canonical', temperature=1e-3)
     
-    dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
+    dm_evolved = evolve(spin, h_unperturbed, dm_0, \
                         mode=mode, pulse_time=20, \
                         picture = 'RRF', RRF_par=RRF_par)
     
@@ -230,7 +230,7 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Half_Integer_Spin():
     spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par, \
                                                      initial_state='canonical', temperature=1e-6)
     
-    dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
+    dm_evolved = evolve(spin, h_unperturbed, dm_0, \
                         mode=mode, pulse_time=20, \
                         picture = 'RRF', RRF_par=RRF_par)
     
@@ -275,7 +275,7 @@ def Spectrum_Perturbed_Quadrupole_Integer_Spin():
     spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par, \
                                                      initial_state='canonical', temperature=1e-4)
     
-    dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
+    dm_evolved = evolve(spin, h_unperturbed, dm_0, \
                         mode=mode, pulse_time=20, \
                         picture = 'RRF', RRF_par=RRF_par)
     
@@ -319,7 +319,7 @@ def Spectrum_Perturbed_Quadrupole_Half_Integer_Spin():
     
     spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par, \
                                                      initial_state='canonical', temperature=1e-3)    
-    dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
+    dm_evolved = evolve(spin, h_unperturbed, dm_0, \
                         mode=mode, pulse_time=20, \
                         picture = 'RRF', RRF_par=RRF_par)
     

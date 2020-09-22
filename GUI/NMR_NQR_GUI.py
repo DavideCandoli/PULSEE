@@ -41,20 +41,11 @@ from kivy.graphics import *
 
 sys.path.insert(1, '/home/davidecandoli/Documenti/Università/Thesis/NQR-NMRSimulationSoftware')
 
-from Operators import Observable, \
-                      Density_Matrix
+from Operators import *
 
-from Nuclear_Spin import Nuclear_Spin
+from Nuclear_Spin import *
 
-from Simulation import nuclear_system_setup, \
-                       Evolve, \
-                       Transition_Spectrum, \
-                       Plot_Real_Density_Matrix, \
-                       Plot_Transition_Spectrum, \
-                       FID_Signal, Plot_FID_Signal, \
-                       Fourier_Transform_Signal, \
-                       Fourier_Phase_Shift, \
-                       Plot_Fourier_Transform
+from Simulation import *
 
 # This class defines the object responsible of the management of the inputs and outputs of the
 # simulation, mediating the interaction between the GUI and the computational core of the program.
@@ -918,7 +909,7 @@ class Evolution_Results(FloatLayout):
             sim_man.dm[0] = sim_man.dm_initial
                         
             for i in range(sim_man.n_pulses):
-                sim_man.dm[i+1] = Evolve(sim_man.spin, sim_man.h_unperturbed, sim_man.dm[i], \
+                sim_man.dm[i+1] = evolve(sim_man.spin, sim_man.h_unperturbed, sim_man.dm[i], \
                                          sim_man.pulse[i], sim_man.pulse_time[i], \
                                          picture=sim_man.evolution_algorithm[i], \
                                          RRF_par=sim_man.RRF_par[i])

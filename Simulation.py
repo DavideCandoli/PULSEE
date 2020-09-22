@@ -38,42 +38,35 @@ def nuclear_system_setup(spin_par, zeem_par, quad_par, initial_state='canonical'
     return spin, h_unperturbed, dm_initial
 
 
-# Computes the density matrix of the system after the application of a desired pulse for a given time, 
-# given the initial preparation of the ensemble. The evolution is performed in the picture specified by
-# the argument
-def Evolve(spin, h_unperturbed, dm_initial, \
+def evolve(spin, h_unperturbed, dm_initial, \
            mode, pulse_time, \
            picture='RRF', RRF_par={'nu_RRF': 0,
                                    'theta_RRF': 0,
                                    'phi_RRF': 0}, \
-           n_points=10):
+           n_points=10, order=2):
     
-    # Selects the operator for the change of picture, according to the value of 'picture'
+    if pulse_time == 0 or np.all(np.absolute((dm_initial-Operator(spin.d)).matrix)<1e-10):
+        return dm_initial
+    
     if picture == 'IP':
         o_change_of_picture = h_unperturbed
     else:
         o_change_of_picture = RRF_Operator(spin, RRF_par)
     
-    # Returns the same density matrix as the initial one when the passed pulse time is exactly 0
-    if pulse_time == 0:
-        return dm_initial
-    
-    # Sampling of the Hamiltonian in the desired picture over the time window [0, pulse_time]
     times, time_step = np.linspace(0, pulse_time, num=int(pulse_time*n_points), retstep=True)
-    h_ip = []
+    h_new_picture = []
     for t in times:
-        h_ip.append(h_changed_picture(spin, mode, h_unperturbed, o_change_of_picture, t))
+        h_new_picture.append(h_changed_picture(spin, mode, h_unperturbed, o_change_of_picture, t))
     
-    # Evaluation of the 1st and 2nd terms of the Magnus expansion for the Hamiltonian in the new picture
-    magnus_1st = magnus_expansion_1st_term(h_ip, time_step)
-    magnus_2nd = magnus_expansion_2nd_term(h_ip, time_step)
+    magnus_exp = magnus_expansion_1st_term(h_new_picture, time_step)
+    if order>1:
+        magnus_exp = magnus_exp + magnus_expansion_2nd_term(h_new_picture, time_step)
+        if order>2:
+            magnus_exp = magnus_exp + magnus_expansion_3rd_term(h_new_picture, time_step)
 
-    # Density matrix of the system after evolution under the action of the pulse, expressed
-    # in the new picture
-    dm_evolved_ip = dm_initial.sim_trans(-(magnus_1st+magnus_2nd), exp=True)
+    dm_evolved_new_picture = dm_initial.sim_trans(-magnus_exp, exp=True)
 
-    # Evolved density matrix cast back in the Schroedinger picture
-    dm_evolved = dm_evolved_ip.changed_picture(o_change_of_picture, pulse_time, invert=True)
+    dm_evolved = dm_evolved_new_picture.changed_picture(o_change_of_picture, pulse_time, invert=True)
     
     return Density_Matrix(dm_evolved.matrix)
 

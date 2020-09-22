@@ -38,40 +38,35 @@ def test_null_zeeman_contribution_for_0_gyromagnetic_ratio():
     
     assert np.all(np.isclose(h_unperturbed.matrix, null_matrix, rtol=1e-10))
     
-# Checks that if the initial density matrix is set to the (normalized) identity, the density matrix
-# returned by the function Evolve will be as well close to the identity
-def test_Evolution_Identity_Matrix():
+
+def test_pi_pulse_yields_population_inversion():
     spin_par = {'quantum number' : 5/2,
                 'gamma/2pi' : 1.}
     
     zeem_par = {'field magnitude' : 10.,
-                'theta_z' : math.pi,
+                'theta_z' : 0,
                 'phi_z' : 0}
     
-    quad_par = {'coupling constant' : 1.,
-                'asymmetry parameter' : 0.5,
+    quad_par = {'coupling constant' : 0.,
+                'asymmetry parameter' : 0.,
                 'alpha_q' : 0,
-                'beta_q' : math.pi/4,
-                'gamma_q' : math.pi/4}
+                'beta_q' : 0,
+                'gamma_q' : 0}
     
-    identity = np.identity(6)/6
+    initial_state = np.zeros((6, 6))
+    initial_state[0, 0] = 1
     
     spin, h_unperturbed, dm_initial = nuclear_system_setup(spin_par, zeem_par, quad_par, \
-                                                     initial_state=identity)
+                                                           initial_state=initial_state)
     
     mode = pd.DataFrame([(10., 1., 0., math.pi/2, 0)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
-    RRF_par={'nu_RRF': 10,
-             'theta_RRF': 0,
-             'phi_RRF': 0}
-    
-    dm_evolved = Evolve(spin, h_unperturbed, dm_initial, \
-                        mode, pulse_time=10, \
-                        picture='RRF', RRF_par=RRF_par, \
-                        n_points=10)
-    
-    assert np.all(np.isclose(dm_evolved.matrix, identity, rtol=1e-10))
+    dm_evolved = evolve(spin, h_unperturbed, dm_initial, \
+                        mode, pulse_time=1, \
+                        picture='IP')
+        
+    assert np.all(np.isclose(dm_evolved.matrix[5, 5], 1, rtol=1e-1))
     
 # Checks that the Observable returned by RRF_Operator is proportional to the Operator I['z'] of the spin
 # when the angle theta_RRF is set to 0
@@ -166,7 +161,7 @@ def test_Opposite_Decay_Signal():
     mode = pd.DataFrame([(10., 1., 0., math.pi/2, 0)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
-    dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
+    dm_evolved = evolve(spin, h_unperturbed, dm_0, \
                         mode, pulse_time=10, \
                         picture='IP', \
                         n_points=10)
@@ -205,7 +200,7 @@ def test_Two_Methods_Phase_Adjustment():
     mode = pd.DataFrame([(10., 1., 0., math.pi/2, 0)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
-    dm_evolved = Evolve(spin, h_unperturbed, dm_0, \
+    dm_evolved = evolve(spin, h_unperturbed, dm_0, \
                         mode, pulse_time=math.pi, \
                         picture='IP', \
                         n_points=10)
