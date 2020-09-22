@@ -974,7 +974,7 @@ class Evolution_Results(FloatLayout):
                                                         theta=sim_man.coil_theta, \
                                                         phi=sim_man.coil_phi)
             sim_man.spectrum_frequencies, sim_man.spectrum_fourier = \
-                Fourier_Transform_Signal(sim_man.FID, sim_man.FID_times, \
+                fourier_transform_signal(sim_man.FID, sim_man.FID_times, \
                                          sim_man.frequency_left_bound,\
                                          sim_man.frequency_right_bound)
             Plot_Fourier_Transform(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
@@ -1077,7 +1077,7 @@ class Evolution_Results(FloatLayout):
             phi = Fourier_Phase_Shift(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
                                       peak_frequency_hint, search_window)
         
-            f, ft = Fourier_Transform_Signal(np.exp(1j*phi)*sim_man.FID, sim_man.FID_times, \
+            f, ft = fourier_transform_signal(np.exp(1j*phi)*sim_man.FID, sim_man.FID_times, \
                                              sim_man.frequency_left_bound, \
                                              sim_man.frequency_right_bound)
         

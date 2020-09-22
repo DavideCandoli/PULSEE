@@ -215,19 +215,12 @@ def plot_real_part_FID_signal(times, FID, show=True, save=False, name='FIDSignal
     return fig
 
 
-# Computes the complex Fourier transform of the given signal originally expressed in the time domain
-def Fourier_Transform_Signal(signal, times, frequency_start, frequency_stop):
-    
-    # Whole duration of the signal
-    T = times[-1]
-    
-    # Step between the sampled instants of time
+def fourier_transform_signal(signal, times, frequency_start, frequency_stop):
+        
     dt = times[1]-times[0]
     
-    # Values of frequency at which the Fourier transform is to be evaluated (one-signed)
     frequencies = np.linspace(start=frequency_start, stop=frequency_stop, num=1000)
     
-    # Fourier transform to be sampled
     fourier = []
     
     # The Fourier transform is evaluated through the conventional formula

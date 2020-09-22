@@ -133,9 +133,8 @@ def test_FID_signal_decays_fast_for_small_relaxation_time():
     
     assert np.absolute(signal[-1])<1e-10
     
-# Checks that the Fourier transform of two FID signal acquired with a phase difference of pi are one the
-# opposite of the other
-def test_Opposite_Decay_Signal():
+
+def test_opposite_fourier_transform_when_FID_differ_of_pi():
     spin_par = {'quantum number' : 3,
                 'gamma/2pi' : 1.}
     
@@ -150,7 +149,7 @@ def test_Opposite_Decay_Signal():
                 'gamma_q' : 0}
     
     initial_matrix = np.zeros((7, 7))
-    initial_matrix[0, 0] = 1
+    initial_matrix[4, 4] = 1
     
     spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par,
                                                      initial_state=initial_matrix)
@@ -158,16 +157,11 @@ def test_Opposite_Decay_Signal():
     mode = pd.DataFrame([(10., 1., 0., math.pi/2, 0)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
-    dm_evolved = evolve(spin, h_unperturbed, dm_0, \
-                        mode, pulse_time=10, \
-                        picture='IP', \
-                        n_points=10)
+    t, signal1 = FID_signal(spin, h_unperturbed, dm_0, acquisition_time=250, T2=100)
+    t, signal2 = FID_signal(spin, h_unperturbed, dm_0, acquisition_time=250, T2=100, phi=math.pi)
     
-    t, signal1 = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=250, T2=100)
-    t, signal2 = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=250, T2=100, phi=math.pi)
-    
-    f, fourier1 = Fourier_Transform_Signal(signal1, t, 7.5, 12.5)
-    f, fourier2 = Fourier_Transform_Signal(signal2, t, 7.5, 12.5)
+    f, fourier1 = fourier_transform_signal(signal1, t, 7.5, 12.5)
+    f, fourier2 = fourier_transform_signal(signal2, t, 7.5, 12.5)
     
     assert np.all(np.isclose(fourier1, -fourier2, rtol=1e-10))
 
@@ -203,13 +197,13 @@ def test_Two_Methods_Phase_Adjustment():
                         n_points=10)
     
     t, fid = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=500)
-    f, fourier0 = Fourier_Transform_Signal(fid, t, 9, 11)
+    f, fourier0 = fourier_transform_signal(fid, t, 9, 11)
             
     phi = Fourier_Phase_Shift(f, fourier0, peak_frequency_hint=10)
-    f, fourier1 = Fourier_Transform_Signal(np.exp(1j*phi)*fid, t, 9, 11)
+    f, fourier1 = fourier_transform_signal(np.exp(1j*phi)*fid, t, 9, 11)
             
     t, fid_rephased = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=500, phi=-phi)
-    f, fourier2 = Fourier_Transform_Signal(fid_rephased, t, 9, 11)
+    f, fourier2 = fourier_transform_signal(fid_rephased, t, 9, 11)
         
     assert np.all(np.isclose(fourier1, fourier2, rtol=1e-10))
 

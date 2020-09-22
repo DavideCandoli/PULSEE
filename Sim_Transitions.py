@@ -56,7 +56,7 @@ def Spectrum_Pure_Zeeman():
     
     t, FID = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=500, phi=math.pi/2)
         
-    f, ft = Fourier_Transform_Signal(FID, t, 9.5, 10.5)
+    f, ft = fourier_transform_signal(FID, t, 9.5, 10.5)
     
     Plot_Fourier_Transform(f, ft)
     
@@ -104,7 +104,7 @@ def Spectrum_Perturbed_Zeeman():
     
     t, FID = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=2000, T2=500, phi=math.pi/2)
     
-    f, ft = Fourier_Transform_Signal(FID, t, 9.8, 10.2)
+    f, ft = fourier_transform_signal(FID, t, 9.8, 10.2)
     
     Plot_Fourier_Transform(f, ft)
     
@@ -152,7 +152,7 @@ def Spectrum_Pure_Symmetric_Quadrupole():
     
     t, FID = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=500)
         
-    f, ft = Fourier_Transform_Signal(FID, t, 0, 4)
+    f, ft = fourier_transform_signal(FID, t, 0, 4)
     
     Plot_Fourier_Transform(f, ft)
     
@@ -197,7 +197,7 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
     
     t, FID = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=500)
     
-    f, ft = Fourier_Transform_Signal(FID, t, 0, 10)
+    f, ft = fourier_transform_signal(FID, t, 0, 10)
     
     Plot_Fourier_Transform(f, ft)
     
@@ -242,7 +242,7 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Half_Integer_Spin():
     
     t, FID = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=500)
     
-    f, ft = Fourier_Transform_Signal(FID, t, 9, 11)
+    f, ft = fourier_transform_signal(FID, t, 9, 11)
     
     Plot_Fourier_Transform(f, ft)
     
@@ -287,7 +287,7 @@ def Spectrum_Perturbed_Quadrupole_Integer_Spin():
     
     t, FID = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=500)
         
-    f, ft = Fourier_Transform_Signal(FID, t, 1, 8)
+    f, ft = fourier_transform_signal(FID, t, 1, 8)
     
     Plot_Fourier_Transform(f, ft)
     
@@ -331,7 +331,7 @@ def Spectrum_Perturbed_Quadrupole_Half_Integer_Spin():
     
     t, FID = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=1000)
     
-    f, ft = Fourier_Transform_Signal(FID, t, 1, 10)
+    f, ft = fourier_transform_signal(FID, t, 1, 10)
     
     Plot_Fourier_Transform(f, ft)
     
