@@ -51,7 +51,7 @@ def evolve(spin, h_unperturbed, dm_initial, \
     if picture == 'IP':
         o_change_of_picture = h_unperturbed
     else:
-        o_change_of_picture = RRF_Operator(spin, RRF_par)
+        o_change_of_picture = RRF_operator(spin, RRF_par)
     
     times, time_step = np.linspace(0, pulse_time, num=int(pulse_time*n_points), retstep=True)
     h_new_picture = []
@@ -73,20 +73,18 @@ def evolve(spin, h_unperturbed, dm_initial, \
 
 # Operator which generates a change of picture equivalent to moving to the rotating reference frame
 # (RRF)
-def RRF_Operator(spin, RRF_par):
+def RRF_operator(spin, RRF_par):
     nu = RRF_par['nu_RRF']
     theta = RRF_par['theta_RRF']
     phi = RRF_par['phi_RRF']
-    RRF_operator = nu*(spin.I['z']*math.cos(theta) + \
-                       spin.I['x']*math.sin(theta)*math.cos(phi) + \
-                       spin.I['y']*math.sin(theta)*math.sin(phi))
-    return Observable(RRF_operator.matrix)
+    RRF_o = nu*(spin.I['z']*math.cos(theta) + \
+                spin.I['x']*math.sin(theta)*math.cos(phi) + \
+                spin.I['y']*math.sin(theta)*math.sin(phi))
+    return Observable(RRF_o.matrix)
 
 
-# Generates a 3D histogram of the real part of the passed density matrix
-def Plot_Real_Density_Matrix(dm, show=True, save=False, name='RealPartDensityMatrix', destination=''):
+def plot_real_part_density_matrix(dm, show=True, save=False, name='RealPartDensityMatrix', destination=''):
     
-    # Retain only the real part of the density matrix elements
     real_part = np.vectorize(np.real)
     data_array = real_part(dm.matrix)
     
@@ -94,8 +92,8 @@ def Plot_Real_Density_Matrix(dm, show=True, save=False, name='RealPartDensityMat
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
-    # Create an X-Y mesh of the same dimension as the 2D data. You can think of this as the floor of the
-    # plot.
+    # Create an X-Y mesh of the same dimension as the 2D data
+    # You can think of this as the floor of the plot
     x_data, y_data = np.meshgrid(np.arange(data_array.shape[1])+0.25,
                                  np.arange(data_array.shape[0])+0.25)
     
@@ -103,10 +101,9 @@ def Plot_Real_Density_Matrix(dm, show=True, save=False, name='RealPartDensityMat
     dx = dy = 0.5
 
     # Flatten out the arrays so that they may be passed to "ax.bar3d".
-    # Basically, ax.bar3d expects three one-dimensional arrays:
-    # x_data, y_data, z_data. The following call boils down to picking
-    # one entry from each array and plotting a bar from
-    # (x_data[i], y_data[i], 0) to (x_data[i], y_data[i], z_data[i]).
+    # Basically, ax.bar3d expects three one-dimensional arrays: x_data, y_data, z_data. The following
+    # call boils down to picking one entry from each array and plotting a bar from (x_data[i],
+    # y_data[i], 0) to (x_data[i], y_data[i], z_data[i]).
     x_data = x_data.flatten()
     y_data = y_data.flatten()
     z_data = data_array.flatten()
@@ -114,8 +111,6 @@ def Plot_Real_Density_Matrix(dm, show=True, save=False, name='RealPartDensityMat
              y_data,
              np.zeros(len(z_data)),
              dx, dy, z_data)
-    
-    # Labels of the plot
     
     s = (data_array.shape[0]-1)/2
 
@@ -126,12 +121,8 @@ def Plot_Real_Density_Matrix(dm, show=True, save=False, name='RealPartDensityMat
     ax.set_ylabel("m")
     ax.set_zlabel("Re(\N{GREEK SMALL LETTER RHO})")
     
-    # Save the plot
-    
     if save:
         plt.savefig(destination + name)
-
-    # Finally, display the plot.
     
     if show:
         plt.show()

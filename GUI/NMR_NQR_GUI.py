@@ -284,7 +284,7 @@ class System_Parameters(FloatLayout):
                                      initial_state=sim_man.dm_0, \
                                      temperature=300)
                 
-            Plot_Real_Density_Matrix(sim_man.dm_initial, show=False)
+            plot_real_part_density_matrix(sim_man.dm_initial, show=False)
             
             self.dm_graph_box = BoxLayout(size=(300, 300), size_hint=(None, None), pos=(470, 105))
             
@@ -1152,7 +1152,7 @@ class Graphical_Results(TabbedPanel):
             plt.close(self.dm_evolved_figure[i])
             self.pulse_tab[i] = TabbedPanelItem(text='Pulse '+str(i+1))
             self.evolved_state[i] = BoxLayout()
-            Plot_Real_Density_Matrix(sim_man.dm[i+1], show=False)
+            plot_real_part_density_matrix(sim_man.dm[i+1], show=False)
             self.dm_evolved_figure[i] = plt.gcf()
             self.evolved_state[i].add_widget(FigureCanvasKivyAgg(self.dm_evolved_figure[i]))
             self.pulse_tab[i].add_widget(self.evolved_state[i])

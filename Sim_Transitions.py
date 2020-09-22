@@ -42,13 +42,13 @@ def Spectrum_Pure_Zeeman():
     
     spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par)
     
-    Plot_Real_Density_Matrix(dm_0, save=False, name='DMPureZeeman')
+    plot_real_part_density_matrix(dm_0, save=False, name='DMPureZeeman')
     
     dm_evolved = evolve(spin, h_unperturbed, dm_0, \
                         mode=mode, pulse_time=1/4, \
                         picture = 'IP', RRF_par=RRF_par)
     
-    Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMPureZeeman')
+    plot_real_part_density_matrix(dm_evolved, save=False, name='DMPureZeeman')
     
     f, p = Transition_Spectrum(spin, h_unperturbed, normalized=True)
     
@@ -96,7 +96,7 @@ def Spectrum_Perturbed_Zeeman():
                         mode=mode, pulse_time=0.5, \
                         picture = 'IP', RRF_par=RRF_par)
     
-    Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMPerturbedZeeman')
+    plot_real_part_density_matrix(dm_evolved, save=False, name='DMPerturbedZeeman')
     
     f, p = Transition_Spectrum(spin, h_unperturbed)
     
@@ -137,14 +137,14 @@ def Spectrum_Pure_Symmetric_Quadrupole():
     spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par, \
                                                      initial_state='canonical', temperature=300)
     
-    Plot_Real_Density_Matrix(dm_0, save=False, name='DMPureSymmetricQuadrupole')
+    plot_real_part_density_matrix(dm_0, save=False, name='DMPureSymmetricQuadrupole')
     
     dm_evolved = evolve(spin, h_unperturbed, dm_0, \
                         mode=mode, pulse_time=2*math.pi/3, \
                         picture = 'IP', RRF_par=RRF_par, \
                         n_points=10)
     
-    Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMPureSymmetricQuadrupole')
+    plot_real_part_density_matrix(dm_evolved, save=False, name='DMPureSymmetricQuadrupole')
     
     f, p = Transition_Spectrum(spin, h_unperturbed)
     
@@ -189,7 +189,7 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
                         mode=mode, pulse_time=20, \
                         picture = 'RRF', RRF_par=RRF_par)
     
-    Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMPureAsymmetricQuadrupoleInt')
+    plot_real_part_density_matrix(dm_evolved, save=False, name='DMPureAsymmetricQuadrupoleInt')
     
     f, p = Transition_Spectrum(spin, h_unperturbed)
     
@@ -234,7 +234,7 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Half_Integer_Spin():
                         mode=mode, pulse_time=20, \
                         picture = 'RRF', RRF_par=RRF_par)
     
-    Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMPureAsymmetricQuadrupoleHalfInt')
+    plot_real_part_density_matrix(dm_evolved, save=False, name='DMPureAsymmetricQuadrupoleHalfInt')
     
     f, p = Transition_Spectrum(spin, h_unperturbed)
     
@@ -279,7 +279,7 @@ def Spectrum_Perturbed_Quadrupole_Integer_Spin():
                         mode=mode, pulse_time=20, \
                         picture = 'RRF', RRF_par=RRF_par)
     
-    Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMSpectrumPerturbedQuadrupoleInt')
+    plot_real_part_density_matrix(dm_evolved, save=False, name='DMSpectrumPerturbedQuadrupoleInt')
     
     f, p = Transition_Spectrum(spin, h_unperturbed)
     
@@ -323,7 +323,7 @@ def Spectrum_Perturbed_Quadrupole_Half_Integer_Spin():
                         mode=mode, pulse_time=20, \
                         picture = 'RRF', RRF_par=RRF_par)
     
-    Plot_Real_Density_Matrix(dm_evolved, save=False, name='DMSpectrumPerturbedQuadrupoleHalfInt')
+    plot_real_part_density_matrix(dm_evolved, save=False, name='DMSpectrumPerturbedQuadrupoleHalfInt')
     
     f, p = Transition_Spectrum(spin, h_unperturbed)
     
