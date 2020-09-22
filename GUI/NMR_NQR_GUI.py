@@ -1074,7 +1074,7 @@ class Evolution_Results(FloatLayout):
         
             search_window = float(null_string(self.search_range.text))
         
-            phi = Fourier_Phase_Shift(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
+            phi = fourier_phase_shift(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
                                       peak_frequency_hint, search_window)
         
             f, ft = fourier_transform_signal(np.exp(1j*phi)*sim_man.FID, sim_man.FID_times, \

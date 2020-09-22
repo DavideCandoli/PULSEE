@@ -124,12 +124,20 @@ def test_FID_signal_decays_fast_for_small_relaxation_time():
                 'gamma_q' : 0}
     
     initial_matrix = np.zeros((5, 5))
-    initial_matrix[2, 2] = 1
+    initial_matrix[0, 0] = 1
     
     spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par,
                                                      initial_state=initial_matrix)
     
-    t, signal = FID_signal(spin, h_unperturbed, dm_0, acquisition_time=100, T2=1)
+    mode = pd.DataFrame([(10., 1., 0., math.pi/2, 0)], 
+                        columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
+    
+    dm_evolved = evolve(spin, h_unperturbed, dm_0, \
+                        mode, pulse_time=math.pi, \
+                        picture='IP', \
+                        n_points=10)
+    
+    t, signal = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=100, T2=1)
     
     assert np.absolute(signal[-1])<1e-10
     
@@ -149,7 +157,7 @@ def test_opposite_fourier_transform_when_FID_differ_of_pi():
                 'gamma_q' : 0}
     
     initial_matrix = np.zeros((7, 7))
-    initial_matrix[4, 4] = 1
+    initial_matrix[0, 0] = 1
     
     spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par,
                                                      initial_state=initial_matrix)
@@ -157,8 +165,13 @@ def test_opposite_fourier_transform_when_FID_differ_of_pi():
     mode = pd.DataFrame([(10., 1., 0., math.pi/2, 0)], 
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
-    t, signal1 = FID_signal(spin, h_unperturbed, dm_0, acquisition_time=250, T2=100)
-    t, signal2 = FID_signal(spin, h_unperturbed, dm_0, acquisition_time=250, T2=100, phi=math.pi)
+    dm_evolved = evolve(spin, h_unperturbed, dm_0, \
+                        mode, pulse_time=math.pi, \
+                        picture='IP', \
+                        n_points=10)
+    
+    t, signal1 = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=250, T2=100)
+    t, signal2 = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=250, T2=100, phi=math.pi)
     
     f, fourier1 = fourier_transform_signal(signal1, t, 7.5, 12.5)
     f, fourier2 = fourier_transform_signal(signal2, t, 7.5, 12.5)
@@ -166,9 +179,9 @@ def test_opposite_fourier_transform_when_FID_differ_of_pi():
     assert np.all(np.isclose(fourier1, -fourier2, rtol=1e-10))
 
 # Checks that the Fourier transform of the signal has the same shape both after adding the phase
-# computed by Fourier_Phase_Shift directly to the FID signal and by rotating the detection coil by the
+# computed by fourier_phase_shift directly to the FID signal and by rotating the detection coil by the
 # same angle
-def test_Two_Methods_Phase_Adjustment():
+def test_two_methods_phase_adjustment():
     spin_par = {'quantum number' : 3/2,
                 'gamma/2pi' : 1.}
     
@@ -199,7 +212,7 @@ def test_Two_Methods_Phase_Adjustment():
     t, fid = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=500)
     f, fourier0 = fourier_transform_signal(fid, t, 9, 11)
             
-    phi = Fourier_Phase_Shift(f, fourier0, peak_frequency_hint=10)
+    phi = fourier_phase_shift(f, fourier0, peak_frequency_hint=10)
     f, fourier1 = fourier_transform_signal(np.exp(1j*phi)*fid, t, 9, 11)
             
     t, fid_rephased = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=500, phi=-phi)

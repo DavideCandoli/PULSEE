@@ -235,9 +235,9 @@ def fourier_transform_signal(signal, times, frequency_start, frequency_stop):
 
 
 # Finds out the phase responsible for the displacement of the real and imaginary parts of the Fourier
-# spectrum of the FID with respect to the ideal absorptive/dispersive shapes
-def Fourier_Phase_Shift(frequencies, fourier, peak_frequency_hint, search_window=0.1):
-    # Position of the specified peak in the list frequencies
+# spectrum of the FID with respect to the ideal absorptive/dispersive lorentzian shapes
+def fourier_phase_shift(frequencies, fourier, peak_frequency_hint, search_window=0.1):
+
     peak_pos = 0
     
     # Range where to look for the maximum of the square modulus of the Fourier spectrum
@@ -250,13 +250,10 @@ def Fourier_Phase_Shift(frequencies, fourier, peak_frequency_hint, search_window
             fourier2_max = np.absolute(fourier[i])
             peak_pos = i
         
-    # Real part of the Fourier spectrum at the peak
     re = np.real(fourier[peak_pos])
     
-    # Imaginary part of the Fourier spectrum at the peak
     im = np.imag(fourier[peak_pos])
     
-    # Phase shift
     if im >= 0:
         phase = math.atan(-im/re)
     else:
@@ -265,7 +262,6 @@ def Fourier_Phase_Shift(frequencies, fourier, peak_frequency_hint, search_window
     return phase
 
 
-# Plots the Fourier transform of the signal
 def Plot_Fourier_Transform(frequencies, fourier, square_modulus=False, show=True, save=False, name='FTSignal', destination=''):
     fig = plt.figure()
     
