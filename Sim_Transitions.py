@@ -52,7 +52,7 @@ def Spectrum_Pure_Zeeman():
     
     f, p = power_absorption_spectrum(spin, h_unperturbed, normalized=True)
     
-    Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPureZeeman')
+    plot_power_absorption_spectrum(f, p, save=False, name='SpectrumPureZeeman')
     
     t, FID = FID_Signal(spin, h_unperturbed, dm_evolved, time_window=500, phi=math.pi/2)
         
@@ -100,7 +100,7 @@ def Spectrum_Perturbed_Zeeman():
     
     f, p = power_absorption_spectrum(spin, h_unperturbed)
     
-    Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPerturbedZeeman')
+    plot_power_absorption_spectrum(f, p, save=False, name='SpectrumPerturbedZeeman')
     
     t, FID = FID_Signal(spin, h_unperturbed, dm_evolved, time_window=2000, T2=500, phi=math.pi/2)
     
@@ -148,7 +148,7 @@ def Spectrum_Pure_Symmetric_Quadrupole():
     
     f, p = power_absorption_spectrum(spin, h_unperturbed)
     
-    Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPureSymmetricQuadrupole')
+    plot_power_absorption_spectrum(f, p, save=False, name='SpectrumPureSymmetricQuadrupole')
     
     t, FID = FID_Signal(spin, h_unperturbed, dm_evolved, time_window=500)
         
@@ -193,7 +193,7 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Integer_Spin():
     
     f, p = power_absorption_spectrum(spin, h_unperturbed)
     
-    Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPureAsymmetricQuadrupoleInt')
+    plot_power_absorption_spectrum(f, p, save=False, name='SpectrumPureAsymmetricQuadrupoleInt')
     
     t, FID = FID_Signal(spin, h_unperturbed, dm_evolved, time_window=500)
     
@@ -238,7 +238,7 @@ def Spectrum_Pure_Asymmetric_Quadrupole_Half_Integer_Spin():
     
     f, p = power_absorption_spectrum(spin, h_unperturbed)
     
-    Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPureAsymmetricQuadrupoleHalfInt')
+    plot_power_absorption_spectrum(f, p, save=False, name='SpectrumPureAsymmetricQuadrupoleHalfInt')
     
     t, FID = FID_Signal(spin, h_unperturbed, dm_evolved, time_window=500)
     
@@ -283,7 +283,7 @@ def Spectrum_Perturbed_Quadrupole_Integer_Spin():
     
     f, p = power_absorption_spectrum(spin, h_unperturbed)
     
-    Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPerturbedQuadrupoleInt')
+    plot_power_absorption_spectrum(f, p, save=False, name='SpectrumPerturbedQuadrupoleInt')
     
     t, FID = FID_Signal(spin, h_unperturbed, dm_evolved, time_window=500)
         
@@ -327,7 +327,7 @@ def Spectrum_Perturbed_Quadrupole_Half_Integer_Spin():
     
     f, p = power_absorption_spectrum(spin, h_unperturbed)
     
-    Plot_Transition_Spectrum(f, p, save=False, name='SpectrumPerturbedQuadrupoleHalfInt')
+    plot_power_absorption_spectrum(f, p, save=False, name='SpectrumPerturbedQuadrupoleHalfInt')
     
     t, FID = FID_Signal(spin, h_unperturbed, dm_evolved, time_window=1000)
     

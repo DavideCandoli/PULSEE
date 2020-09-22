@@ -167,13 +167,13 @@ def power_absorption_spectrum(spin, h_unperturbed, normalized=True, dm_initial='
     return transition_frequency, transition_intensity
 
 
-def Plot_Transition_Spectrum(frequencies, probabilities, show=True, save=False, name='TransitionSpectrum', destination=''):
+def plot_power_absorption_spectrum(frequencies, intensities, show=True, save=False, name='PowerAbsorptionSpectrum', destination=''):
     fig = plt.figure()
     
-    plt.vlines(frequencies, 0, probabilities, colors='b')
+    plt.vlines(frequencies, 0, intensities, colors='b')
     
-    plt.xlabel("\N{GREEK SMALL LETTER OMEGA} (MHz)")    
-    plt.ylabel("Probability (a. u.)")
+    plt.xlabel("\N{GREEK SMALL LETTER NU} (MHz)")    
+    plt.ylabel("Power absorption (a. u.)")
     
     if save: plt.savefig(destination + name)
     
