@@ -53,7 +53,7 @@ def evolve(spin, h_unperturbed, dm_initial, \
     else:
         o_change_of_picture = RRF_operator(spin, RRF_par)
     
-    times, time_step = np.linspace(0, pulse_time, num=int(pulse_time*n_points), retstep=True)
+    times, time_step = np.linspace(0, pulse_time, num=max(2, int(pulse_time*n_points)), retstep=True)
     h_new_picture = []
     for t in times:
         h_new_picture.append(h_changed_picture(spin, mode, h_unperturbed, o_change_of_picture, t))

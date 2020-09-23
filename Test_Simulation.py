@@ -69,6 +69,31 @@ def test_pi_pulse_yields_population_inversion():
     assert np.all(np.isclose(dm_evolved.matrix[5, 5], 1, rtol=1e-1))
     
 
+def test_evolution_goes_fine_for_low_pulse_duration():
+    spin_par = {'quantum number' : 1,
+                'gamma/2pi' : 1.}
+    
+    zeem_par = {'field magnitude' : 10.,
+                'theta_z' : 0,
+                'phi_z' : 0}
+    
+    quad_par = {'coupling constant' : 0.,
+                'asymmetry parameter' : 0.,
+                'alpha_q' : 0,
+                'beta_q' : 0,
+                'gamma_q' : 0}
+    
+    spin, h_unperturbed, dm_initial = nuclear_system_setup(spin_par, zeem_par, quad_par, \
+                                                           initial_state='canonical')
+    
+    mode = pd.DataFrame([(10., 1., 0., math.pi/2, 0)], 
+                        columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
+    
+    dm_evolved = evolve(spin, h_unperturbed, dm_initial, \
+                        mode, pulse_time=0.01, \
+                        picture='IP')
+    
+
 def test_RRF_operator_proportional_to_Iz_for_theta_0():
     
     spin = Nuclear_Spin(3/2, 1.)
