@@ -849,13 +849,13 @@ class Evolution_Results(FloatLayout):
     
     error_last_par = Label()
     
-    error_simulation = Label()
+    error_evolution = Label()
     
     tb_last_par = Button()
     
-    tb_simulation = Button()
+    tb_evolution = Button()
     
-    graphical_results = Widget()
+    evolved_dm_panels = Widget()
     
     NMR_spectrum = Widget()
         
@@ -891,13 +891,11 @@ class Evolution_Results(FloatLayout):
             self.add_widget(self.tb_last_par)
             
     # Function that actually evolves the system through all the steps of the specified sequence
-    def launch_simulation(self, sim_man, *args):
+    def launch_evolution(self, sim_man, *args):
         try:
-            self.remove_widget(self.error_simulation)
-            self.remove_widget(self.tb_simulation)
-            self.remove_widget(self.graphical_results)
-                
-            plt.close(self.NMR_spectrum_figure)
+            self.remove_widget(self.error_evolution)
+            self.remove_widget(self.tb_evolution)
+            self.remove_widget(self.evolved_dm_panels)
                                     
             for i in range(sim_man.n_pulses):
                 sim_man.dm[i+1] = evolve(sim_man.spin, sim_man.h_unperturbed, sim_man.dm[i], \
@@ -905,186 +903,65 @@ class Evolution_Results(FloatLayout):
                                          picture=sim_man.evolution_algorithm[i], \
                                          RRF_par=sim_man.RRF_par[i])
             
-            # LOGGING
+            # Recap of the input parameters
             print("Spin quantum number = " + str(sim_man.spin_par['quantum number']))
-            print("gamma/2pi = " + str(sim_man.spin_par['gamma/2pi']))
+            print("gamma/2pi = " + str(sim_man.spin_par['gamma/2pi']) + "MHz" )
             
             print('\n')
             
-            print("Field magnitude = " + str(sim_man.zeem_par['field magnitude']))
-            print("theta_z = " + str(sim_man.zeem_par['theta_z']))
-            print("phi_z = " + str(sim_man.zeem_par['phi_z']))
+            print("Field magnitude = " + str(sim_man.zeem_par['field magnitude']) + "T")
+            print("theta_z = " + str(sim_man.zeem_par['theta_z']) + "rad")
+            print("phi_z = " + str(sim_man.zeem_par['phi_z']) + "rad")
             
             print('\n')
             
-            print("e2qQ = " + str(sim_man.quad_par['coupling constant']))
+            print("e2qQ = " + str(sim_man.quad_par['coupling constant']) + "MHz")
             print("Asymmetry = " + str(sim_man.quad_par['asymmetry parameter']))
-            print("alpha_q = " + str(sim_man.quad_par['alpha_q']))
-            print("beta_q = " + str(sim_man.quad_par['beta_q']))
-            print("gamma_q = " + str(sim_man.quad_par['gamma_q']))
+            print("alpha_q = " + str(sim_man.quad_par['alpha_q']) + "rad")
+            print("beta_q = " + str(sim_man.quad_par['beta_q']) + "rad")
+            print("gamma_q = " + str(sim_man.quad_par['gamma_q']) + "rad")
             
             print('\n')
             
             print("# pulses = " + str(sim_man.n_pulses))
             for i in range(sim_man.n_pulses):
                 for j in range(2):
-                    print("frequency (pulse #"+str(i)+" mode #"+str(j)+") = "+str(sim_man.pulse[i]['frequency'][j]))
-                    print("amplitude (pulse #"+str(i)+" mode #"+str(j)+") = "+str(sim_man.pulse[i]['amplitude'][j]))
-                    print("phase (pulse #"+str(i)+" mode #"+str(j)+")"+" = "+str(sim_man.pulse[i]['phase'][j]))
-                    print("theta_p (pulse #"+str(i)+" mode #"+str(j)+")"+" = "+str(sim_man.pulse[i]['theta_p'][j]))
-                    print("phi_p (pulse #"+str(i)+" mode #"+str(j)+")"+" = "+str(sim_man.pulse[i]['phi_p'][j]))
+                    print("frequency (pulse #"+str(i)+" mode #"+str(j)+") = "+str(sim_man.pulse[i]['frequency'][j]) + "MHz")
+                    print("amplitude (pulse #"+str(i)+" mode #"+str(j)+") = "+str(sim_man.pulse[i]['amplitude'][j]) + "T")
+                    print("phase (pulse #"+str(i)+" mode #"+str(j)+")"+" = "+str(sim_man.pulse[i]['phase'][j]) + "rad")
+                    print("theta_p (pulse #"+str(i)+" mode #"+str(j)+")"+" = "+str(sim_man.pulse[i]['theta_p'][j]) + "rad")
+                    print("phi_p (pulse #"+str(i)+" mode #"+str(j)+")"+" = "+str(sim_man.pulse[i]['phi_p'][j]) + "rad")
     
-                print("Pulse time (pulse #"+str(i) + ") = " + str(sim_man.pulse_time[i]))
+                print("Pulse time (pulse #"+str(i) + ") = " + str(sim_man.pulse_time[i]) + "us")
                 print("Evolution algorithm (pulse #"+str(i) + ") = " + str(sim_man.evolution_algorithm[i]))
-                print("nu_RRF (pulse #"+str(i) + ") = " + str(sim_man.RRF_par[i]['nu_RRF']))
-                print("theta_RRF (pulse #"+str(i) + ") = " + str(sim_man.RRF_par[i]['theta_RRF']))
-                print("phi_RRF (pulse #"+str(i) + ") = " + str(sim_man.RRF_par[i]['phi_RRF']))
+                print("nu_RRF (pulse #"+str(i) + ") = " + str(sim_man.RRF_par[i]['nu_RRF']) + "MHz")
+                print("theta_RRF (pulse #"+str(i) + ") = " + str(sim_man.RRF_par[i]['theta_RRF']) + "rad")
+                print("phi_RRF (pulse #"+str(i) + ") = " + str(sim_man.RRF_par[i]['phi_RRF']) + "rad")
                 print('\n')
     
-            print("Temperature = " + str(sim_man.temperature))
+            print("Temperature = " + str(sim_man.temperature) + "K")
             print("Initial density matrix = " + str(sim_man.dm[0].matrix))
-            print("Relaxation time = " + str(sim_man.relaxation_time))    
-            print("theta_detection = " + str(sim_man.coil_theta))
-            print("phi_detection = " + str(sim_man.coil_phi))
-            print("Time of acquisition = " + str(sim_man.time_aq))
+            print("Relaxation time = " + str(sim_man.relaxation_time) + "us")    
+            print("theta_detection = " + str(sim_man.coil_theta) + "rad")
+            print("phi_detection = " + str(sim_man.coil_phi) + "rad")
+            print("Time of acquisition = " + str(sim_man.time_aq) + "us")
             print("Square modulus of the NMR signal = " + str(sim_man.square_modulus))
-            print("Frequency domain left bound = " + str(sim_man.frequency_left_bound))
-            print("Frequency domain right bound = " + str(sim_man.frequency_right_bound))
+            print("Frequency domain left bound = " + str(sim_man.frequency_left_bound) + "MHz")
+            print("Frequency domain right bound = " + str(sim_man.frequency_right_bound) + "MHz")
             print('\n')
 
-            # Panels showing the graphical results of the simulation (i.e. the NMR spectrum and
-            # the evolved density matrix)
-            self.graphical_results = Graphical_Results(size_hint=(0.5, 0.3), pos=(200, 725), do_default_tab=False, tab_width=150, tab_pos='top_mid', sim_man=sim_man)
-            self.add_widget(self.graphical_results)
-            
-            self.NMR_spectrum = BoxLayout(size_hint=(0.9, 0.3), pos=(40, 250))
-            sim_man.FID_times, sim_man.FID = FID_signal(sim_man.spin, sim_man.h_unperturbed, \
-                                                        sim_man.dm[sim_man.n_pulses], \
-                                                        acquisition_time=sim_man.time_aq, \
-                                                        T2=sim_man.relaxation_time, \
-                                                        theta=sim_man.coil_theta, \
-                                                        phi=sim_man.coil_phi)
-            sim_man.spectrum_frequencies, sim_man.spectrum_fourier = \
-                fourier_transform_signal(sim_man.FID, sim_man.FID_times, \
-                                         sim_man.frequency_left_bound,\
-                                         sim_man.frequency_right_bound)
-            plot_fourier_transform(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
-                                   square_modulus=sim_man.square_modulus, show=False)
-            self.NMR_spectrum_figure = plt.gcf()
-            self.NMR_spectrum.add_widget(FigureCanvasKivyAgg(self.NMR_spectrum_figure))
-            self.add_widget(self.NMR_spectrum)
+            # Panels showing the diagram of the density matrix evolved at each stage of the pulse
+            # sequence
+            self.evolved_dm_panels = Evolved_Density_Matrices(size_hint=(0.8, 0.4), pos=(80, 775), do_default_tab=False, tab_width=150, tab_pos='top_mid', sim_man=sim_man)
+            self.add_widget(self.evolved_dm_panels)
             
         except Exception as e:
-            self.error_simulation=Label(text=e.args[0], pos=(210, 495), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
-            self.add_widget(self.error_simulation)
+            self.error_evolution=Label(text=e.args[0], pos=(210, 495), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+            self.add_widget(self.error_evolution)
             
-            self.tb_simulation=Button(text='traceback', size_hint=(0.1, 0.02), pos=(654, 1200))
-            self.tb_simulation.bind(on_release=partial(print_traceback, e))
-            self.add_widget(self.tb_simulation)
-          
-    def acquisition_parameters(self, y_shift, sim_man):
-        # Orientation of the detection coils
-        self.coil_orientation_label = Label(text='Normal to the plane of the detection coils', size=(10, 5), pos=(-200, 180+y_shift), font_size='15sp')
-        self.add_widget(self.coil_orientation_label)
-        
-        self.coil_theta_label = Label(text='\N{GREEK SMALL LETTER THETA}', size=(10, 5), pos=(-337.5, 140+y_shift), font_size='15sp')
-        self.add_widget(self.coil_theta_label)
-        
-        self.coil_theta = TextInput(multiline=False, size_hint=(0.075, 0.02), pos=(72.25, 875+y_shift))
-        self.add_widget(self.coil_theta)
-        
-        self.coil_theta_unit = Label(text='°', size=(10, 5), pos=(-260, 140+y_shift), font_size='15sp')
-        self.add_widget(self.coil_theta_unit)
-        
-        self.coil_phi_label = Label(text='\N{GREEK SMALL LETTER PHI}', size=(10, 5), pos=(-225, 140+y_shift), font_size='15sp')
-        self.add_widget(self.coil_phi_label)
-        
-        self.coil_phi = TextInput(multiline=False, size_hint=(0.075, 0.02), pos=(185, 875+y_shift))
-        self.add_widget(self.coil_phi)
-        
-        self.coil_phi_unit = Label(text='°', size=(10, 5), pos=(-147.5, 140+y_shift), font_size='15sp')
-        self.add_widget(self.coil_phi_unit)
-        
-        # Time of acquisition of the FID Signal
-        
-        self.time_aq_label = Label(text='Time of acquisition of the FID signal', size=(10, 5), pos=(-222.5, 100+y_shift), font_size='15sp')
-        self.add_widget(self.time_aq_label)
-        
-        self.time_aq = TextInput(multiline=False, size_hint=(0.075, 0.02), pos=(307.5, 835+y_shift))
-        self.add_widget(self.time_aq)
-        
-        self.time_aq_unit = Label(text='\N{GREEK SMALL LETTER MU}s', size=(10, 5), pos=(-15, 100+y_shift), font_size='15sp')
-        self.add_widget(self.time_aq_unit)
-        
-        # Checkbox which specifies if the generated NMR spectrum displays the separate
-        # real and imaginary parts or the square modulus of the complex signal
-        
-        self.sq_mod_space = GridLayout(cols=2, size=(750, 35), size_hint=(None, None), pos=(55, 795+y_shift))
-        
-        self.sq_mod_checkbox = CheckBox(size_hint_x=None, width=20)
-        self.sq_mod_space.add_widget(self.sq_mod_checkbox)
-        
-        self.sq_mod_label = Label(text='Square modulus of the NMR signal', font_size='15sp', size_hint_x=None, width=250)
-        self.sq_mod_space.add_widget(self.sq_mod_label)
-        
-        self.add_widget(self.sq_mod_space)
-        
-        # Controls for the left and right bounds of the frequency domain where the NMR spectrum is to 
-        # be plotted
-        
-        self.NMR_domain = Label(text='Frequency window of the NMR signal plot', size=(10, 5), pos=(-205, 25+y_shift), font_size='15sp')
-        self.add_widget(self.NMR_domain)
-        
-        self.frequency_left_bound = TextInput(multiline=False, size_hint=(0.075, 0.02), pos=(340, 760+y_shift))
-        self.add_widget(self.frequency_left_bound)
-        
-        self.left_to_right = Label(text='-', size=(10, 5), pos=(10, 25+y_shift), font_size='15sp')
-        self.add_widget(self.left_to_right)
-        
-        self.frequency_right_bound = TextInput(multiline=False, size_hint=(0.075, 0.02), pos=(420, 760+y_shift))
-        self.add_widget(self.frequency_right_bound)
-        
-        self.frequency_bounds_unit = Label(text='MHz', size=(10, 5), pos=(100, 25+y_shift), font_size='15sp')
-        self.add_widget(self.frequency_bounds_unit)
-        
-        # Button which assigns the values of the inputs above to the corresponding variables of the
-        # Simulation_Manager
-        self.set_last_par_btn = Button(text='Set up the acquisition parameters', font_size='16sp', size_hint_y=None, height=35, size_hint_x=None, width=260, pos=(475, 915+y_shift))
-        self.set_last_par_btn.bind(on_press=partial(self.set_last_par, sim_man))
-        self.add_widget(self.set_last_par_btn)
-        
-    # Corrects the phase of the NMR spectrum at the given peak frequency
-    def adjust_phase(self, sim_man, *args):
-        try:
-            self.remove_widget(self.error_adj_phase)
-            self.remove_widget(self.adj_phase_tb)
-            plt.close(self.NMR_spectrum_figure)
-            self.remove_widget(self.NMR_spectrum)
-            
-            peak_frequency_hint = float(null_string(self.peak_frequency.text))
-        
-            search_window = float(null_string(self.search_range.text))
-        
-            phi = fourier_phase_shift(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
-                                      peak_frequency_hint, search_window)
-        
-            f, ft = fourier_transform_signal(np.exp(1j*phi)*sim_man.FID, sim_man.FID_times, \
-                                             sim_man.frequency_left_bound, \
-                                             sim_man.frequency_right_bound)
-        
-            self.NMR_spectrum = BoxLayout(size_hint=(0.9, 0.3), pos=(40, 250))
-            plot_fourier_transform(f, ft, show=False)
-            self.NMR_spectrum_figure = plt.gcf()
-            self.NMR_spectrum.add_widget(FigureCanvasKivyAgg(self.NMR_spectrum_figure))
-            self.add_widget(self.NMR_spectrum)
-            
-        except Exception as e:
-            self.error_adj_phase=Label(text=e.args[0], pos=(-212, -672), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
-            self.add_widget(self.error_adj_phase)
-            
-            self.adj_phase_tb = Button(text='traceback', size_hint=(0.1, 0.02), pos=(54, 35))
-            self.adj_phase_tb.bind(on_release=partial(print_traceback, e))
-            self.add_widget(self.adj_phase_tb)
+            self.tb_evolution=Button(text='traceback', size_hint=(0.1, 0.02), pos=(654, 1200))
+            self.tb_evolution.bind(on_release=partial(print_traceback, e))
+            self.add_widget(self.tb_evolution)
 
     def __init__(self, sim_man, **kwargs):
         super().__init__(**kwargs)
@@ -1092,61 +969,207 @@ class Evolution_Results(FloatLayout):
         self.evolved_state_label = Label(text='Evolved states', size=(10, 5), pos=(0, 700), font_size='30sp')
         self.add_widget(self.evolved_state_label)
         
-        self.acquisition_parameters(y_shift=450, sim_man=sim_man)
+        # Button which launches the evolution
+        self.launch_evo_btn = Button(text='Launch evolution', font_size='16sp', bold=True, background_normal = '', background_color=(0, 0.2, 1, 1), size_hint_y=None, height=35, size_hint_x=None, width=160, pos=(560, 1390))
+        self.launch_evo_btn.bind(on_press=partial(self.launch_evolution, sim_man))
+        self.add_widget(self.launch_evo_btn)
         
-        # Button which launches the simulation
-        self.launch_sim_btn = Button(text='Launch simulation', font_size='16sp', bold=True, background_normal = '', background_color=(0, 0.2, 1, 1), size_hint_y=None, height=35, size_hint_x=None, width=160, pos=(572.5, 1260))
-        self.launch_sim_btn.bind(on_press=partial(self.launch_simulation, sim_man))
-        self.add_widget(self.launch_sim_btn)
-        
-        # Set of controls for the phase adjustment of the NMR spectrum
-        self.phase_adjustment_label = Label(text='Phase adjustment', size=(10, 5), pos=(-265, -550), font_size='20sp')
-        self.add_widget(self.phase_adjustment_label)
-        
-        self.peak_frequency_label = Label(text='Peak frequency', size=(10, 5), pos=(-291, -590), font_size='15sp')
-        self.add_widget(self.peak_frequency_label)
-        
-        self.peak_frequency = TextInput(multiline=False, size_hint=(0.075, 0.02), pos=(175, 145))
-        self.add_widget(self.peak_frequency)
-        
-        self.peak_frequency_unit = Label(text='MHz', size=(10, 5), pos=(-140, -590), font_size='15sp')
-        self.add_widget(self.peak_frequency_unit)
-        
-        self.search_range_label = Label(text='Uncertainty', size=(10, 5), pos=(-50, -590), font_size='15sp')
-        self.add_widget(self.search_range_label)
-        
-        self.search_range = TextInput(multiline=False, size_hint=(0.075, 0.02), pos=(400, 145))
-        self.add_widget(self.search_range)
-        
-        self.search_range_unit = Label(text='MHz', size=(10, 5), pos=(85, -590), font_size='15sp')
-        self.add_widget(self.search_range_unit)
-        
-        self.phase_adj_btn = Button(text='Adjust phase', font_size='16sp', size_hint_y=None, height=35, size_hint_x=None, width=110, pos=(55, 90))
-        self.phase_adj_btn.bind(on_press=partial(self.adjust_phase, sim_man))
-        self.add_widget(self.phase_adj_btn)
-        
-        
-# Class for the panels showing the graphical results of the simulation, to be embedded inside the
-# Evolve main panel
-class Graphical_Results(TabbedPanel):
-    
-    dm_evolved_figure = np.ndarray(4, dtype=matplotlib.figure.Figure)
+# Class for the panels showing the density matrix evolved at each stage of the pulse (to be embedded
+# inside the Evolve main panel)
+class Evolved_Density_Matrices(TabbedPanel):
     
     def __init__(self, sim_man, **kwargs):
         super().__init__(**kwargs)
         
         self.pulse_tab = np.ndarray(sim_man.n_pulses, dtype=TabbedPanelItem)
-        self.evolved_state = np.ndarray(sim_man.n_pulses, dtype=BoxLayout)
+        self.evolved_dm_box = np.ndarray(sim_man.n_pulses, dtype=BoxLayout)
+        self.evolved_dm_figure = np.ndarray(4, dtype=matplotlib.figure.Figure)
         
         for i in range(sim_man.n_pulses):
-            plt.close(self.dm_evolved_figure[i])
+            plt.close(self.evolved_dm_figure[i])
+            
             self.pulse_tab[i] = TabbedPanelItem(text='Pulse '+str(i+1))
-            self.evolved_state[i] = BoxLayout()
-            plot_real_part_density_matrix(sim_man.dm[i+1], show=False)
-            self.dm_evolved_figure[i] = plt.gcf()
-            self.evolved_state[i].add_widget(FigureCanvasKivyAgg(self.dm_evolved_figure[i]))
-            self.pulse_tab[i].add_widget(self.evolved_state[i])
+            self.evolved_dm_box[i] = BoxLayout()
+            
+            self.evolved_dm_figure[i] = plot_real_part_density_matrix(sim_man.dm[i+1], show=False)#plt.gcf()
+            
+            self.evolved_dm_box[i].add_widget(FigureCanvasKivyAgg(self.evolved_dm_figure[i]))
+            self.pulse_tab[i].add_widget(self.evolved_dm_box[i])
             self.add_widget(self.pulse_tab[i])
+
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+#self.acquisition_parameters(y_shift=450, sim_man=sim_man)
+        
+#plt.close(self.NMR_spectrum_figure)
+        
+#self.NMR_spectrum = BoxLayout(size_hint=(0.9, 0.3), pos=(40, 250))
+#sim_man.FID_times, sim_man.FID = FID_signal(sim_man.spin, sim_man.h_unperturbed, \
+#                                            sim_man.dm[sim_man.n_pulses], \
+#                                            acquisition_time=sim_man.time_aq, \
+#                                            T2=sim_man.relaxation_time, \
+#                                            theta=sim_man.coil_theta, \
+#                                            phi=sim_man.coil_phi)
+#sim_man.spectrum_frequencies, sim_man.spectrum_fourier = \
+#    fourier_transform_signal(sim_man.FID, sim_man.FID_times, \
+#                             sim_man.frequency_left_bound,\
+#                             sim_man.frequency_right_bound)
+#plot_fourier_transform(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
+#                       square_modulus=sim_man.square_modulus, show=False)
+#self.NMR_spectrum_figure = plt.gcf()
+#self.NMR_spectrum.add_widget(FigureCanvasKivyAgg(self.NMR_spectrum_figure))
+#self.add_widget(self.NMR_spectrum)
+       
+#    def acquisition_parameters(self, y_shift, sim_man):
+#        # Orientation of the detection coils
+#        self.coil_orientation_label = Label(text='Normal to the plane of the detection coils', size=(10, 5), pos=(-200, 180+y_shift), font_size='15sp')
+#        self.add_widget(self.coil_orientation_label)
+#        
+#        self.coil_theta_label = Label(text='\N{GREEK SMALL LETTER THETA}', size=(10, 5), pos=(-337.5, 140+y_shift), font_size='15sp')
+#        self.add_widget(self.coil_theta_label)
+        
+#        self.coil_theta = TextInput(multiline=False, size_hint=(0.075, 0.02), pos=(72.25, 875+y_shift))
+#        self.add_widget(self.coil_theta)
+        
+#        self.coil_theta_unit = Label(text='°', size=(10, 5), pos=(-260, 140+y_shift), font_size='15sp')
+#        self.add_widget(self.coil_theta_unit)
+        
+#        self.coil_phi_label = Label(text='\N{GREEK SMALL LETTER PHI}', size=(10, 5), pos=(-225, 140+y_shift), font_size='15sp')
+#        self.add_widget(self.coil_phi_label)
+        
+#        self.coil_phi = TextInput(multiline=False, size_hint=(0.075, 0.02), pos=(185, 875+y_shift))
+#        self.add_widget(self.coil_phi)
+        
+#        self.coil_phi_unit = Label(text='°', size=(10, 5), pos=(-147.5, 140+y_shift), font_size='15sp')
+#        self.add_widget(self.coil_phi_unit)
+        
+        # Time of acquisition of the FID Signal
+        
+#        self.time_aq_label = Label(text='Time of acquisition of the FID signal', size=(10, 5), pos=(-222.5, 100+y_shift), font_size='15sp')
+#        self.add_widget(self.time_aq_label)
+        
+#        self.time_aq = TextInput(multiline=False, size_hint=(0.075, 0.02), pos=(307.5, 835+y_shift))
+#        self.add_widget(self.time_aq)
+        
+#        self.time_aq_unit = Label(text='\N{GREEK SMALL LETTER MU}s', size=(10, 5), pos=(-15, 100+y_shift), font_size='15sp')
+#        self.add_widget(self.time_aq_unit)
+        
+        # Checkbox which specifies if the generated NMR spectrum displays the separate
+        # real and imaginary parts or the square modulus of the complex signal
+        
+#        self.sq_mod_space = GridLayout(cols=2, size=(750, 35), size_hint=(None, None), pos=(55, 795+y_shift))
+        
+#        self.sq_mod_checkbox = CheckBox(size_hint_x=None, width=20)
+#        self.sq_mod_space.add_widget(self.sq_mod_checkbox)
+        
+#        self.sq_mod_label = Label(text='Square modulus of the NMR signal', font_size='15sp', size_hint_x=None, width=250)
+#        self.sq_mod_space.add_widget(self.sq_mod_label)
+        
+#        self.add_widget(self.sq_mod_space)
+        
+        # Controls for the left and right bounds of the frequency domain where the NMR spectrum is to 
+        # be plotted
+        
+#        self.NMR_domain = Label(text='Frequency window of the NMR signal plot', size=(10, 5), pos=(-205, 25+y_shift), font_size='15sp')
+#        self.add_widget(self.NMR_domain)
+        
+#        self.frequency_left_bound = TextInput(multiline=False, size_hint=(0.075, 0.02), pos=(340, 760+y_shift))
+#        self.add_widget(self.frequency_left_bound)
+        
+#        self.left_to_right = Label(text='-', size=(10, 5), pos=(10, 25+y_shift), font_size='15sp')
+#        self.add_widget(self.left_to_right)
+        
+#        self.frequency_right_bound = TextInput(multiline=False, size_hint=(0.075, 0.02), pos=(420, 760+y_shift))
+#        self.add_widget(self.frequency_right_bound)
+        
+#        self.frequency_bounds_unit = Label(text='MHz', size=(10, 5), pos=(100, 25+y_shift), font_size='15sp')
+#        self.add_widget(self.frequency_bounds_unit)
+        
+        # Button which assigns the values of the inputs above to the corresponding variables of the
+        # Simulation_Manager
+#        self.set_last_par_btn = Button(text='Set up the acquisition parameters', font_size='16sp', size_hint_y=None, height=35, size_hint_x=None, width=260, pos=(475, 915+y_shift))
+#        self.set_last_par_btn.bind(on_press=partial(self.set_last_par, sim_man))
+#        self.add_widget(self.set_last_par_btn)
+        
+    # Corrects the phase of the NMR spectrum at the given peak frequency
+#    def adjust_phase(self, sim_man, *args):
+#        try:
+#            self.remove_widget(self.error_adj_phase)
+#            self.remove_widget(self.adj_phase_tb)
+#            plt.close(self.NMR_spectrum_figure)
+#            self.remove_widget(self.NMR_spectrum)
+            
+#            peak_frequency_hint = float(null_string(self.peak_frequency.text))
+        
+#            search_window = float(null_string(self.search_range.text))
+        
+#            phi = fourier_phase_shift(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
+#                                      peak_frequency_hint, search_window)
+        
+#            f, ft = fourier_transform_signal(np.exp(1j*phi)*sim_man.FID, sim_man.FID_times, \
+#                                             sim_man.frequency_left_bound, \
+#                                             sim_man.frequency_right_bound)
+        
+#            self.NMR_spectrum = BoxLayout(size_hint=(0.9, 0.3), pos=(40, 250))
+#            plot_fourier_transform(f, ft, show=False)
+#            self.NMR_spectrum_figure = plt.gcf()
+#            self.NMR_spectrum.add_widget(FigureCanvasKivyAgg(self.NMR_spectrum_figure))
+#            self.add_widget(self.NMR_spectrum)
+            
+#        except Exception as e:
+#            self.error_adj_phase=Label(text=e.args[0], pos=(-212, -672), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+#            self.add_widget(self.error_adj_phase)
+            
+#            self.adj_phase_tb = Button(text='traceback', size_hint=(0.1, 0.02), pos=(54, 35))
+#            self.adj_phase_tb.bind(on_release=partial(print_traceback, e))
+#            self.add_widget(self.adj_phase_tb)   
+        
+        
+#        # Set of controls for the phase adjustment of the NMR spectrum
+#        self.phase_adjustment_label = Label(text='Phase adjustment', size=(10, 5), pos=(-265, -550), font_size='20sp')
+#        self.add_widget(self.phase_adjustment_label)
+        
+#        self.peak_frequency_label = Label(text='Peak frequency', size=(10, 5), pos=(-291, -590), font_size='15sp')
+#        self.add_widget(self.peak_frequency_label)
+        
+#        self.peak_frequency = TextInput(multiline=False, size_hint=(0.075, 0.02), pos=(175, 145))
+#        self.add_widget(self.peak_frequency)
+        
+#        self.peak_frequency_unit = Label(text='MHz', size=(10, 5), pos=(-140, -590), font_size='15sp')
+#        self.add_widget(self.peak_frequency_unit)
+        
+#        self.search_range_label = Label(text='Uncertainty', size=(10, 5), pos=(-50, -590), font_size='15sp')
+#        self.add_widget(self.search_range_label)
+        
+#        self.search_range = TextInput(multiline=False, size_hint=(0.075, 0.02), pos=(400, 145))
+#        self.add_widget(self.search_range)
+        
+#        self.search_range_unit = Label(text='MHz', size=(10, 5), pos=(85, -590), font_size='15sp')
+#        self.add_widget(self.search_range_unit)
+        
+#        self.phase_adj_btn = Button(text='Adjust phase', font_size='16sp', size_hint_y=None, height=35, size_hint_x=None, width=110, pos=(55, 90))
+#        self.phase_adj_btn.bind(on_press=partial(self.adjust_phase, sim_man))
+#        self.add_widget(self.phase_adj_btn)
+        
+        
+        
+        
+        
+
             
 
 # Class of the object on top of the individual panels
