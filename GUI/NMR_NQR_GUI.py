@@ -146,9 +146,7 @@ class System_Parameters(FloatLayout):
     manual_dm = Widget()
         
     error_spin_qn = Label()
-    
-    error_canonical = Label()
-        
+            
     error_build_system = Label()
     
     tb_button = Button()
@@ -162,20 +160,13 @@ class System_Parameters(FloatLayout):
     # Specifies the action of the checkbox 'Canonical', i.e. to toggle the TextInput widgets associated
     # with the temperature and the density matrix to be inserted manually
     def on_canonical_active(self, *args):
-        try:
-            self.remove_widget(self.error_canonical)
-            
-            self.temperature.disabled = not self.temperature.disabled
+                    
+        self.temperature.disabled = not self.temperature.disabled
         
-            if self.spin_qn.text != '':
-                for i in range(self.d):
-                    for j in range(self.d):
-                        self.dm_elements[i, j].disabled = not self.dm_elements[i, j].disabled
-                        
-        except Exception as e:
-            self.error_canonical=Label(text=e.args[0], pos=(-175, -50), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
-            self.add_widget(self.error_canonical)
-            
+        if self.spin_qn.text != '':
+            for i in range(self.d):
+                for j in range(self.d):
+                    self.dm_elements[i, j].disabled = not self.dm_elements[i, j].disabled
     
     # Specifies the action carried out after the validation of the spin quantum number, i.e. the
     # creation of the inputs for the elements of the density matrix
@@ -461,9 +452,8 @@ class System_Parameters(FloatLayout):
         self.add_widget(self.dm_par)
         
     def __init__(self, sim_man, **kwargs):
-        super(System_Parameters, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         
-        # Label 'System parameters'
         self.parameters = Label(text='System parameters', size=(10, 5), pos=(0, 450), font_size='30sp')
         self.add_widget(self.parameters)
         
@@ -522,8 +512,8 @@ class Pulse_Sequence(FloatLayout):
     
     n_modes = np.ones(4, dtype=int)
     
-    new_mode_btn = np.ndarray(4, dtype=Button)
-    less_mode_btn = np.ndarray(4, dtype=Button)
+    more_modes_btn = np.ndarray(4, dtype=Button)
+    less_modes_btn = np.ndarray(4, dtype=Button)
     
     n_pulses = 1
     
@@ -620,6 +610,7 @@ class Pulse_Sequence(FloatLayout):
         self.RRF_phi_unit[n-1] = Label(text='°', size=(10, 5), pos=(300, y_shift-215), font_size='15sp')
         self.add_widget(self.RRF_phi_unit[n-1])
 
+    # Removes from the screen the controls of the parameters of the RRF
     def remove_RRF_par(self, n):
         self.remove_widget(self.RRF_frequency_label[n-1])
         self.remove_widget(self.RRF_frequency[n-1])
@@ -633,8 +624,7 @@ class Pulse_Sequence(FloatLayout):
         self.remove_widget(self.RRF_phi[n-1])
         self.remove_widget(self.RRF_phi_unit[n-1])
     
-    # Defines what happens when the ToggleButton 'RRF' is pressed
-    def set_RRF_evolution(self, n, y_shift, *args):
+    def set_RRF_evolution(self, n, y_shift, sim_man, *args):
         if self.RRF_btn[n-1].state == 'down':
             sim_man.evolution_algorithm[n-1] = 'RRF'
             self.IP_btn[n-1].state = 'normal'
@@ -646,10 +636,8 @@ class Pulse_Sequence(FloatLayout):
             
             sim_man.evolution_algorithm[n-1] = 'IP'
             self.IP_btn[n-1].state = 'down'
-            
     
-    # Defines what happens when the ToggleButton 'IP' is pressed
-    def set_IP_evolution(self, n, y_shift, *args):
+    def set_IP_evolution(self, n, y_shift, sim_man, *args):
         if self.IP_btn[n-1].state == 'down':
             self.remove_RRF_par(n)
             
@@ -661,13 +649,11 @@ class Pulse_Sequence(FloatLayout):
             self.RRF_btn[n-1].state = 'down'
             
             self.set_RRF_par(n, y_shift)
-            
     
-    # Creates the set of controls associated with the parameters of a single pulse in the sequence
+    # Creates the set of controls associated with the parameters of a single pulse in the sequence.
     # n is an integer which labels successive pulses
     def single_pulse_par(self, n, y_shift, sim_man):
         
-        # Label 'Pulse #n'
         self.pulse_label[n-1] = Label(text='Pulse #%r' % n, size=(10, 5), pos=(-285, y_shift), font_size='20sp')
         self.add_widget(self.pulse_label[n-1])
         
@@ -732,22 +718,22 @@ class Pulse_Sequence(FloatLayout):
         self.single_pulse_table[n-1].add_widget(self.phi1[n-1][0])
         
         # Button for the addition of another mode of radiation
-        self.new_mode_btn[n-1] = Button(text='+', font_size = '15sp', size_hint=(None, None), size=(30, 30), pos=(485, y_shift+374))
-        self.new_mode_btn[n-1].bind(on_press=partial(self.add_new_mode, n))
-        self.add_widget(self.new_mode_btn[n-1])
+        self.more_modes_btn[n-1] = Button(text='+', font_size = '15sp', size_hint=(None, None), size=(30, 30), pos=(485, y_shift+374))
+        self.more_modes_btn[n-1].bind(on_press=partial(self.add_new_mode, n))
+        self.add_widget(self.more_modes_btn[n-1])
         
         # Button for the removal of a mode of radiation
-        self.less_mode_btn[n-1] = Button(text='-', font_size = '15sp', size_hint=(None, None), size=(30, 30), pos=(517.5, y_shift+374))
-        self.less_mode_btn[n-1].bind(on_press=partial(self.remove_mode, n, sim_man))
-        self.add_widget(self.less_mode_btn[n-1])
+        self.less_modes_btn[n-1] = Button(text='-', font_size = '15sp', size_hint=(None, None), size=(30, 30), pos=(517.5, y_shift+374))
+        self.less_modes_btn[n-1].bind(on_press=partial(self.remove_mode, n, sim_man))
+        self.add_widget(self.less_modes_btn[n-1])
         
         # Buttons which specify the methods of numerical evolution of the system: RRF and IP
         self.RRF_btn[n-1] = ToggleButton(text='RRF', font_size = '15sp', size_hint=(None, None), size=(40, 30), pos=(575, y_shift+374))
-        self.RRF_btn[n-1].bind(on_press=partial(self.set_RRF_evolution, n, y_shift))
+        self.RRF_btn[n-1].bind(on_press=partial(self.set_RRF_evolution, n, y_shift, sim_man))
         self.add_widget(self.RRF_btn[n-1])
         
         self.IP_btn[n-1] = ToggleButton(text='IP', font_size = '15sp', size_hint=(None, None), size=(40, 30), pos=(619, y_shift+374))
-        self.IP_btn[n-1].bind(on_press=partial(self.set_IP_evolution, n, y_shift))
+        self.IP_btn[n-1].bind(on_press=partial(self.set_IP_evolution, n, y_shift, sim_man))
         self.IP_btn[n-1].state = 'down'
         self.add_widget(self.IP_btn[n-1])
     
@@ -756,26 +742,29 @@ class Pulse_Sequence(FloatLayout):
         try:
             self.remove_widget(self.error_n_pulses)
             
-            if int(self.number_pulses.text) < 1 or int(self.number_pulses.text) > 4:
+            new_n_pulses = int(self.number_pulses.text)
+            
+            if new_n_pulses < 1 or new_n_pulses > 4:
                 raise ValueError("The number of pulses in the sequence"+'\n'+"must fall between 1 and 4")
             
-            for i in range(1, self.n_pulses):
-                self.remove_widget(self.pulse_label[i])
-                self.remove_widget(self.pulse_t_label[i])
-                self.remove_widget(self.pulse_times[i])
-                self.remove_widget(self.pulse_t_unit[i])
-                self.remove_widget(self.single_pulse_table[i])
-                self.remove_widget(self.new_mode_btn[i])
-                self.remove_widget(self.less_mode_btn[i])
-                self.remove_widget(self.RRF_btn[i])
-                self.remove_widget(self.IP_btn[i])
-                if self.RRF_btn[i].state == 'down':
-                    self.remove_RRF_par(i+1)
+            if self.n_pulses>new_n_pulses:
+                for i in range(new_n_pulses, self.n_pulses):
+                    self.remove_widget(self.pulse_label[i])
+                    self.remove_widget(self.pulse_t_label[i])
+                    self.remove_widget(self.pulse_times[i])
+                    self.remove_widget(self.pulse_t_unit[i])
+                    self.remove_widget(self.single_pulse_table[i])
+                    self.remove_widget(self.more_modes_btn[i])
+                    self.remove_widget(self.less_modes_btn[i])
+                    self.remove_widget(self.RRF_btn[i])
+                    self.remove_widget(self.IP_btn[i])
+                    if self.RRF_btn[i].state == 'down':
+                        self.remove_RRF_par(i+1)
+            else:
+                for i in range(self.n_pulses, new_n_pulses):
+                    self.single_pulse_par(n=i+1, y_shift=400-i*200, sim_man=sim_man)
                 
-            self.n_pulses = int(self.number_pulses.text)
-        
-            for i in range(1, self.n_pulses):
-                self.single_pulse_par(n=i+1, y_shift=400-i*200, sim_man=sim_man)
+            self.n_pulses = new_n_pulses
             
         except Exception as e:
             self.error_n_pulses=Label(text=e.args[0], pos=(200, 335), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
@@ -815,17 +804,16 @@ class Pulse_Sequence(FloatLayout):
             self.add_widget(self.tb_button)
 
     def __init__(self, sim_man, **kwargs):
-        super(Pulse_Sequence, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         
-        # Label 'Pulse sequence'
         self.pulse_sequence_label = Label(text='Pulse sequence', size=(10, 5), pos=(0, 450), font_size='30sp')
         self.add_widget(self.pulse_sequence_label)
         
         self.single_pulse_par(n=1, y_shift=400, sim_man=sim_man)
         
         # Question mark connected with the explanation of RRF and IP buttons
-        self.RRF_IP_mark = Label(text='[ref=?]?[/ref]', markup=True, size=(20, 20), pos=(280, 290), font_size='20sp')
-        self.add_widget(self.RRF_IP_mark)
+        self.RRF_IP_question_mark = Label(text='[ref=?]?[/ref]', markup=True, size=(20, 20), pos=(280, 290), font_size='20sp')
+        self.add_widget(self.RRF_IP_question_mark)
        
         # Popup message which explains the meaning of the RRF and IP buttons
         explanation = 'The acronyms RRF and IP indicate two ways'+'\n'+\
@@ -840,7 +828,7 @@ class Pulse_Sequence(FloatLayout):
                       'perturbation, i.e. the applied pulse.'
         self.RRF_IP_popup = Popup(title='RRF and IP', content=Label(text=explanation), size_hint=(0.475, 0.45), pos=(425, 500), auto_dismiss=True)
         
-        self.RRF_IP_mark.bind(on_ref_press=self.RRF_IP_popup.open)
+        self.RRF_IP_question_mark.bind(on_ref_press=self.RRF_IP_popup.open)
 
         
         # Number of pulses in the sequence
@@ -855,7 +843,8 @@ class Pulse_Sequence(FloatLayout):
         self.set_up_pulse_btn.bind(on_press=partial(self.set_up_pulse, sim_man))
         self.add_widget(self.set_up_pulse_btn)
         
-# Class of the page of the software which lists the results of the evolution
+# Class of the page of the software which lists the stages of the system's state throughout the
+# evolution
 class Evolution_Results(FloatLayout):
     
     error_last_par = Label()
@@ -1098,11 +1087,10 @@ class Evolution_Results(FloatLayout):
             self.add_widget(self.adj_phase_tb)
 
     def __init__(self, sim_man, **kwargs):
-        super(Evolution_Results, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         
-        # Label 'Results of the evolution'
-        self.evo_res_label = Label(text='Results of the evolution', size=(10, 5), pos=(0, 700), font_size='30sp')
-        self.add_widget(self.evo_res_label)
+        self.evolved_state_label = Label(text='Evolved states', size=(10, 5), pos=(0, 700), font_size='30sp')
+        self.add_widget(self.evolved_state_label)
         
         self.acquisition_parameters(y_shift=450, sim_man=sim_man)
         
@@ -1145,7 +1133,7 @@ class Graphical_Results(TabbedPanel):
     dm_evolved_figure = np.ndarray(4, dtype=matplotlib.figure.Figure)
     
     def __init__(self, sim_man, **kwargs):
-        super(Graphical_Results, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         
         self.pulse_tab = np.ndarray(sim_man.n_pulses, dtype=TabbedPanelItem)
         self.evolved_state = np.ndarray(sim_man.n_pulses, dtype=BoxLayout)
@@ -1164,7 +1152,7 @@ class Graphical_Results(TabbedPanel):
 # Class of the object on top of the individual panels
 class Panels(TabbedPanel):
     def __init__(self, sim_man, **kwargs):
-        super(Panels, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         
         self.tab_sys_par = TabbedPanelItem(text='System')
         self.scroll_window =  ScrollView(size_hint=(1, None), size=(Window.width, 500))
