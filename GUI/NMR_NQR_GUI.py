@@ -1,20 +1,20 @@
+# Generic python imports
 import sys
 import math
 import numpy as np
 import pandas as pd
 from fractions import Fraction
+from functools import partial
 
+# Generic graphics imports
 import matplotlib
 import matplotlib.pylab as plt
 
+# Kivy imports
 from kivy.config import Config
 Config.set('graphics', 'resizable', False)
 
-from functools import partial
-
 from kivy.app import App
-
-from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
@@ -37,14 +37,15 @@ from kivy.uix.checkbox import CheckBox
 from kivy.uix.slider import Slider
 from kivy.uix.popup import Popup
 
+from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
+
 from kivy.graphics import *
 
 sys.path.insert(1, '/home/davidecandoli/Documenti/Università/Thesis/NQR-NMRSimulationSoftware')
 
+# NMR-NQRSimulationSoftware imports
 from Operators import *
-
 from Nuclear_Spin import *
-
 from Simulation import *
 
 # This class defines the object responsible of the management of the inputs and outputs of the
@@ -90,14 +91,12 @@ class Simulation_Manager:
     
     temperature = 300.
     
-    dm_0 = 0
+    manual_dm = 0
     
     spin = Nuclear_Spin()
     
     h_unperturbed = Observable(1)
-    
-    dm_initial = Density_Matrix(1)
-    
+        
     relaxation_time = 100.
     
     coil_theta = 0.
@@ -122,20 +121,14 @@ class Simulation_Manager:
     
     spectrum_fourier = np.ndarray(1)
     
-# Function which specifies the action of various controls (stub)
-def on_enter(*args):
-        pass
-    
 def print_traceback(err, *args):
     raise err
     
-# Function which automatically replaces the content of a TextInput with the new string 'text'
 def clear_and_write_text(text_object, text, *args):
     text_object.select_all()
     text_object.delete_selection()
     text_object.insert_text(text)
     
-# Function which takes a string and returns a 0 in case it is empty
 def null_string(text):
     if text=='':
         return 0
@@ -152,11 +145,11 @@ class System_Parameters(FloatLayout):
     
     manual_dm = Widget()
         
-    error_spin_qn = Label(text='')
+    error_spin_qn = Label()
     
     error_canonical = Label()
         
-    error_build_system = Label(text='')
+    error_build_system = Label()
     
     tb_button = Button()
     
@@ -167,7 +160,7 @@ class System_Parameters(FloatLayout):
     dm_initial_figure = matplotlib.figure.Figure()
     
     # Specifies the action of the checkbox 'Canonical', i.e. to toggle the TextInput widgets associated
-    # with the temperature, the density matrix to be inserted manually and the related button
+    # with the temperature and the density matrix to be inserted manually
     def on_canonical_active(self, *args):
         try:
             self.remove_widget(self.error_canonical)
@@ -178,27 +171,26 @@ class System_Parameters(FloatLayout):
                 for i in range(self.d):
                     for j in range(self.d):
                         self.dm_elements[i, j].disabled = not self.dm_elements[i, j].disabled
+                        
         except Exception as e:
             self.error_canonical=Label(text=e.args[0], pos=(-175, -50), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
             self.add_widget(self.error_canonical)
             
     
-    # Specifies the action carried out after the validation of the spin quantum number
+    # Specifies the action carried out after the validation of the spin quantum number, i.e. the
+    # creation of the inputs for the elements of the density matrix
     def set_quantum_number(self, sim_man, *args):
         try:
             self.remove_widget(self.error_spin_qn)
-            
             self.remove_widget(self.manual_dm)
-            
-            sim_man.spin_par['quantum number'] = float(Fraction(self.spin_qn.text))
-        
+                    
             self.d = int(Fraction(self.spin_qn.text)*2+1)
         
-            if self.d <= 8: self.el_w = 40
-            else: self.el_w = 30
+            if self.d <= 8: self.el_width = 40
+            else: self.el_width = 30
         
         # Sets the grid representing the initial density matrix to be filled manually
-            self.manual_dm = GridLayout(cols=self.d, size=(self.el_w*self.d, self.el_w*self.d), size_hint=(None, None), pos=(50, 405-self.d*self.el_w))
+            self.manual_dm = GridLayout(cols=self.d, size=(self.el_width*self.d, self.el_width*self.d), size_hint=(None, None), pos=(50, 405-self.d*self.el_width))
             self.dm_elements = np.empty((self.d, self.d), dtype=TextInput)
             for j in range(self.d):
                 for i in range(self.d):
@@ -207,10 +199,31 @@ class System_Parameters(FloatLayout):
                     self.dm_elements[i, j].disabled = not self.temperature.disabled
             self.add_widget(self.manual_dm)
             
-        # Prints any error raised after the validation of the spin quantum number below the TextInput
+        # Prints any error raised after the validation of the spin quantum number below its TextInput
         except Exception as e:
             self.error_spin_qn=Label(text=e.args[0], pos=(-10, 337.5), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
             self.add_widget(self.error_spin_qn)
+            
+    # Stores the value of nu_q among the attributes of sim_man and writes it on screen
+    def store_and_write_nu_q(self, sim_man):
+        sim_man.nu_q = 3*sim_man.quad_par['coupling constant']/ \
+                      (2*sim_man.spin_par['quantum number']* \
+                      (2*sim_man.spin_par['quantum number']-1))* \
+                       math.sqrt(1+(sim_man.quad_par['asymmetry parameter']**2)/3)
+            
+        self.nu_q_label = Label(text="\N{GREEK SMALL LETTER NU}Q = " + str(round(sim_man.nu_q, 2)) + "MHz", pos=(250, 140), size=(200, 200), font_size='15sp')
+        self.add_widget(self.nu_q_label)
+            
+    def view_the_initial_density_matrix(self, sim_man):
+        plot_real_part_density_matrix(sim_man.dm[0], show=False)
+            
+        self.dm_graph_box = BoxLayout(size=(300, 300), size_hint=(None, None), pos=(470, 105))
+            
+        self.dm_initial_figure = plt.gcf()
+            
+        self.dm_graph_box.add_widget(FigureCanvasKivyAgg(self.dm_initial_figure))
+         
+        self.add_widget(self.dm_graph_box)
     
     # Builds up the objects representing the nuclear system
     def build_system(self, sim_man, *args):
@@ -226,6 +239,7 @@ class System_Parameters(FloatLayout):
             
             plt.close(self.dm_initial_figure)
             
+            # Storage of the system's input parameters
             sim_man.spin_par['quantum number'] = float(Fraction(null_string(self.spin_qn.text)))
             
             sim_man.spin_par['gamma/2pi'] = float(null_string(self.gyro.text))
@@ -248,19 +262,11 @@ class System_Parameters(FloatLayout):
             
             sim_man.relaxation_time = float(null_string(self.relax.text))
             
-            # Calculation of the parameter nu_q
-            sim_man.nu_q = 3*sim_man.quad_par['coupling constant']/\
-                          (2*sim_man.spin_par['quantum number']*\
-                          (2*sim_man.spin_par['quantum number']-1))*\
-                          math.sqrt(1+(sim_man.quad_par['asymmetry parameter']**2)/3)
-            
-            # Prints the value of nu_q on screen
-            self.nu_q_label = Label(text="\N{GREEK SMALL LETTER NU}Q = " + str(round(sim_man.nu_q, 2)) + "MHz", pos=(250, 140), size=(200, 200), font_size='15sp')
-            self.add_widget(self.nu_q_label)
+            self.store_and_write_nu_q(sim_man)
             
             if self.canonical_checkbox.active:
                 sim_man.temperature = float(null_string(self.temperature.text))
-                sim_man.spin, sim_man.h_unperturbed, sim_man.dm_initial = \
+                sim_man.spin, sim_man.h_unperturbed, sim_man.dm[0] = \
                 nuclear_system_setup(sim_man.spin_par, \
                                      sim_man.zeem_par, \
                                      sim_man.quad_par, \
@@ -268,31 +274,20 @@ class System_Parameters(FloatLayout):
                                      temperature=sim_man.temperature)
             
             else:
-                sim_man.dm_0 = np.zeros((self.d, self.d), dtype=complex)
+                sim_man.manual_dm = np.zeros((self.d, self.d), dtype=complex)
             
                 for i in range(self.d):
                     for j in range(self.d):
-                        if self.dm_elements[i, j].text == "":
-                            pass
-                        else:
-                            sim_man.dm_0[i, j] = complex(self.dm_elements[i, j].text)
+                        sim_man.manual_dm[i, j] = complex(null_string(self.dm_elements[i, j].text))
             
-                sim_man.spin, sim_man.h_unperturbed, sim_man.dm_initial = \
+                sim_man.spin, sim_man.h_unperturbed, sim_man.dm[0] = \
                 nuclear_system_setup(sim_man.spin_par, \
                                      sim_man.zeem_par, \
                                      sim_man.quad_par, \
-                                     initial_state=sim_man.dm_0, \
+                                     initial_state=sim_man.manual_dm, \
                                      temperature=300)
-                
-            plot_real_part_density_matrix(sim_man.dm_initial, show=False)
             
-            self.dm_graph_box = BoxLayout(size=(300, 300), size_hint=(None, None), pos=(470, 105))
-            
-            self.dm_initial_figure = plt.gcf()
-            
-            self.dm_graph_box.add_widget(FigureCanvasKivyAgg(self.dm_initial_figure))
-            
-            self.add_widget(self.dm_graph_box)
+            self.view_the_initial_density_matrix(sim_man)
             
         except Exception as e:
             self.error_build_system=Label(text=e.args[0], pos=(0, -490), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
@@ -302,22 +297,29 @@ class System_Parameters(FloatLayout):
             self.tb_button.bind(on_release=partial(print_traceback, e))
             self.add_widget(self.tb_button)
     
-    # Controls of the nuclear spin parameters
-    def nuclear_parameters(self, x_shift, y_shift, sim_man):        
+    def nuclear_spin_parameters(self, x_shift, y_shift, sim_man):
+        
         # Nuclear species dropdown list
-        self.nuclear_species = Button(text='Nuclear species', size_hint=(0.15, 0.055), pos=(x_shift+50, y_shift+450))
+        self.nuclear_species = Button(text='Nuclear species', size_hint=(0.15, 0.045), pos=(x_shift+50, y_shift+450))
         self.add_widget(self.nuclear_species)
 
         self.nucleus_dd = DropDown()
+        # Displays the options when nuclear_species is pressed
         self.nuclear_species.bind(on_release=self.nucleus_dd.open)
+        
+        # Waits for the selection of an option in the list, then takes the text of the corresponding
+        # button and assigns it to the button nuclear_species
+        self.nucleus_dd.bind(on_select=lambda instance, x: setattr(self.nuclear_species, 'text', x))
+        
         self.Cl_btn = Button(text='Cl', size_hint_y=None, height=25)
+        # When a button in the list is pressed, the on_select event is triggered and the text of the
+        # chosen button is passed as the argument x in the callback launched by nucleus_dd
         self.Cl_btn.bind(on_release=lambda btn: self.nucleus_dd.select(btn.text))
         self.nucleus_dd.add_widget(self.Cl_btn)
         
         self.Na_btn = Button(text='Na', size_hint_y=None, height=25)
         self.Na_btn.bind(on_release=lambda btn: self.nucleus_dd.select(btn.text))
         self.nucleus_dd.add_widget(self.Na_btn)
-        self.nucleus_dd.bind(on_select=lambda instance, x: setattr(self.nuclear_species, 'text', x))
         
         # Spin quantum number
         self.spin_qn_label = Label(text='Spin quantum number', size=(10, 5), pos=(x_shift-130, y_shift-25), font_size='15sp')
@@ -326,26 +328,29 @@ class System_Parameters(FloatLayout):
         self.spin_qn = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(x_shift+355, y_shift+460))
         self.spin_qn.bind(on_text_validate=partial(self.set_quantum_number, sim_man))
         self.add_widget(self.spin_qn)
+        
+        # After the selection of one of the options in the dropdown list, the spin quantum number
+        # takes the corresponding value
         self.Cl_btn.bind(on_release=partial(clear_and_write_text, self.spin_qn, '3/2'))
         self.Na_btn.bind(on_release=partial(clear_and_write_text, self.spin_qn, '3/2'))
         
-        # Gyromagnetic Ratio
+        # Gyromagnetic ratio
         self.gyro_label = Label(text='\N{GREEK SMALL LETTER GAMMA}/2\N{GREEK SMALL LETTER PI}', size=(10, 5), pos=(x_shift+100, y_shift-25), font_size='15sp')
         self.add_widget(self.gyro_label)
         
-        self.gyro = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(x_shift+575, y_shift+460))
+        self.gyro = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(x_shift+530, y_shift+460))
         self.add_widget(self.gyro)
+        
         self.Cl_btn.bind(on_release=partial(clear_and_write_text, self.gyro, '4.00'))
         self.Na_btn.bind(on_release=partial(clear_and_write_text, self.gyro, '11.26'))
         
-        self.gyro_unit_label = Label(text='MHz/T', size=(10, 5), pos=(x_shift+265, y_shift-25), font_size='15sp')
+        self.gyro_unit_label = Label(text='MHz/T', size=(10, 5), pos=(x_shift+220, y_shift-25), font_size='15sp')
         self.add_widget(self.gyro_unit_label)
 
-    # Controls of the magnetic field parameters
-    def magnetic_parameters(self, x_shift, y_shift):
+    def magnetic_field_parameters(self, x_shift, y_shift):
         
-        self.mag_field = Label(text='Magnetic field', size=(10, 5), pos=(x_shift-285, y_shift+100), font_size='20sp')
-        self.add_widget(self.mag_field)
+        self.mag_field_label = Label(text='Magnetic field', size=(10, 5), pos=(x_shift-285, y_shift+100), font_size='20sp')
+        self.add_widget(self.mag_field_label)
         
         # Field magnitude
         self.field_mag_label = Label(text='Field magnitude', size=(10, 5), pos=(x_shift-296, y_shift+50), font_size='15sp')
@@ -377,7 +382,6 @@ class System_Parameters(FloatLayout):
         self.phi_z_unit = Label(text='°', size=(10, 5), pos=(x_shift+140, y_shift+50), font_size='15sp')
         self.add_widget(self.phi_z_unit)
         
-    # Controls of the quadrupole interaction parameters
     def quadrupole_parameters(self, x_shift=0, y_shift=0):
         self.quad_int = Label(text='Quadrupole interaction', size=(10, 5), pos=(x_shift-250, y_shift+90), font_size='20sp')
         self.add_widget(self.quad_int)
@@ -427,7 +431,6 @@ class System_Parameters(FloatLayout):
         self.gamma_q_unit = Label(text='°', size=(10, 5), pos=(x_shift+73, y_shift-10), font_size='15sp')
         self.add_widget(self.gamma_q_unit)
         
-    # Controls on the initial density matrix
     def initial_dm_parameters(self, x_shift, y_shift):
     
         self.initial_dm = Label(text='Initial density matrix', size=(10, 5), pos=(x_shift-260, y_shift+30), font_size='20sp')
@@ -446,6 +449,7 @@ class System_Parameters(FloatLayout):
         self.temperature_label = Label(text='Temperature (K)', font_size='15sp', size_hint_x=None, width=150)
         self.dm_par.add_widget(self.temperature_label)
         
+        # The TextInput of the temperature is initially disabled
         self.temperature = TextInput(multiline=False, disabled=True, size_hint_x=None, width=65, size_hint_y=None, height=32.5)
         self.dm_par.add_widget(self.temperature)
         
@@ -463,9 +467,9 @@ class System_Parameters(FloatLayout):
         self.parameters = Label(text='System parameters', size=(10, 5), pos=(0, 450), font_size='30sp')
         self.add_widget(self.parameters)
         
-        self.nuclear_parameters(0, 400, sim_man=sim_man)
+        self.nuclear_spin_parameters(0, 400, sim_man=sim_man)
         
-        self.magnetic_parameters(0, 200)
+        self.magnetic_field_parameters(0, 200)
         
         self.quadrupole_parameters(0, 100)
         
@@ -906,8 +910,6 @@ class Evolution_Results(FloatLayout):
                 
             plt.close(self.NMR_spectrum_figure)
                                     
-            sim_man.dm[0] = sim_man.dm_initial
-                        
             for i in range(sim_man.n_pulses):
                 sim_man.dm[i+1] = evolve(sim_man.spin, sim_man.h_unperturbed, sim_man.dm[i], \
                                          sim_man.pulse[i], sim_man.pulse_time[i], \
@@ -951,7 +953,7 @@ class Evolution_Results(FloatLayout):
                 print('\n')
     
             print("Temperature = " + str(sim_man.temperature))
-            print("Initial density matrix = " + str(sim_man.dm_initial.matrix))
+            print("Initial density matrix = " + str(sim_man.dm[0].matrix))
             print("Relaxation time = " + str(sim_man.relaxation_time))    
             print("theta_detection = " + str(sim_man.coil_theta))
             print("phi_detection = " + str(sim_man.coil_phi))
@@ -1188,7 +1190,7 @@ class Panels(TabbedPanel):
         self.add_widget(self.tab_evolve)
         
         
-# Class of the application
+# Class of the application and main class of the program
 class PulseBit(App):
     
     sim_man = Simulation_Manager()
