@@ -847,48 +847,11 @@ class Pulse_Sequence(FloatLayout):
 # evolution
 class Evolution_Results(FloatLayout):
     
-    error_last_par = Label()
-    
     error_evolution = Label()
-    
-    tb_last_par = Button()
     
     tb_evolution = Button()
     
     evolved_dm_panels = Widget()
-    
-    NMR_spectrum = Widget()
-        
-    NMR_spectrum_figure = matplotlib.figure.Figure()
-    
-    error_adj_phase = Widget()
-    
-    adj_phase_tb = Widget()
-    
-    def set_last_par(self, sim_man, *args):
-        try:
-            self.remove_widget(self.error_last_par)
-            self.remove_widget(self.tb_last_par)
-            
-            sim_man.coil_theta = (float(null_string(self.coil_theta.text))/180)*math.pi
-            
-            sim_man.coil_phi = (float(null_string(self.coil_phi.text))/180)*math.pi
-            
-            sim_man.time_aq = float(null_string(self.time_aq.text))
-            
-            sim_man.square_modulus = self.sq_mod_checkbox.active
-            
-            sim_man.frequency_left_bound = float(null_string(self.frequency_left_bound.text))
-            
-            sim_man.frequency_right_bound = float(null_string(self.frequency_right_bound.text))
-            
-        except Exception as e:
-            self.error_last_par=Label(text=e.args[0], pos=(210, 600), size=(200, 205), bold=True, color=(1, 0, 0, 1), font_size='15sp')
-            self.add_widget(self.error_last_par)
-            
-            self.tb_last_par=Button(text='traceback', size_hint=(0.1, 0.02), pos=(655, 1305))
-            self.tb_last_par.bind(on_release=partial(print_traceback, e))
-            self.add_widget(self.tb_last_par)
             
     # Function that actually evolves the system through all the steps of the specified sequence
     def launch_evolution(self, sim_man, *args):
@@ -896,7 +859,7 @@ class Evolution_Results(FloatLayout):
             self.remove_widget(self.error_evolution)
             self.remove_widget(self.tb_evolution)
             self.remove_widget(self.evolved_dm_panels)
-                                    
+            
             for i in range(sim_man.n_pulses):
                 sim_man.dm[i+1] = evolve(sim_man.spin, sim_man.h_unperturbed, sim_man.dm[i], \
                                          sim_man.pulse[i], sim_man.pulse_time[i], \
@@ -952,25 +915,25 @@ class Evolution_Results(FloatLayout):
 
             # Panels showing the diagram of the density matrix evolved at each stage of the pulse
             # sequence
-            self.evolved_dm_panels = Evolved_Density_Matrices(size_hint=(0.8, 0.4), pos=(80, 775), do_default_tab=False, tab_width=150, tab_pos='top_mid', sim_man=sim_man)
+            self.evolved_dm_panels = Evolved_Density_Matrices(size_hint=(0.8, 0.6), pos=(80, 275), do_default_tab=False, tab_width=150, tab_pos='top_mid', sim_man=sim_man)
             self.add_widget(self.evolved_dm_panels)
             
         except Exception as e:
-            self.error_evolution=Label(text=e.args[0], pos=(210, 495), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+            self.error_evolution=Label(text=e.args[0], pos=(210, 360), size=(200, 180), bold=True, color=(1, 0, 0, 1), font_size='15sp')
             self.add_widget(self.error_evolution)
             
-            self.tb_evolution=Button(text='traceback', size_hint=(0.1, 0.02), pos=(654, 1200))
+            self.tb_evolution=Button(text='traceback', size_hint=(0.1, 0.03), pos=(640, 815))
             self.tb_evolution.bind(on_release=partial(print_traceback, e))
             self.add_widget(self.tb_evolution)
 
     def __init__(self, sim_man, **kwargs):
         super().__init__(**kwargs)
         
-        self.evolved_state_label = Label(text='Evolved states', size=(10, 5), pos=(0, 700), font_size='30sp')
+        self.evolved_state_label = Label(text='Evolved states', size=(10, 5), pos=(0, 450), font_size='30sp')
         self.add_widget(self.evolved_state_label)
         
         # Button which launches the evolution
-        self.launch_evo_btn = Button(text='Launch evolution', font_size='16sp', bold=True, background_normal = '', background_color=(0, 0.2, 1, 1), size_hint_y=None, height=35, size_hint_x=None, width=160, pos=(560, 1390))
+        self.launch_evo_btn = Button(text='Launch evolution', font_size='16sp', bold=True, background_normal = '', background_color=(0, 0.2, 1, 1), size_hint_y=None, height=35, size_hint_x=None, width=160, pos=(560, 875))
         self.launch_evo_btn.bind(on_press=partial(self.launch_evolution, sim_man))
         self.add_widget(self.launch_evo_btn)
         
@@ -991,7 +954,7 @@ class Evolved_Density_Matrices(TabbedPanel):
             self.pulse_tab[i] = TabbedPanelItem(text='Pulse '+str(i+1))
             self.evolved_dm_box[i] = BoxLayout()
             
-            self.evolved_dm_figure[i] = plot_real_part_density_matrix(sim_man.dm[i+1], show=False)#plt.gcf()
+            self.evolved_dm_figure[i] = plot_real_part_density_matrix(sim_man.dm[i+1], show=False)
             
             self.evolved_dm_box[i].add_widget(FigureCanvasKivyAgg(self.evolved_dm_figure[i]))
             self.pulse_tab[i].add_widget(self.evolved_dm_box[i])
@@ -1011,9 +974,97 @@ class Evolved_Density_Matrices(TabbedPanel):
         
         
         
+class NMR_Spectrum(FloatLayout):
+    error_FID = Label()
+    tb_FID = Button()
+    
+    FID = Widget()
+    FID_figure = matplotlib.figure.Figure()
+    
+    error_fourier = Widget()
+    adj_fourier = Widget()
+
+    fourier_spectrum = Widget()
+    fourier_spectrum_figure = matplotlib.figure.Figure()
+
+    # Assigns the values of the inputs above to the corresponding variables of the Simulation_Manager
+    # and generates the FID signal
+    def generate_FID(self, sim_man, y_shift, *args):
+        try:
+            self.remove_widget(self.error_FID)
+            self.remove_widget(self.tb_FID)
+            
+            sim_man.coil_theta = (float(null_string(self.coil_theta.text))/180)*math.pi
+            
+            sim_man.coil_phi = (float(null_string(self.coil_phi.text))/180)*math.pi
+            
+            sim_man.time_aq = float(null_string(self.time_aq.text))
+            
+            sim_man.square_modulus = self.sq_mod_checkbox.active
+            
+            sim_man.frequency_left_bound = float(null_string(self.frequency_left_bound.text))
+            
+            sim_man.frequency_right_bound = float(null_string(self.frequency_right_bound.text))
+            
+        except Exception as e:
+            self.error_FID=Label(text=e.args[0], pos=(175, y_shift+360), size=(200, 205), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+            self.add_widget(self.error_FID)
+            
+            self.tb_FID=Button(text='traceback', size_hint=(0.1, 0.03), pos=(670, y_shift+815))
+            self.tb_FID.bind(on_release=partial(print_traceback, e))
+            self.add_widget(self.tb_FID)
+
+    def FID_parameters(self, sim_man, y_shift):
         
+        self.FID_parameters_label = Label(text='Acquisition of the FID', size=(10, 5), pos=(-250, y_shift+400), font_size='20sp')
+        self.add_widget(self.FID_parameters_label)
         
-#self.acquisition_parameters(y_shift=450, sim_man=sim_man)
+        # Orientation of the detection coils
+        
+        self.coil_orientation_label = Label(text='Normal to the plane of the detection coils', size=(10, 5), pos=(-207.5, y_shift+360), font_size='15sp')
+        self.add_widget(self.coil_orientation_label)
+        
+        self.coil_theta_label = Label(text='\N{GREEK SMALL LETTER THETA}', size=(10, 5), pos=(-342.5, y_shift+320), font_size='15sp')
+        self.add_widget(self.coil_theta_label)
+        
+        self.coil_theta = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(65, y_shift+805))
+        self.add_widget(self.coil_theta)
+        
+        self.coil_theta_unit = Label(text='°', size=(10, 5), pos=(-265, y_shift+320), font_size='15sp')
+        self.add_widget(self.coil_theta_unit)
+        
+        self.coil_phi_label = Label(text='\N{GREEK SMALL LETTER PHI}', size=(10, 5), pos=(-230, y_shift+320), font_size='15sp')
+        self.add_widget(self.coil_phi_label)
+        
+        self.coil_phi = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(180, y_shift+805))
+        self.add_widget(self.coil_phi)
+        
+        self.coil_phi_unit = Label(text='°', size=(10, 5), pos=(-152.5, y_shift+320), font_size='15sp')
+        self.add_widget(self.coil_phi_unit)
+        
+        # Time of acquisition of the FID Signal
+        
+        self.time_aq_label = Label(text='Time of acquisition of the FID signal', size=(10, 5), pos=(-227.5, y_shift+280), font_size='15sp')
+        self.add_widget(self.time_aq_label)
+        
+        self.time_aq = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(305, y_shift+765))
+        self.add_widget(self.time_aq)
+        
+        self.time_aq_unit = Label(text='\N{GREEK SMALL LETTER MU}s', size=(10, 5), pos=(-17.5, y_shift+280), font_size='15sp')
+        self.add_widget(self.time_aq_unit)
+        
+        self.generate_FID_btn = Button(text='Acquire FID signal', font_size='16sp', size_hint_y=None, height=35, size_hint_x=None, width=200, pos=(550, 875+y_shift))
+        self.generate_FID_btn.bind(on_press=partial(self.generate_FID, sim_man, y_shift))
+        self.add_widget(self.generate_FID_btn)
+    
+    def __init__(self, sim_man, **kwargs):
+        super().__init__(**kwargs)
+        
+        self.NMR_spectrum_label = Label(text='NMR/NQR spectrum', size=(10, 5), pos=(0, 450), font_size='30sp')
+        self.add_widget(self.NMR_spectrum_label)
+        
+        self.FID_parameters(sim_man, 0)
+        
         
 #plt.close(self.NMR_spectrum_figure)
         
@@ -1035,39 +1086,7 @@ class Evolved_Density_Matrices(TabbedPanel):
 #self.add_widget(self.NMR_spectrum)
        
 #    def acquisition_parameters(self, y_shift, sim_man):
-#        # Orientation of the detection coils
-#        self.coil_orientation_label = Label(text='Normal to the plane of the detection coils', size=(10, 5), pos=(-200, 180+y_shift), font_size='15sp')
-#        self.add_widget(self.coil_orientation_label)
 #        
-#        self.coil_theta_label = Label(text='\N{GREEK SMALL LETTER THETA}', size=(10, 5), pos=(-337.5, 140+y_shift), font_size='15sp')
-#        self.add_widget(self.coil_theta_label)
-        
-#        self.coil_theta = TextInput(multiline=False, size_hint=(0.075, 0.02), pos=(72.25, 875+y_shift))
-#        self.add_widget(self.coil_theta)
-        
-#        self.coil_theta_unit = Label(text='°', size=(10, 5), pos=(-260, 140+y_shift), font_size='15sp')
-#        self.add_widget(self.coil_theta_unit)
-        
-#        self.coil_phi_label = Label(text='\N{GREEK SMALL LETTER PHI}', size=(10, 5), pos=(-225, 140+y_shift), font_size='15sp')
-#        self.add_widget(self.coil_phi_label)
-        
-#        self.coil_phi = TextInput(multiline=False, size_hint=(0.075, 0.02), pos=(185, 875+y_shift))
-#        self.add_widget(self.coil_phi)
-        
-#        self.coil_phi_unit = Label(text='°', size=(10, 5), pos=(-147.5, 140+y_shift), font_size='15sp')
-#        self.add_widget(self.coil_phi_unit)
-        
-        # Time of acquisition of the FID Signal
-        
-#        self.time_aq_label = Label(text='Time of acquisition of the FID signal', size=(10, 5), pos=(-222.5, 100+y_shift), font_size='15sp')
-#        self.add_widget(self.time_aq_label)
-        
-#        self.time_aq = TextInput(multiline=False, size_hint=(0.075, 0.02), pos=(307.5, 835+y_shift))
-#        self.add_widget(self.time_aq)
-        
-#        self.time_aq_unit = Label(text='\N{GREEK SMALL LETTER MU}s', size=(10, 5), pos=(-15, 100+y_shift), font_size='15sp')
-#        self.add_widget(self.time_aq_unit)
-        
         # Checkbox which specifies if the generated NMR spectrum displays the separate
         # real and imaginary parts or the square modulus of the complex signal
         
@@ -1165,7 +1184,11 @@ class Evolved_Density_Matrices(TabbedPanel):
 #        self.phase_adj_btn.bind(on_press=partial(self.adjust_phase, sim_man))
 #        self.add_widget(self.phase_adj_btn)
         
-        
+
+
+
+    
+
         
         
         
@@ -1195,10 +1218,17 @@ class Panels(TabbedPanel):
         
         self.tab_evolve = TabbedPanelItem(text='Evolve')
         self.scroll_window =  ScrollView(size_hint=(1, None), size=(Window.width, 500))
-        self.evo_res_page = Evolution_Results(size_hint=(1, None), size=(Window.width, 1500), sim_man=sim_man)
+        self.evo_res_page = Evolution_Results(size_hint=(1, None), size=(Window.width, 1000), sim_man=sim_man)
         self.scroll_window.add_widget(self.evo_res_page)
         self.tab_evolve.add_widget(self.scroll_window)
         self.add_widget(self.tab_evolve)
+        
+        self.tab_spectrum = TabbedPanelItem(text='Spectrum')
+        self.scroll_window =  ScrollView(size_hint=(1, None), size=(Window.width, 500))
+        self.spectrum_page = NMR_Spectrum(size_hint=(1, None), size=(Window.width, 1000), sim_man=sim_man)
+        self.scroll_window.add_widget(self.spectrum_page)
+        self.tab_spectrum.add_widget(self.scroll_window)
+        self.add_widget(self.tab_spectrum)
         
         
 # Class of the application and main class of the program
