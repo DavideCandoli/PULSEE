@@ -1065,7 +1065,6 @@ class NMR_Spectrum(FloatLayout):
         
         self.FID_parameters(sim_man, 0)
         
-        
 #plt.close(self.NMR_spectrum_figure)
         
 #self.NMR_spectrum = BoxLayout(size_hint=(0.9, 0.3), pos=(40, 250))
