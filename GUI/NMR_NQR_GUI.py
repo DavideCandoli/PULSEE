@@ -109,6 +109,8 @@ class Simulation_Manager:
     
     spectrum_fourier = np.ndarray(1)
     
+    spectrum_fourier_neg = np.ndarray(1)
+    
 def print_traceback(err, *args):
     raise err
     
@@ -972,12 +974,15 @@ class NMR_Spectrum(FloatLayout):
             
             input_time_aq = float(null_string(self.time_aq.text))
             
+            input_n_points = float(null_string(self.sample_points.text))
+            
             sim_man.FID_times, sim_man.FID = FID_signal(sim_man.spin, sim_man.h_unperturbed, \
                                                         sim_man.dm[sim_man.n_pulses], \
                                                         acquisition_time=input_time_aq, \
                                                         T2=sim_man.relaxation_time, \
                                                         theta=input_theta, \
-                                                        phi=input_phi)
+                                                        phi=input_phi, \
+                                                        n_points=input_n_points)
             
         except Exception as e:
             self.error_FID=Label(text=e.args[0], pos=(175, y_shift+360), size=(200, 205), bold=True, color=(1, 0, 0, 1), font_size='15sp')
@@ -997,19 +1002,31 @@ class NMR_Spectrum(FloatLayout):
             self.remove_widget(self.fourier_spectrum)
             plt.close(self.fourier_spectrum_figure)
             
+            input_opposite_frequency = self.flip_negative_freq_checkbox.active
             input_square_modulus = self.sq_mod_checkbox.active
             
             self.input_frequency_left_bound = float(null_string(self.frequency_left_bound.text))
             self.input_frequency_right_bound = float(null_string(self.frequency_right_bound.text))
             
-            sim_man.spectrum_frequencies, \
-            sim_man.spectrum_fourier = fourier_transform_signal(sim_man.FID, sim_man.FID_times, \
+            if input_opposite_frequency == False:
+                sim_man.spectrum_frequencies, \
+                sim_man.spectrum_fourier = fourier_transform_signal(sim_man.FID, sim_man.FID_times, \
                                                      frequency_start=self.input_frequency_left_bound, \
                                                      frequency_stop=self.input_frequency_right_bound)
+                plot_fourier_transform(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
+                                       square_modulus=input_square_modulus, show=False)
+            else:
+                sim_man.spectrum_frequencies, \
+                sim_man.spectrum_fourier, \
+                sim_man.spectrum_fourier_neg = fourier_transform_signal(sim_man.FID,sim_man.FID_times,\
+                                                     frequency_start=self.input_frequency_left_bound, \
+                                                     frequency_stop=self.input_frequency_right_bound, \
+                                                     opposite_frequency=input_opposite_frequency)
+                plot_fourier_transform(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
+                                       sim_man.spectrum_fourier_neg, \
+                                       square_modulus=input_square_modulus, show=False)
             
             self.fourier_spectrum = BoxLayout(size_hint=(0.9, 0.5), pos=(40, 0))
-            
-            plot_fourier_transform(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, square_modulus=input_square_modulus, show=False)
             
             self.fourier_spectrum_figure = plt.gcf()
             
@@ -1105,6 +1122,7 @@ class NMR_Spectrum(FloatLayout):
         self.add_widget(self.sample_points_label)
         
         self.sample_points = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(495, y_shift+765))
+        self.sample_points.text = '10'
         self.add_widget(self.sample_points)
         
         # Question mark connected with the explanation of the input right above
