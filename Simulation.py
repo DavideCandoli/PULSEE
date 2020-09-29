@@ -314,5 +314,3 @@ def plot_fourier_transform(frequencies, fourier, fourier_neg=None, square_modulu
 
 
 
-
-
