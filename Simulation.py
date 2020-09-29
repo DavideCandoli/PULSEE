@@ -271,24 +271,40 @@ def fourier_phase_shift(frequencies, fourier, peak_frequency_hint, search_window
     
     return phase
 
-def plot_fourier_transform(frequencies, fourier, square_modulus=False, show=True, save=False, name='FTSignal', destination=''):
-    fig = plt.figure()
+# If another set of data is passed as fourier_neg, the function plots a couple of graphs, with the
+# one at the top interpreted as the NMR signal produced by a magnetization rotating counter-clockwise,
+# the one at the bottom corresponding to the opposite sense of rotation
+def plot_fourier_transform(frequencies, fourier, fourier_neg=None, square_modulus=False, show=True, save=False, name='FTSignal', destination=''):
     
-    if not square_modulus:
-        plt.plot(frequencies, np.real(fourier), label='Real part')
-    
-        plt.plot(frequencies, np.imag(fourier), label='Imaginary part')
-    
+    if fourier_neg is None:
+        n_plots = 1
+        fourier_data = [fourier]
     else:
-        plt.plot(frequencies, np.absolute(fourier)**2, label='Square modulus')
+        n_plots = 2
+        fourier_data = [fourier, fourier_neg]
+        plot_title = ["Counter-clockwise precession", "Clockwise precession"]
     
-    plt.legend(loc='upper left')
+    fig, ax = plt.subplots(n_plots, 1, gridspec_kw={'hspace':0.5})
     
-    plt.xlabel("frequency (MHz)")    
-    plt.ylabel("FT signal (a. u.)")
-    
+    if fourier_neg is None:
+        ax = [ax]
+        
+    for i in range(n_plots):
+        if not square_modulus:
+            ax[i].plot(frequencies, np.real(fourier_data[i]), label='Real part')
+            ax[i].plot(frequencies, np.imag(fourier_data[i]), label='Imaginary part')
+        else:
+            ax[i].plot(frequencies, np.absolute(fourier_data[i])**2, label='Square modulus')
+        
+        if n_plots>1:
+            ax[i].title.set_text(plot_title[i])
+        
+        ax[i].legend(loc='upper left')
+        ax[i].set_xlabel("frequency (MHz)")    
+        ax[i].set_ylabel("FT signal (a. u.)")  
+         
     if save: plt.savefig(destination + name)
-    
+        
     if show: plt.show()
         
     return fig
