@@ -5,6 +5,7 @@ import math
 import matplotlib.pylab as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.pyplot import xticks, yticks
+from matplotlib.axes import Axes
 
 from Operators import *
 
@@ -182,9 +183,9 @@ def plot_power_absorption_spectrum(frequencies, intensities, show=True, save=Fal
     return fig
 
 
-def FID_signal(spin, h_unperturbed, dm, acquisition_time, T2=100, theta=0, phi=0):
+def FID_signal(spin, h_unperturbed, dm, acquisition_time, T2=100, theta=0, phi=0, n_points=10):
     
-    times = np.linspace(start=0, stop=acquisition_time, num=int(acquisition_time*10))
+    times = np.linspace(start=0, stop=acquisition_time, num=int(acquisition_time*n_points))
     
     FID = []
     
@@ -203,15 +204,15 @@ def FID_signal(spin, h_unperturbed, dm, acquisition_time, T2=100, theta=0, phi=0
 def plot_real_part_FID_signal(times, FID, show=True, save=False, name='FIDSignal', destination=''):
     fig = plt.figure()
     
-    plt.plot(times, np.real(FID))
-    
+    plt.plot(times, np.real(FID), label='Real part')
+        
     plt.xlabel("time (\N{GREEK SMALL LETTER MU}s)")    
     plt.ylabel("Re(FID) (a. u.)")
     
     if save: plt.savefig(destination + name)
     
     if show: plt.show()
-        
+    
     return fig
 
 
@@ -260,7 +261,6 @@ def fourier_phase_shift(frequencies, fourier, peak_frequency_hint, search_window
         phase = math.atan(-im/re) + math.pi
     
     return phase
-
 
 def plot_fourier_transform(frequencies, fourier, square_modulus=False, show=True, save=False, name='FTSignal', destination=''):
     fig = plt.figure()

@@ -167,6 +167,46 @@ def test_FID_signal_decays_fast_for_small_relaxation_time():
     assert np.absolute(signal[-1])<1e-10
     
 
+def test_pure_zeeman_FID_is_periodic_for_long_relax_times():
+    spin_par = {'quantum number' : 3/2,
+                'gamma/2pi' : 1.}
+    
+    H_0 = 1
+    
+    zeem_par = {'field magnitude' : H_0,
+                'theta_z' : 0,
+                'phi_z' : 0}
+    
+    quad_par = {'coupling constant' : 0.,
+                'asymmetry parameter' : 0.,
+                'alpha_q' : 0.,
+                'beta_q' : 0.,
+                'gamma_q' : 0.}
+    
+    spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par)
+    
+    nu = spin_par['gamma/2pi']*H_0
+    
+    mode = pd.DataFrame([(nu, 1., 0., math.pi/2, 0)], 
+                        columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
+    
+    dm_evolved = evolve(spin, h_unperturbed, dm_0, \
+                        mode, pulse_time=1/4, \
+                        picture='IP')
+    
+    t, signal = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=1, T2=1e3, n_points=1e3)
+        
+    t1 = 0
+    t2 = 0
+    for i in range(len(t)):
+        t2 = t[i]
+        if np.absolute(t2-1/nu) < 1e-3:
+            assert (np.absolute(signal[i]-signal[0])) < 1e-2
+            return
+    
+    raise AssertionError("The sampling of the acquisition time window isn't dense enough to reproduce the periodicity of the FID signal")
+    
+
 def test_opposite_fourier_transform_when_FID_differ_of_pi():
     spin_par = {'quantum number' : 3,
                 'gamma/2pi' : 1.}
