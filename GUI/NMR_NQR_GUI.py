@@ -98,19 +98,7 @@ class Simulation_Manager:
     h_unperturbed = Observable(1)
         
     relaxation_time = 100.
-    
-    coil_theta = 0.
-    
-    coil_phi = 0.
-    
-    time_aq = 500.
-    
-    square_modulus = False
-    
-    frequency_left_bound = 0.
-    
-    frequency_right_bound = 10.
-    
+        
     dm = np.ndarray(5, dtype=Density_Matrix)
 
     FID_times = np.ndarray(1)
@@ -978,18 +966,18 @@ class NMR_Spectrum(FloatLayout):
             self.remove_widget(self.error_FID)
             self.remove_widget(self.tb_FID)
             
-            sim_man.coil_theta = (float(null_string(self.coil_theta.text))/180)*math.pi
+            input_theta = (float(null_string(self.coil_theta.text))/180)*math.pi
             
-            sim_man.coil_phi = (float(null_string(self.coil_phi.text))/180)*math.pi
+            input_phi = (float(null_string(self.coil_phi.text))/180)*math.pi
             
-            sim_man.time_aq = float(null_string(self.time_aq.text))
+            input_time_aq = float(null_string(self.time_aq.text))
             
             sim_man.FID_times, sim_man.FID = FID_signal(sim_man.spin, sim_man.h_unperturbed, \
                                                         sim_man.dm[sim_man.n_pulses], \
-                                                        acquisition_time=sim_man.time_aq, \
+                                                        acquisition_time=input_time_aq, \
                                                         T2=sim_man.relaxation_time, \
-                                                        theta=sim_man.coil_theta, \
-                                                        phi=sim_man.coil_phi)
+                                                        theta=input_theta, \
+                                                        phi=input_phi)
             
         except Exception as e:
             self.error_FID=Label(text=e.args[0], pos=(175, y_shift+360), size=(200, 205), bold=True, color=(1, 0, 0, 1), font_size='15sp')
@@ -1009,19 +997,19 @@ class NMR_Spectrum(FloatLayout):
             self.remove_widget(self.fourier_spectrum)
             plt.close(self.fourier_spectrum_figure)
             
-            sim_man.square_modulus = self.sq_mod_checkbox.active
+            input_square_modulus = self.sq_mod_checkbox.active
             
-            sim_man.frequency_left_bound = float(null_string(self.frequency_left_bound.text))
-            sim_man.frequency_right_bound = float(null_string(self.frequency_right_bound.text))
+            self.input_frequency_left_bound = float(null_string(self.frequency_left_bound.text))
+            self.input_frequency_right_bound = float(null_string(self.frequency_right_bound.text))
             
             sim_man.spectrum_frequencies, \
             sim_man.spectrum_fourier = fourier_transform_signal(sim_man.FID, sim_man.FID_times, \
-                                                       frequency_start=sim_man.frequency_left_bound, \
-                                                       frequency_stop=sim_man.frequency_right_bound)
+                                                     frequency_start=self.input_frequency_left_bound, \
+                                                     frequency_stop=self.input_frequency_right_bound)
             
             self.fourier_spectrum = BoxLayout(size_hint=(0.9, 0.5), pos=(40, 0))
             
-            plot_fourier_transform(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, square_modulus=sim_man.square_modulus, show=False)
+            plot_fourier_transform(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, square_modulus=input_square_modulus, show=False)
             
             self.fourier_spectrum_figure = plt.gcf()
             
@@ -1052,8 +1040,8 @@ class NMR_Spectrum(FloatLayout):
                                       peak_frequency_hint, search_window)
             
             f, ft = fourier_transform_signal(np.exp(1j*phi)*sim_man.FID, sim_man.FID_times, \
-                                             sim_man.frequency_left_bound, \
-                                             sim_man.frequency_right_bound)
+                                             self.input_frequency_left_bound, \
+                                             self.input_frequency_right_bound)
             
             self.fourier_spectrum = BoxLayout(size_hint=(0.9, 0.5), pos=(40, y_shift))
             
@@ -1107,9 +1095,36 @@ class NMR_Spectrum(FloatLayout):
         
         self.time_aq = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(305, y_shift+765))
         self.add_widget(self.time_aq)
-        
+
         self.time_aq_unit = Label(text='\N{GREEK SMALL LETTER MU}s', size=(10, 5), pos=(-17.5, y_shift+280), font_size='15sp')
         self.add_widget(self.time_aq_unit)
+        
+        # Number of sampling points
+        
+        self.sample_points_label = Label(text='#points/\N{GREEK SMALL LETTER MU}s', size=(10, 5), pos=(50, y_shift+280), font_size='15sp')
+        self.add_widget(self.sample_points_label)
+        
+        self.sample_points = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(495, y_shift+765))
+        self.add_widget(self.sample_points)
+        
+        # Question mark connected with the explanation of the input right above
+        self.sample_question_mark = Label(text='[ref=?]?[/ref]', markup=True, size=(20, 20), pos=(175, y_shift+280), font_size='20sp')
+        self.add_widget(self.sample_question_mark)
+       
+        # Popup message which explains the meaning of the input above
+        explanation = "The number of points per microsecond in which " + '\n' + \
+                      "the time interval of acquisition is to be sampled " + '\n' + \
+                      "is a fundamental parameter for the correct " +'\n' + \
+                      "reproduction of the FID and its Fourier spectrum." + '\n' + \
+                      "Indeed, according to Nyquist sampling theorem, the " + '\n' + \
+                      "sampling frequency must be at least twice the " + '\n' + \
+                      "maximum resonance frequency in the spectrum in " + '\n' + \
+                      "order for the continuous FID signal to be sampled " + '\n' + \
+                      "correctly. For this reason, few sampling points may " + '\n' +\
+                      "lead to erroneous peaks in the Fourier spectrum."
+        self.sample_popup = Popup(title='Nyquist theorem', content=Label(text=explanation), size_hint=(0.475, 0.45), pos=(425, 500), auto_dismiss=True)
+        
+        self.sample_question_mark.bind(on_ref_press=self.sample_popup.open)
         
         self.generate_FID_btn = Button(text='Acquire FID signal', font_size='16sp', size_hint_y=None, height=35, size_hint_x=None, width=200, pos=(550, 875+y_shift))
         self.generate_FID_btn.bind(on_press=partial(self.generate_FID, sim_man, y_shift))
@@ -1122,7 +1137,7 @@ class NMR_Spectrum(FloatLayout):
         
         # Checkbox which specifies if the generated NMR spectrum shows the frequencies in both the
         # negative and positive real axis of the same graph or in two separate graphs corresponding
-        # to the clockwise and anticlockwise precession
+        # to the clockwise and counter-clockwise precession
         
         self.flip_negative_freq_space = GridLayout(cols=2, size=(1000, 35), size_hint=(None, None), pos=(50, y_shift+675))
         self.flip_negative_freq_checkbox = CheckBox(size_hint_x=None, width=20)
