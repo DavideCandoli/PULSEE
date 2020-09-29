@@ -216,23 +216,32 @@ def plot_real_part_FID_signal(times, FID, show=True, save=False, name='FIDSignal
     return fig
 
 
-def fourier_transform_signal(signal, times, frequency_start, frequency_stop):
-        
+# When opposite_frequency is True, the function computes the Fourier spectrum also in the range of
+# frequencies opposite to those specified as inputs and returns it
+def fourier_transform_signal(signal, times, frequency_start, frequency_stop, opposite_frequency=False):
+    
     dt = times[1]-times[0]
     
     frequencies = np.linspace(start=frequency_start, stop=frequency_stop, num=1000)
+        
+    fourier = [[], []]
     
-    fourier = []
+    if opposite_frequency == False:
+        sign_options = 1
+    else:
+        sign_options = 2
     
-    # The Fourier transform is evaluated through the conventional formula
-    # F = int_0^T{exp(i 2pi nu t) S(t) dt}
-    for nu in frequencies:
-        integral = 0
-        for i in range(len(times)):
-            integral = integral + np.exp(1j*2*math.pi*nu*times[i])*signal[i]*dt
-        fourier.append(integral)
-    
-    return frequencies, np.array(fourier)
+    for s in range(sign_options):
+        for nu in frequencies:
+            integral = np.zeros(sign_options, dtype=complex)
+            for t in range(len(times)):
+                integral[s] = integral[s] + np.exp(1j*2*math.pi*(1-2*s)*nu*times[t])*signal[t]*dt
+            fourier[s].append(integral[s])
+        
+    if opposite_frequency == False:
+        return frequencies, np.array(fourier[0])
+    else:
+        return frequencies, np.array(fourier[0]), np.array(fourier[1])
 
 
 # Finds out the phase responsible for the displacement of the real and imaginary parts of the Fourier
