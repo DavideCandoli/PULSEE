@@ -1054,9 +1054,14 @@ class NMR_Spectrum(FloatLayout):
             peak_frequency_hint = float(null_string(self.peak_frequency.text))
         
             search_window = float(null_string(self.search_range.text))
-        
-            phi = fourier_phase_shift(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
-                                      peak_frequency_hint, search_window)
+            
+            if not self.flip_negative_freq_checkbox.active:
+                phi = fourier_phase_shift(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
+                                          peak_frequency_hint, search_window)
+            else:
+                phi = fourier_phase_shift(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
+                                          sim_man.spectrum_fourier_neg, \
+                                          peak_frequency_hint, search_window)
             
             self.calculate_and_plot_fourier(sim_man, np.exp(1j*phi))
             
