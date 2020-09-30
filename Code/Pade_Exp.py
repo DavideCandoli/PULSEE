@@ -1,4 +1,5 @@
 from numpy import asarray, inf, dot, floor, identity
+from math import log
 import numpy as np
 
 # Local imports
@@ -24,7 +25,6 @@ def expm(A, q=13):
     nA = norm(A,inf)
     if nA==0:
         return identity(A.shape[0], A.dtype.char)
-    from math import log
     val = log(nA, 2)
     e = int(floor(val))
     j = max(0,e+1)

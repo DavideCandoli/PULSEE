@@ -1,4 +1,5 @@
-from Operators import *
+import sys
+sys.path.insert(1, '/home/davidecandoli/Documenti/Università/Thesis/NQR-NMRSimulationSoftware/Code')
 
 import math
 from numpy import log
@@ -10,6 +11,8 @@ from scipy.constants import Planck, Boltzmann
 
 import hypothesis.strategies as st
 from hypothesis import given, note, assume
+
+from Operators import *
 
 def test_operator_initialisation_with_wrong_dimensions():
     wrong_input = np.ones((1, 2))

@@ -1,5 +1,7 @@
-# Generic python imports
 import sys
+sys.path.insert(1, '/home/davidecandoli/Documenti/Università/Thesis/NQR-NMRSimulationSoftware/Code')
+
+# Generic python imports
 import math
 import numpy as np
 import pandas as pd

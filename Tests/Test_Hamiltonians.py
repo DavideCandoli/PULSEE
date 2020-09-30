@@ -1,16 +1,16 @@
+import sys
+sys.path.insert(1, '/home/davidecandoli/Documenti/Università/Thesis/NQR-NMRSimulationSoftware/Code')
+
 import math
 import numpy as np
 import pandas as pd
 
-from Operators import *
-
-from Nuclear_Spin import *
-
-from Hamiltonians import *
-
 import hypothesis.strategies as st
 from hypothesis import given, note
 
+from Operators import *
+from Nuclear_Spin import *
+from Hamiltonians import *
 
 @given(par = st.lists(st.floats(min_value=0, max_value=20), min_size=3, max_size=3))
 def test_zeeman_hamiltonian_changes_sign_when_magnetic_field_is_flipped(par):

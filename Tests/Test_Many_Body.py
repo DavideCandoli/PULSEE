@@ -1,13 +1,14 @@
+import sys
+sys.path.insert(1, '/home/davidecandoli/Documenti/Università/Thesis/NQR-NMRSimulationSoftware/Code')
+
 import math
 import numpy as np
-
-from Operators import *
-
-from Many_Body import *
 
 import hypothesis.strategies as st
 from hypothesis import given, note
 
+from Operators import *
+from Many_Body import *
 
 @given(d = st.integers(min_value=1, max_value=8))
 def test_tensor_product_conserves_density_matrix_properties(d):

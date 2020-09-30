@@ -1,5 +1,4 @@
 # Generic python imports
-import sys
 import math
 import numpy as np
 import pandas as pd
@@ -40,8 +39,6 @@ from kivy.uix.popup import Popup
 from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 
 from kivy.graphics import *
-
-sys.path.insert(1, '/home/davidecandoli/Documenti/Università/Thesis/NQR-NMRSimulationSoftware')
 
 # NMR-NQRSimulationSoftware imports
 from Operators import *
@@ -209,7 +206,7 @@ class System_Parameters(FloatLayout):
     # Builds up the objects representing the nuclear system
     def build_system(self, sim_man, *args):
         try:
-            
+                        
             self.remove_widget(self.error_build_system)
             
             self.remove_widget(self.tb_button)
@@ -269,6 +266,8 @@ class System_Parameters(FloatLayout):
                                      temperature=300)
             
             self.view_the_initial_density_matrix(sim_man)
+            
+            self.set_up_system.disabled = False
             
         except Exception as e:
             self.error_build_system=Label(text=e.args[0], pos=(0, -490), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
@@ -466,7 +465,7 @@ class System_Parameters(FloatLayout):
         self.initial_dm_parameters(0, -30)
         
         self.set_up_system = Button(text='Set up the system', font_size='16sp', size_hint_y=None, height=40, size_hint_x=None, width=200, pos=(535, 25))
-        self.set_up_system.bind(on_press=partial(self.build_system, sim_man))
+        self.set_up_system.bind(on_release=partial(self.build_system, sim_man))
         
         self.add_widget(self.set_up_system)
 
@@ -1057,7 +1056,8 @@ class NMR_Spectrum(FloatLayout):
             
             if not self.flip_negative_freq_checkbox.active:
                 phi = fourier_phase_shift(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
-                                          peak_frequency_hint, search_window)
+                                          peak_frequency_hint=peak_frequency_hint, \
+                                          search_window=search_window)
             else:
                 phi = fourier_phase_shift(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
                                           sim_man.spectrum_fourier_neg, \
@@ -1157,7 +1157,7 @@ class NMR_Spectrum(FloatLayout):
         self.flip_negative_freq_checkbox = CheckBox(size_hint_x=None, width=20)
         self.flip_negative_freq_space.add_widget(self.flip_negative_freq_checkbox)
         
-        self.flip_negative_freq_label = Label(text='Separate plots for opposite sense of rotation', font_size='15sp', size_hint_x=None, width=325)
+        self.flip_negative_freq_label = Label(text='Separate plots for counter-rotating Fourier components', font_size='15sp', size_hint_x=None, width=395)
         self.flip_negative_freq_space.add_widget(self.flip_negative_freq_label)
         
         self.add_widget(self.flip_negative_freq_space)
@@ -1169,7 +1169,7 @@ class NMR_Spectrum(FloatLayout):
         self.sq_mod_checkbox = CheckBox(size_hint_x=None, width=20)
         self.sq_mod_space.add_widget(self.sq_mod_checkbox)
         
-        self.sq_mod_label = Label(text='Square modulus of the NMR signal', font_size='15sp', size_hint_x=None, width=245)
+        self.sq_mod_label = Label(text='Square modulus of the NMR/NQR spectrum', font_size='15sp', size_hint_x=None, width=310)
         self.sq_mod_space.add_widget(self.sq_mod_label)
         
         self.add_widget(self.sq_mod_space)
@@ -1177,19 +1177,19 @@ class NMR_Spectrum(FloatLayout):
         # Controls for the left and right bounds of the frequency domain where the NMR spectrum is to 
         # be plotted
         
-        self.NMR_domain = Label(text='Frequency window of the NMR signal plot', size=(10, 5), pos=(-210, y_shift+120), font_size='15sp')
+        self.NMR_domain = Label(text='Frequency domain of the NMR/NQR spectrum', size=(10, 5), pos=(-195, y_shift+120), font_size='15sp')
         self.add_widget(self.NMR_domain)
         
-        self.frequency_left_bound = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(337.5, 605+y_shift))
+        self.frequency_left_bound = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(365, 605+y_shift))
         self.add_widget(self.frequency_left_bound)
         
-        self.left_to_right = Label(text='-', size=(10, 5), pos=(7.5, y_shift+120), font_size='15sp')
+        self.left_to_right = Label(text='-', size=(10, 5), pos=(30, y_shift+120), font_size='15sp')
         self.add_widget(self.left_to_right)
         
-        self.frequency_right_bound = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(417.5, 605+y_shift))
+        self.frequency_right_bound = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(435, 605+y_shift))
         self.add_widget(self.frequency_right_bound)
         
-        self.frequency_bounds_unit = Label(text='MHz', size=(10, 5), pos=(100, y_shift+120), font_size='15sp')
+        self.frequency_bounds_unit = Label(text='MHz', size=(10, 5), pos=(115, y_shift+120), font_size='15sp')
         self.add_widget(self.frequency_bounds_unit)
         
         self.generate_fourier_btn = Button(text='Perform Fourier analysis', font_size='16sp', size_hint_y=None, height=35, size_hint_x=None, width=225, pos=(525, 715+y_shift))

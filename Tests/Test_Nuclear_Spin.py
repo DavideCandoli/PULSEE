@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(1, '/home/davidecandoli/Documenti/Università/Thesis/NQR-NMRSimulationSoftware/Code')
+
 import math
 import numpy as np
 
@@ -5,7 +8,6 @@ import hypothesis.strategies as st
 from hypothesis import given, note
 
 from Operators import *
-
 from Nuclear_Spin import *
         
 
