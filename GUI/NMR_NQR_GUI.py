@@ -991,6 +991,42 @@ class NMR_Spectrum(FloatLayout):
             self.tb_FID=Button(text='traceback', size_hint=(0.1, 0.03), pos=(670, y_shift+815))
             self.tb_FID.bind(on_release=partial(print_traceback, e))
             self.add_widget(self.tb_FID)
+            
+    def calculate_and_plot_fourier(self, sim_man, phase=1):
+            self.remove_widget(self.fourier_spectrum)
+            plt.close(self.fourier_spectrum_figure)
+            
+            self.input_opposite_frequency = self.flip_negative_freq_checkbox.active
+            self.input_square_modulus = self.sq_mod_checkbox.active
+            
+            self.input_frequency_left_bound = float(null_string(self.frequency_left_bound.text))
+            self.input_frequency_right_bound = float(null_string(self.frequency_right_bound.text))
+            
+            if self.input_opposite_frequency == False:
+                sim_man.spectrum_frequencies, \
+                sim_man.spectrum_fourier = fourier_transform_signal(phase*sim_man.FID, sim_man.FID_times, \
+                                                     frequency_start=self.input_frequency_left_bound, \
+                                                     frequency_stop=self.input_frequency_right_bound)
+                plot_fourier_transform(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
+                                       square_modulus=self.input_square_modulus, show=False)
+            else:
+                sim_man.spectrum_frequencies, \
+                sim_man.spectrum_fourier, \
+                sim_man.spectrum_fourier_neg = fourier_transform_signal(phase*sim_man.FID,\
+                                                     sim_man.FID_times,\
+                                                     frequency_start=self.input_frequency_left_bound, \
+                                                     frequency_stop=self.input_frequency_right_bound, \
+                                                     opposite_frequency=self.input_opposite_frequency)
+                plot_fourier_transform(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
+                                       sim_man.spectrum_fourier_neg, \
+                                       square_modulus=self.input_square_modulus, show=False)
+            
+            self.fourier_spectrum = BoxLayout(size_hint=(0.9, 0.5), pos=(40, 0))
+            
+            self.fourier_spectrum_figure = plt.gcf()
+            
+            self.fourier_spectrum.add_widget(FigureCanvasKivyAgg(self.fourier_spectrum_figure))
+            self.add_widget(self.fourier_spectrum)
     
     # Assigns the values of the inputs connected with the analysis of the FID to the corresponding
     # variables of the Simulation_Manager and generates its Fourier spectrum
@@ -999,39 +1035,7 @@ class NMR_Spectrum(FloatLayout):
             self.remove_widget(self.error_fourier)
             self.remove_widget(self.tb_fourier)
             
-            self.remove_widget(self.fourier_spectrum)
-            plt.close(self.fourier_spectrum_figure)
-            
-            input_opposite_frequency = self.flip_negative_freq_checkbox.active
-            input_square_modulus = self.sq_mod_checkbox.active
-            
-            self.input_frequency_left_bound = float(null_string(self.frequency_left_bound.text))
-            self.input_frequency_right_bound = float(null_string(self.frequency_right_bound.text))
-            
-            if input_opposite_frequency == False:
-                sim_man.spectrum_frequencies, \
-                sim_man.spectrum_fourier = fourier_transform_signal(sim_man.FID, sim_man.FID_times, \
-                                                     frequency_start=self.input_frequency_left_bound, \
-                                                     frequency_stop=self.input_frequency_right_bound)
-                plot_fourier_transform(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
-                                       square_modulus=input_square_modulus, show=False)
-            else:
-                sim_man.spectrum_frequencies, \
-                sim_man.spectrum_fourier, \
-                sim_man.spectrum_fourier_neg = fourier_transform_signal(sim_man.FID,sim_man.FID_times,\
-                                                     frequency_start=self.input_frequency_left_bound, \
-                                                     frequency_stop=self.input_frequency_right_bound, \
-                                                     opposite_frequency=input_opposite_frequency)
-                plot_fourier_transform(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
-                                       sim_man.spectrum_fourier_neg, \
-                                       square_modulus=input_square_modulus, show=False)
-            
-            self.fourier_spectrum = BoxLayout(size_hint=(0.9, 0.5), pos=(40, 0))
-            
-            self.fourier_spectrum_figure = plt.gcf()
-            
-            self.fourier_spectrum.add_widget(FigureCanvasKivyAgg(self.fourier_spectrum_figure))
-            self.add_widget(self.fourier_spectrum)
+            self.calculate_and_plot_fourier(sim_man)
             
         except Exception as e:
             self.error_fourier=Label(text=e.args[0], pos=(220, y_shift+200), size=(200, 205), bold=True, color=(1, 0, 0, 1), font_size='15sp')
@@ -1046,8 +1050,6 @@ class NMR_Spectrum(FloatLayout):
         try:
             self.remove_widget(self.error_adj_phase)
             self.remove_widget(self.tb_adj_phase)
-            plt.close(self.fourier_spectrum_figure)
-            self.remove_widget(self.fourier_spectrum)
             
             peak_frequency_hint = float(null_string(self.peak_frequency.text))
         
@@ -1056,18 +1058,7 @@ class NMR_Spectrum(FloatLayout):
             phi = fourier_phase_shift(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
                                       peak_frequency_hint, search_window)
             
-            f, ft = fourier_transform_signal(np.exp(1j*phi)*sim_man.FID, sim_man.FID_times, \
-                                             self.input_frequency_left_bound, \
-                                             self.input_frequency_right_bound)
-            
-            self.fourier_spectrum = BoxLayout(size_hint=(0.9, 0.5), pos=(40, y_shift))
-            
-            plot_fourier_transform(f, ft, show=False)
-            
-            self.fourier_spectrum_figure = plt.gcf()
-            
-            self.fourier_spectrum.add_widget(FigureCanvasKivyAgg(self.fourier_spectrum_figure))
-            self.add_widget(self.fourier_spectrum)
+            self.calculate_and_plot_fourier(sim_man, np.exp(1j*phi))
             
         except Exception as e:
             self.error_adj_phase=Label(text=e.args[0], pos=(225, y_shift+45), size=(100, 100), bold=True, color=(1, 0, 0, 1), font_size='15sp')
