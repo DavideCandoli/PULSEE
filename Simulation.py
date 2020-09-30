@@ -246,9 +246,15 @@ def fourier_transform_signal(signal, times, frequency_start, frequency_stop, opp
 
 # Finds out the phase responsible for the displacement of the real and imaginary parts of the Fourier
 # spectrum of the FID with respect to the ideal absorptive/dispersive lorentzian shapes
-def fourier_phase_shift(frequencies, fourier, peak_frequency_hint, search_window=0.1):
+def fourier_phase_shift(frequencies, fourier, fourier_neg=None, peak_frequency_hint=0, search_window=0.1):
 
     peak_pos = 0
+    
+    # When the Fourier spectrum for the opposite frequencies is passed, the search of the maximum is
+    # carried out in both the positive and negative range of frequencies
+    if fourier_neg is not None:
+        fourier = np.concatenate((fourier, fourier_neg))
+        frequencies = np.concatenate((frequencies, -frequencies))
     
     # Range where to look for the maximum of the square modulus of the Fourier spectrum
     search_range = np.nonzero(np.isclose(frequencies, peak_frequency_hint, atol=search_window/2))[0]
@@ -259,7 +265,7 @@ def fourier_phase_shift(frequencies, fourier, peak_frequency_hint, search_window
         if (np.absolute(fourier[i])**2)>fourier2_max:
             fourier2_max = np.absolute(fourier[i])
             peak_pos = i
-        
+            
     re = np.real(fourier[peak_pos])
     
     im = np.imag(fourier[peak_pos])
@@ -270,6 +276,7 @@ def fourier_phase_shift(frequencies, fourier, peak_frequency_hint, search_window
         phase = math.atan(-im/re) + math.pi
     
     return phase
+
 
 # If another set of data is passed as fourier_neg, the function plots a couple of graphs, with the
 # one at the top interpreted as the NMR signal produced by a magnetization rotating counter-clockwise,
