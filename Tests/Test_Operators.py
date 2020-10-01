@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(1, '/home/davidecandoli/Documenti/Università/Thesis/NQR-NMRSimulationSoftware/Code')
+sys.path.insert(1, '../Code')
 
 import math
 from numpy import log
