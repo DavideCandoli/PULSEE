@@ -10,7 +10,7 @@ from scipy.integrate import quad
 from scipy.constants import Planck, Boltzmann
 
 import hypothesis.strategies as st
-from hypothesis import given, note, assume
+from hypothesis import given, settings, note, assume
 
 from Operators import *
 
@@ -46,6 +46,7 @@ def test_associativity_sum_operators(d):
     assert np.all(np.isclose(left_sum.matrix, right_sum.matrix, rtol=1e-10))
 
 @given(d = st.integers(min_value=1, max_value=16))
+@settings(deadline = None)
 def test_associativity_product_operators(d):
     a = random_operator(d)
     b = random_operator(d)
@@ -95,7 +96,8 @@ def test_reciprocal_operator(d):
     
 # Checks the fact that the eigenvalues of the exponential of an Operator o are the exponentials of
 # o's eigenvalues
-@given(d = st.integers(min_value=1, max_value=8))
+@given(d = st.integers(min_value=1, max_value=4))
+@settings(deadline = None)
 def test_exponential_operator_eigenvalues(d):
     o = random_operator(d)
     o_e = o.diagonalisation()[0]

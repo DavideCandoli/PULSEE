@@ -5,7 +5,7 @@ import math
 import numpy as np
 
 import hypothesis.strategies as st
-from hypothesis import given, note
+from hypothesis import given, settings, note
 
 from Operators import *
 from Many_Body import *
@@ -27,6 +27,7 @@ def test_tensor_product_conserves_density_matrix_properties(d):
 
             
 @given(d = st.integers(min_value=2, max_value=6))
+@settings(deadline = None)
 def test_partial_trace_is_inverse_tensor_product(d):
     A = random_operator(d-1)
     A = A/A.trace()
