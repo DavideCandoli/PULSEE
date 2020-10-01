@@ -56,7 +56,7 @@ class Operator:
         return Operator(np.linalg.matrix_power(self.matrix, exponent))
     
     def exp(self):
-        exp_matrix = Pade_Exp.expm(self.matrix, 45)
+        exp_matrix = expm(self.matrix)
         return Operator(exp_matrix)
     
     def diagonalisation(self):
