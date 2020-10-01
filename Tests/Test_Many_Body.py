@@ -11,6 +11,7 @@ from Operators import *
 from Many_Body import *
 
 @given(d = st.integers(min_value=1, max_value=8))
+@settings(deadline = None)
 def test_tensor_product_conserves_density_matrix_properties(d):
     A = random_density_matrix(d)
     B = random_density_matrix(d)

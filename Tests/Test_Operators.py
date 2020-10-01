@@ -26,12 +26,14 @@ def test_operator_initialisation_with_wrong_dimensions():
         raise AssertionError("No appropriate IndexError caused by the initialisation with a non-square array")
 
 @given(d = st.integers(min_value=1, max_value=16))
+@settings(deadline = None)
 def test_opposite_operator(d):
     o = random_operator(d)
     note("o = %r" % (o.matrix))
     assert np.all(np.isclose((o-o).matrix, np.zeros((d,d)), rtol=1e-10))
 
 @given(d = st.integers(min_value=1, max_value=16))
+@settings(deadline = None)
 def test_associativity_sum_operators(d):
     a = random_operator(d)
     b = random_operator(d)
@@ -61,6 +63,7 @@ def test_associativity_product_operators(d):
     assert np.all(np.isclose(left_product.matrix, right_product.matrix, rtol=1e-10))
 
 @given(d = st.integers(min_value=1, max_value=16))
+@settings(deadline = None)
 def test_distributivity_operators(d):
     a = random_operator(d)
     b = random_operator(d)
@@ -75,6 +78,7 @@ def test_distributivity_operators(d):
     assert np.all(np.isclose(left_hand_side.matrix, right_hand_side.matrix, rtol=1e-10))
     
 @given(d = st.integers(min_value=1, max_value=16))
+@settings(deadline = None)
 def test_operator_trace_normalisation(d):
     o = random_operator(d)
     o_trace = o.trace()
@@ -87,6 +91,7 @@ def test_operator_trace_normalisation(d):
     assert np.all(np.isclose(o_norm_trace, 1, rtol=1e-10))
 
 @given(d = st.integers(min_value=1, max_value=16))
+@settings(deadline = None)
 def test_reciprocal_operator(d):
     o = random_operator(d)
     o_r = o**(-1)
@@ -112,6 +117,7 @@ def test_exponential_operator_eigenvalues(d):
     assert np.all(np.isclose(sorted_exp_o_e, sorted_exp_e, rtol=1e-10))
     
 @given(d = st.integers(min_value=1, max_value=16))
+@settings(deadline = None)
 def test_observable_real_eigenvalues(d):
     o = random_observable(d)
     eig = o.diagonalisation()[0]
@@ -119,6 +125,7 @@ def test_observable_real_eigenvalues(d):
     assert np.all(np.absolute(np.imag(eig)) < 1e-10)
 
 @given(d = st.integers(min_value=1, max_value=8))
+@settings(deadline = None)
 def test_diagonalising_change_of_basis(d):
     o = random_operator(d)
     o_e, p = o.diagonalisation()
@@ -132,6 +139,7 @@ def test_diagonalising_change_of_basis(d):
     assert np.all(np.isclose(o_sim, o_diag, rtol=1e-10))
 
 @given(d = st.integers(min_value=1, max_value=16))
+@settings(deadline = None)
 def test_trace_invariance_under_similarity(d):
     o = random_operator(d)
     singularity = True
@@ -152,6 +160,7 @@ def test_trace_invariance_under_similarity(d):
 
 # Checks that the adjoint of an Operator o's exponential is the exponential of the adjoint of o
 @given(d = st.integers(min_value=1, max_value=16))
+@settings(deadline = None)
 def test_adjoint_exponential(d):
     o = random_operator(d)
     o_exp = o.exp()
@@ -164,6 +173,7 @@ def test_adjoint_exponential(d):
 # Checks that the inverse of the exponential of an Operator o is the same as the exponential of an
 # operator o changed by sign
 @given(d = st.integers(min_value=1, max_value=4))
+@settings(deadline = None)
 def test_inverse_exponential(d):
     o = random_operator(d)
     o_exp = o.exp()
@@ -174,6 +184,7 @@ def test_inverse_exponential(d):
     assert np.all(np.isclose(left_hand_side, right_hand_side, rtol=1e-2))
 
 @given(d = st.integers(min_value=1, max_value=4))
+@settings(deadline = None)
 def test_reversibility_change_picture(d):
     o = random_operator(d)
     h = random_operator(d)
@@ -215,6 +226,7 @@ def test_dmatrix_initialisation_not_positive():
         raise AssertionError("No ValueError raised by the initialisation of a Density_Matrix with a square array which is not positive")
 
 @given(d = st.integers(min_value=1, max_value=8))
+@settings(deadline = None)
 def test_free_evolution_conserves_dm_properties(d):
     dm = random_density_matrix(d)
     h = random_observable(d)
@@ -229,6 +241,7 @@ def test_free_evolution_conserves_dm_properties(d):
             raise AssertionError(error_message)
 
 @given(d = st.integers(min_value=1, max_value=16))
+@settings(deadline = None)
 def test_random_observable_is_hermitian(d):
     try:
         ob_random = random_observable(d)
@@ -238,6 +251,7 @@ def test_random_observable_is_hermitian(d):
             raise AssertionError("random_observable fails in the creation of hermitian matrices")
 
 @given(d = st.integers(min_value=1, max_value=16))
+@settings(deadline = None)
 def test_random_density_matrix_satisfies_dm_properties(d):
     try:
         dm_random = random_density_matrix(d)
@@ -252,6 +266,7 @@ def test_random_density_matrix_satisfies_dm_properties(d):
 # where dm1, dm2 are density matrices, a and b real numbers, is a density matrix if
 # a, b in [0, 1] and a + b = 1
 @given(d = st.integers(min_value=1, max_value=16))
+@settings(deadline = None)
 def test_convexity_density_matrix_space(d):
     dm1 = random_density_matrix(d)
     dm2 = random_density_matrix(d)
@@ -267,6 +282,7 @@ def test_convexity_density_matrix_space(d):
             raise AssertionError(error_message)
 
 @given(d = st.integers(min_value=1, max_value=16))
+@settings(deadline = None)
 def test_linearity_evolution(d):
     dm1 = random_density_matrix(d)
     dm2 = random_density_matrix(d)
@@ -294,6 +310,7 @@ def test_observable_initialisation_not_hermitian():
         raise AssertionError("No ValueError raised by the initialisation of an Observable object with a square array which is not hermitian")
 
 @given(d = st.integers(min_value=1, max_value=16))
+@settings(deadline = None)
 def test_real_expectation_values(d):
     dm = random_density_matrix(d)
     ob = random_observable(d)
@@ -304,6 +321,7 @@ def test_real_expectation_values(d):
 # <(O-<O>)^2> = <O^2> - <O>^2
 # where O is an observable, and the angular brackets indicate the expectation value over some state
 @given(d = st.integers(min_value=1, max_value=16))
+@settings(deadline = None)
 def test_variance_formula(d):
     ob = random_observable(d)
     i = Observable(d)
@@ -346,6 +364,7 @@ def test_antihermitianity_magnus_3rd_term():
 # Checks that the canonical density matrix computed with the function canonical_density_matrix reduces
 # to (1 - h*H_0/(k_B*T))/Z when the temperature T gets very large
 @given(d = st.integers(min_value=1, max_value=16))
+@settings(deadline = None)
 def test_canonical_density_matrix_large_temperature_approximation(d):
     h0 = random_observable(d)
     can_dm = canonical_density_matrix(h0, 300)
