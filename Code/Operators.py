@@ -4,7 +4,6 @@ from numpy.linalg import LinAlgError
 from scipy.linalg import expm, eig
 from scipy.constants import Planck, Boltzmann
 from scipy.integrate import quad
-import Pade_Exp
 
 # Objects of the class Operator represent linear applications which act on the vectors of a Hilbert space
 class Operator:
