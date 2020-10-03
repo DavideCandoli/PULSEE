@@ -30,6 +30,8 @@ In order to save processing power and lighten calculations, a suitable choice of
 
 The standard units employed in the software are listed below.
 
+| physical quantity  | unit  |
+| ------------------ | ----- |
 | gyromagnetic ratio | MHz/T |
 |   magnetic field   |   T   |
 |  energy/frequency  |  MHz  |
@@ -41,6 +43,32 @@ Angles do not have a standard unit: they are measured in radians when they are p
 ## Software
 
 ### Installation
+
+The software has been written in Python 3.7.
+
+The operative systems where the code has been tested and executed are
+* Ubuntu
+* Windows 10 (through the Spyder interface provided by the Anaconda distribution)
+
+The program makes wide use of many of the standard Python modules (namely `numpy`, `scipy`, `pandas`, `matplotlib`) for its general purposes.
+
+Tests have been carried out using the `pytest` framework and the `hypothesis` module.
+
+`pytest` -> https://docs.pytest.org/en/stable/
+
+`hypothesis` -> https://hypothesis.readthedocs.io/en/latest/
+
+The GUI has been implemented with the tools provided by the Python library `kivy`.
+
+https://kivy.org/#home
+
+In order to run the GUI, it is required the additional installation of the module `kivy.garden` and `garden.matplotlib.backend_kivy`.
+
+`kivy.garden` -> https://kivy.org/doc/stable/api-kivy.garden.html
+
+`garden.matplotlib.backend_kivy` -> https://github.com/kivy-garden/garden.matplotlib/blob/master/backend_kivy.py
+
+https://kivy.org/doc/stable/api-kivy.garden.html
 
 ### Modules of the software
 
