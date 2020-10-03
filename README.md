@@ -4,7 +4,7 @@
 
 This project consists of a software which simulates a typical nuclear quadrupole/magnetic resonance experiment on a solid state sample, describing the dynamics of nuclear spins in condensed matter under the effect external magnetic fields and reproducing the traditional results observed in laboratory.
 
-### Physics background
+## Physics background
 
 Each atomic nucleus in a single crystal is endowed with an intrinsic angular momentum, named spin, and a corresponding intrinsic magnetic moment. The interaction between this latter and any applied magnetic field provides a means for the manipulation of nuclear spins and the study of the magnetic properties of a sample.
 
@@ -42,13 +42,13 @@ Angles do not have a standard unit: they are measured in radians when they are p
 
 ## Software
 
-### Installation
+### Prerequisites
 
 The software has been written in Python 3.7.
 
 The operative systems where the code has been tested and executed are
 * Ubuntu
-* Windows 10 (through the Spyder interface provided by the Anaconda distribution)
+* Windows 10 (through the Spyder interface provided by the distribution Anaconda)
 
 The program makes wide use of many of the standard Python modules (namely `numpy`, `scipy`, `pandas`, `matplotlib`) for its general purposes.
 
@@ -60,7 +60,7 @@ Tests have been carried out using the `pytest` framework and the `hypothesis` mo
 
 The GUI has been implemented with the tools provided by the Python library `kivy`.
 
-https://kivy.org/#home
+`kivy` -> https://kivy.org/#home
 
 In order to run the GUI, it is required the additional installation of the module `kivy.garden` and `garden.matplotlib.backend_kivy`.
 
@@ -68,12 +68,42 @@ In order to run the GUI, it is required the additional installation of the modul
 
 `garden.matplotlib.backend_kivy` -> https://github.com/kivy-garden/garden.matplotlib/blob/master/backend_kivy.py
 
-https://kivy.org/doc/stable/api-kivy.garden.html
-
 ### Modules of the software
+
+The program is made up by 6 modules. Each of them is described in full detail in the wiki page of the repository of GitHub which hosts the project:
+
+https://github.com/DavideCandoli/NQR-NMRSimulationSoftware/wiki
+
+Below, the content and usage of these modules is reported briefly:
+
+* `Operators`
+
+  This module, together with `Many_Body`, is to be considered a sort of toolbox for the simulations of generic quantum systems. It contains the definitions of the classes and functions related to the basic mathematical objects which enter the treatment of a quantum system. `Operators` focuses on the properties of a single system, while `Many_Body` extends these features to systems made up of several particles.
+  
+  The classes and subclasses defined in `Operators` belong to the following inheritance tree
+  
+  * `Operator`
+    * `Density_Matrix(Operator)`
+    * `Observable(Operator)`
+    
+Class `Operator` defines the properties of a generic linear application acting in the Hilbert space of a quantum system.
+  
+Class `Density_Matrix` characterizes the operators which represent the state (pure or mixed) of the quantum system. It is defined by three fundamental properties:
+1. hermitianity
+1. unit trace
+1. positivity
+
+Class `Observable` characterizes the hermitian operators which represent the physical quantities of the system.
 
 ### Example of execution
 
 ### GUI
 
 ### Acknowledgementes
+
+
+
+
+
+
+
