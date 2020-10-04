@@ -26,7 +26,7 @@ The time dependence of the magnetization is measured through the acquisition of 
 
 In order to save processing power and lighten calculations, a suitable choice of units of measure has been taken.
 
-**Remark:** In the whole program, energies and frequencies are considered quantities with the same physical dimensions. The identification between them is a consequence of setting the Planck constant h (originally the proportionaly constant for the conversion form frequencies to energies) equal to 1.
+**Remark:** In the whole program, energies and frequencies are considered quantities with the same physical dimensions. The identification between them is a consequence of setting the Planck constant h (originally the proportionaly constant for the conversion from frequencies to energies) equal to 1.
 
 The standard units employed in the software are listed below.
 
@@ -86,15 +86,61 @@ Below, the content and usage of these modules is reported briefly:
     * `Density_Matrix(Operator)`
     * `Observable(Operator)`
     
-Class `Operator` defines the properties of a generic linear application acting in the Hilbert space of a quantum system.
+  Class `Operator` defines the properties of a generic linear application acting in the Hilbert space of a finite-dimenstional quantum system. Its main attribute is `matrix`, a square array of complex numbers which gives the matrix representation of the operator in a certain basis. The methods of this class implement the basic algebraic operations and other common actions involving operators, such as the change of basis.
   
-Class `Density_Matrix` characterizes the operators which represent the state (pure or mixed) of the quantum system. It is defined by three fundamental properties:
-1. hermitianity
-1. unit trace
-1. positivity
+  Class `Density_Matrix` characterizes the operators which represent the state (pure or mixed) of the quantum system. It is defined by three fundamental properties:
+  1. hermitianity
+  1. unit trace
+  1. positivity
 
-Class `Observable` characterizes the hermitian operators which represent the physical quantities of the system.
+  Class `Observable` characterizes the hermitian operators which represent the physical quantities of the system.
+  
+  Other functions defined in this module perform:
+  * the calculation of the first few terms of the Magnus expansion of a time-dependent Hamiltonian, which turn useful in the approximation of the evolution operator; 
+  * the calculation of the canonical density matrix corresponding to the equilibrium state of a system at the specified temperature.
+  
+* `Many_Body`
 
+  This module contains two function definitions which allow to pass from a single particle Hilbert space to a many particle space and viceversa.
+  
+  * `tensor_product_operator`
+  
+    Takes two operators of arbitrary dimensions and returns their tensor product.
+    
+  * `partial_trace`
+  
+    Takes an operator acting on the Hilbert space of a many-particle system and extracts its partial trace over the specified subspace.
+    
+  **Remark:** These functions have been tested working properly, but up to now no simulation has been carried out which makes use of them. Anyway, new simulations may rely on these functions, so they have been included anyway in the program.
+    
+* `Nuclear_Spin`
+
+  In this module, the definitions of `Operators` are employed to build up the class which represents a spin of an atomic nucleus.
+  
+  Class `Nuclear_Spin` is characterized by a quantum number, a gyromagnetic ratio and a set of methods which return the spherical and cartesian components of the spin vector operator.
+  
+* `Hamiltonians`
+
+  This file is dedicated to the definitions of the functions which return the pieces of the Hamiltonian of a nuclear spin system in an NMR/NQR experiment.
+  
+  * `h_zeeman`
+    
+    Builds up the Hamiltonian of the interaction between the spin and an external static magnetic field, after its magnitude and direction has been given.
+    
+  * `h_quadrupole`
+  
+    Builds up the Hamiltonian of the interaction between the nuclear electric quadrupole momentum and the EFG, after the coupling constant of the interaction, the asymmetry of the EFG and the direction of its principal axes have been given.
+    
+    This function calls in turn the functions `v0_EFG`,`v1_EFG`, `v2_EFG` for the computation of the spherical components of the EFG tensor, which enter the expression of the quadrupole Hamiltonian.
+    
+  * `h_single_mode_pulse`
+  
+    Returns the Hamiltonian of interaction of a spin with a linearly polarized electromagnetic wave, once the properties of the wave and the time of evaluation have been passed.
+    
+    This function is called by `h_multiple_mode_pulse`, which returns the Hamiltonian of interaction with a superposition of pulses.
+    
+    In turn, `h_multiple_mode_pulse` is called inside `h_changed_picture`, which, in the given instant of time, evaluates the full Hamiltonian of the system (comprised of the Zeeman, quadrupole and time-dependent contributions) and returns the same Hamiltonian expressed in a different dynamical picture. This passage is required by the implementation of the evolution of the system, which is described later.
+    
 ### Example of execution
 
 ### GUI
