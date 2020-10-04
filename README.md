@@ -203,7 +203,7 @@ spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par, i
 plot_real_part_density_matrix(dm_0)
 ```
 where the initial state has been set to be at thermal equilibrium at a temperature of 10<sup>-3</sup> K.
-[[Figures_README/Pure_Zeeman_Initial_State.png]]
+![Pure Zeeman - Initial_State](Figures_README/Pure_Zeeman_Initial_State.png)
 
 Then, the power absorption spectrum can be simulated running the functions
 ```
