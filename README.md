@@ -211,7 +211,8 @@ f, p = power_absorption_spectrum(spin, h_unperturbed, normalized=True)
 
 plot_power_absorption_spectrum(f, p)
 ```
-[[Figures_README/Pure_Zeeman_Power_Absorption.png]]
+![Pure Zeeman - Power_Absorption](Figures_README/Pure_Zeeman_Power_Absorption.png)
+
 In order to apply a 90° pulse to the system, which rotates the magnetization from the z-axis to the x-y plane, we shall design a pulse in resonance with the system such that the product
 
 gyromagnetic ratio x pulse field magnitude x pulse time
@@ -231,7 +232,8 @@ dm_evolved = evolve(spin, h_unperturbed, dm_0, \
     
 plot_real_part_density_matrix(dm_evolved)
 ```
-[[Figures_README/Pure_Zeeman_Evolved_State.png]]
+![Pure Zeeman - Evolved State](Figures_README/Pure_Zeeman_Evolved_State.png)
+
 
 The evolved density matrix can be employed to generate the FID signal of the system as follows:
 ```
@@ -239,7 +241,7 @@ t, fid = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=500, T2=10
 
 plot_real_part_FID_signal(t, fid)
 ```
-[[Figures_README/Pure_Zeeman_FID_Signal.png]]
+![Pure Zeeman - FID Signal](Figures_README/Pure_Zeeman_FID_Signal.png)
 
 And in turn the Fourier analysis of this signal produces the NMR spectrum:
 ```
@@ -247,7 +249,7 @@ f, ft = fourier_transform_signal(t, fid, -1.5, -0.5)
     
 plot_fourier_transform(f, ft)
 ```
-[[Figures_README/Pure_Zeeman_NMR_Spectrum.png]]
+![Pure Zeeman - NMR Spectrum](Figures_README/Pure_Zeeman_NMR_Spectrum.png)
 
 #### Perturbed Zeeman experiment
 
@@ -264,7 +266,7 @@ quad_par = {'coupling constant' : 0.1,
 ```
 
 The presence of this perturbation leads eventually to a spectrum with two resonance peaks.
-[[Figures_README/Perturbed_Zeeman_NMR_Spectrum.png]]
+![Perturbed Zeeman - NMR Spectrum](Figures_README/Perturbed_Zeeman_NMR_Spectrum.png)
 
 As one can see, the real and imaginary parts of the spectrum at each peak don't fit the conventional absorptive/dispersive lorentzian shapes, which would be a nice feature to be visualized. By means of the function `fourier_phase_shift`, one can obtain the phase for the correction of the shape of the spectrum at a specified peak (the simultaneous correction at both peaks is impossible on principle):
 ```
@@ -274,7 +276,7 @@ f, ft_correct = fourier_transform_signal(t, np.exp(1j*phi)*fid, -1.5, -0.5)
 
 plot_fourier_transform(f, ft_correct)
 ```
-[[Figures_README/Perturbed_Zeeman_Corrected_NMR_Spectrum.png]]
+![Perturbed Zeeman - Corrected NMR Spectrum](Figures_README/Perturbed_Zeeman_Corrected_NMR_Spectrum.png)
 
 #### Pure NQR experiment
 
@@ -298,9 +300,10 @@ where we have set the spin quantum number to 3/2 and the coupling constant of th
 In such a configuration, the pulse set up before turns out to be in resonance with the new system as well, so can be left unaltered.
 
 The initial state is
-[[Figures_README/Pure_NQR_Initial_State.png]]
+![Pure_NQR - Initial_State](Figures_README/Pure_NQR_Initial_State.png)
+
 while the evolved one is  
-[[Figures_README/Pure_NQR_Evolved_State.png]]
+![Pure_NQR - Evolved_State](Figures_README/Pure_NQR_Evolved_State.png)
 
 In this case, however, the resonant frequencies of the system are both 1 and -1 MHz, due to the characteristics of the pure quadrupolar energy spectrum, so both the rotating waves which the linearly polarized pulse splits into are able to induce transitions. In order to visualize properly both the positive and negative resonance line in the spectrum, the functions for the analysis of the FID must be run as follows:
 ```
@@ -308,7 +311,7 @@ f, ft, ft_n = fourier_transform_signal(t, fid, 0.5, 1.5, opposite_frequency=True
     
 plot_fourier_transform(f, ft, ft_n)
 ```
-[[Figures_README/Pure_NQR_NMR_Spectrum.png]]
+![Pure_NQR - NMR_Spectrum](Figures_README/Pure_NQR_NMR_Spectrum.png)
 
 
 ### GUI
