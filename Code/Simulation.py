@@ -218,7 +218,7 @@ def plot_real_part_FID_signal(times, FID, show=True, save=False, name='FIDSignal
 
 # When opposite_frequency is True, the function computes the Fourier spectrum also in the range of
 # frequencies opposite to those specified as inputs and returns it
-def fourier_transform_signal(signal, times, frequency_start, frequency_stop, opposite_frequency=False):
+def fourier_transform_signal(times, signal, frequency_start, frequency_stop, opposite_frequency=False):
     
     dt = times[1]-times[0]
     

@@ -1003,7 +1003,8 @@ class NMR_Spectrum(FloatLayout):
             
             if self.input_opposite_frequency == False:
                 sim_man.spectrum_frequencies, \
-                sim_man.spectrum_fourier = fourier_transform_signal(phase*sim_man.FID, sim_man.FID_times, \
+                sim_man.spectrum_fourier = fourier_transform_signal(sim_man.FID_times, \
+                                                     phase*sim_man.FID,\
                                                      frequency_start=self.input_frequency_left_bound, \
                                                      frequency_stop=self.input_frequency_right_bound)
                 plot_fourier_transform(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
@@ -1011,8 +1012,8 @@ class NMR_Spectrum(FloatLayout):
             else:
                 sim_man.spectrum_frequencies, \
                 sim_man.spectrum_fourier, \
-                sim_man.spectrum_fourier_neg = fourier_transform_signal(phase*sim_man.FID,\
-                                                     sim_man.FID_times,\
+                sim_man.spectrum_fourier_neg = fourier_transform_signal(sim_man.FID_times, \
+                                                     phase*sim_man.FID, \
                                                      frequency_start=self.input_frequency_left_bound, \
                                                      frequency_stop=self.input_frequency_right_bound, \
                                                      opposite_frequency=self.input_opposite_frequency)
