@@ -38,6 +38,29 @@ def test_null_zeeman_contribution_for_0_gyromagnetic_ratio():
     
     assert np.all(np.isclose(h_unperturbed.matrix, null_matrix, rtol=1e-10))
     
+    
+@given(s = st.integers(min_value=1, max_value=14))
+def test_correct_number_lines_power_absorption_spectrum(s):
+    
+    spin_par = {'quantum number' : s/2,
+                'gamma/2pi' : 1.}
+    
+    zeem_par = {'field magnitude' : 10.,
+                'theta_z' : math.pi/4,
+                'phi_z' : 0}
+    
+    quad_par = {'coupling constant' : 5.,
+                'asymmetry parameter' : 0.3,
+                'alpha_q' : math.pi/3,
+                'beta_q' : math.pi/5,
+                'gamma_q' : 0}
+    
+    spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par)
+    
+    f, p = power_absorption_spectrum(spin, h_unperturbed, normalized=False, dm_initial=dm_0)
+    
+    assert len(f)==(spin.d)*(spin.d-1)/2
+    
 
 def test_pi_pulse_yields_population_inversion():
     spin_par = {'quantum number' : 5/2,
@@ -110,29 +133,7 @@ def test_RRF_operator_proportional_to_Iz_for_theta_0():
     c = RRF_matrix[0, 0]/Iz_matrix[0, 0]
     
     assert np.all(np.isclose(RRF_matrix, c*Iz_matrix, rtol=1e-10))
-    
-    
-@given(s = st.integers(min_value=1, max_value=14))
-def test_correct_number_lines_power_absorption_spectrum(s):
-    
-    spin_par = {'quantum number' : s/2,
-                'gamma/2pi' : 1.}
-    
-    zeem_par = {'field magnitude' : 10.,
-                'theta_z' : math.pi/4,
-                'phi_z' : 0}
-    
-    quad_par = {'coupling constant' : 5.,
-                'asymmetry parameter' : 0.3,
-                'alpha_q' : math.pi/3,
-                'beta_q' : math.pi/5,
-                'gamma_q' : 0}
-    
-    spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par, zeem_par, quad_par)
-    
-    f, p = power_absorption_spectrum(spin, h_unperturbed, normalized=False, dm_initial=dm_0)
-    
-    assert len(f)==(spin.d)*(spin.d-1)/2
+
     
 def test_FID_signal_decays_fast_for_small_relaxation_time():
     spin_par = {'quantum number' : 2,
