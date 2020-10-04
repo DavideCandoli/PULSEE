@@ -39,6 +39,58 @@ def nuclear_system_setup(spin_par, zeem_par, quad_par, initial_state='canonical'
     return spin, h_unperturbed, dm_initial
 
 
+def power_absorption_spectrum(spin, h_unperturbed, normalized=True, dm_initial='none'):
+    
+    energies, o_change_of_basis = h_unperturbed.diagonalisation()
+    
+    transition_frequency = []
+    
+    transition_intensity = []
+    
+    d = h_unperturbed.dimension()
+    
+    for i in range(d):
+        for j in range(d):
+            if i < j:
+                nu = np.absolute(energies[j] - energies[i])
+                transition_frequency.append(nu)
+                
+                # Operator of the magnetic moment of the spin expressed in the basis of energy
+                # eigenstates, defined in order to extract the matrix elements required by Fermi's
+                # golden rule
+                magnetization_in_basis_of_eigenstates=\
+                    spin.gyro_ratio_over_2pi*spin.I['x'].sim_trans(o_change_of_basis)
+                
+                intensity_nu = nu*\
+                    (np.absolute(magnetization_in_basis_of_eigenstates.matrix[j, i]))**2
+                
+                if not normalized:
+                    p_i = dm_initial.matrix[i, i]
+                    p_j = dm_initial.matrix[j, j]
+                    intensity_nu = np.absolute(p_i-p_j)*intensity_nu
+                    
+                transition_intensity.append(intensity_nu)
+            else:
+                pass
+    
+    return transition_frequency, transition_intensity
+
+
+def plot_power_absorption_spectrum(frequencies, intensities, show=True, save=False, name='PowerAbsorptionSpectrum', destination=''):
+    fig = plt.figure()
+    
+    plt.vlines(frequencies, 0, intensities, colors='b')
+    
+    plt.xlabel("\N{GREEK SMALL LETTER NU} (MHz)")    
+    plt.ylabel("Power absorption (a. u.)")
+    
+    if save: plt.savefig(destination + name)
+    
+    if show: plt.show()
+        
+    return fig
+
+
 def evolve(spin, h_unperturbed, dm_initial, \
            mode, pulse_time, \
            picture='RRF', RRF_par={'nu_RRF': 0,
@@ -127,58 +179,6 @@ def plot_real_part_density_matrix(dm, show=True, save=False, name='RealPartDensi
     
     if show:
         plt.show()
-        
-    return fig
-    
-
-def power_absorption_spectrum(spin, h_unperturbed, normalized=True, dm_initial='none'):
-    
-    energies, o_change_of_basis = h_unperturbed.diagonalisation()
-    
-    transition_frequency = []
-    
-    transition_intensity = []
-    
-    d = h_unperturbed.dimension()
-    
-    for i in range(d):
-        for j in range(d):
-            if i < j:
-                nu = np.absolute(energies[j] - energies[i])
-                transition_frequency.append(nu)
-                
-                # Operator of the magnetic moment of the spin expressed in the basis of energy
-                # eigenstates, defined in order to extract the matrix elements required by Fermi's
-                # golden rule
-                magnetization_in_basis_of_eigenstates=\
-                    spin.gyro_ratio_over_2pi*spin.I['x'].sim_trans(o_change_of_basis)
-                
-                intensity_nu = nu*\
-                    (np.absolute(magnetization_in_basis_of_eigenstates.matrix[j, i]))**2
-                
-                if not normalized:
-                    p_i = dm_initial.matrix[i, i]
-                    p_j = dm_initial.matrix[j, j]
-                    intensity_nu = np.absolute(p_i-p_j)*intensity_nu
-                    
-                transition_intensity.append(intensity_nu)
-            else:
-                pass
-    
-    return transition_frequency, transition_intensity
-
-
-def plot_power_absorption_spectrum(frequencies, intensities, show=True, save=False, name='PowerAbsorptionSpectrum', destination=''):
-    fig = plt.figure()
-    
-    plt.vlines(frequencies, 0, intensities, colors='b')
-    
-    plt.xlabel("\N{GREEK SMALL LETTER NU} (MHz)")    
-    plt.ylabel("Power absorption (a. u.)")
-    
-    if save: plt.savefig(destination + name)
-    
-    if show: plt.show()
         
     return fig
 
