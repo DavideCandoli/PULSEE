@@ -4,6 +4,17 @@
 
 This project consists of a software which simulates a typical nuclear quadrupole/magnetic resonance experiment on a solid state sample, describing the dynamics of nuclear spins in condensed matter under the effect external magnetic fields and reproducing the traditional results observed in laboratory.
 
+* [Physics background](#physics-background)
+  + [Unit standard of the software](#unit-standard-of-the-software)
+* [Software](#software)
+  + [Prerequisites](#prerequisites)
+  + [Modules of the software](#modules-of-the-software)
+  + [Examples of execution](#examples-of-execution)
+    - [Pure Zeeman experiment](#pure-zeeman-experiment)
+    - [Perturbed Zeeman experiment](#perturbed-zeeman-experiment)
+    - [Pure NQR experiment](#pure-nqr-experiment)
+  + [Acknowledgementes](#acknowledgementes)
+
 ## Physics background
 
 Each atomic nucleus in a single crystal is endowed with an intrinsic angular momentum, named spin, and a corresponding intrinsic magnetic moment. The interaction between this latter and any applied magnetic field provides a means for the manipulation of nuclear spins and the study of the magnetic properties of a sample.
@@ -243,7 +254,9 @@ plot_real_part_FID_signal(t, fid)
 ```
 ![Pure Zeeman - FID Signal](Figures_README/Pure_Zeeman_FID_Signal.png)
 
-And in turn the Fourier analysis of this signal produces the NMR spectrum:
+**Remark:** In order to acquire a true reproduction of the continuous FID signal, one needs to compare the largest frequency in its Fourier spectrum with the frequency of sampling of the signal. Indeed, Nyquist theorem states that the latter must be at least twice the former to ensure a correct sampling. See the documentation for FID_signal to learn how to set the number of sampling points.
+
+The Fourier analysis of the FID signal produces the NMR spectrum:
 ```
 f, ft = fourier_transform_signal(t, fid, -1.5, -0.5)
     
@@ -268,7 +281,7 @@ quad_par = {'coupling constant' : 0.1,
 The presence of this perturbation leads eventually to a spectrum with two resonance peaks.
 ![Perturbed Zeeman - NMR Spectrum](Figures_README/Perturbed_Zeeman_NMR_Spectrum.png)
 
-As one can see, the real and imaginary parts of the spectrum at each peak don't fit the conventional absorptive/dispersive lorentzian shapes, which would be a nice feature to be visualized. By means of the function `fourier_phase_shift`, one can obtain the phase for the correction of the shape of the spectrum at a specified peak (the simultaneous correction at both peaks is impossible on principle):
+As one can see, the real and imaginary parts of the spectrum at each peak don't fit the conventional absorptive/dispersive lorentzian shapes, which would be a nice feature to be visualized. By means of the function `fourier_phase_shift`, one can obtain the phase for the correction of the shape of the spectrum at a specified peak (the simultaneous correction at both peaks is impossible):
 ```
 phi = fourier_phase_shift(f, ft, peak_frequency_hint=-0.9)
 
@@ -305,15 +318,12 @@ The initial state is
 while the evolved one is  
 ![Pure_NQR - Evolved_State](Figures_README/Pure_NQR_Evolved_State.png)
 
-In this case, however, the resonant frequencies of the system are both 1 and -1 MHz, due to the characteristics of the pure quadrupolar energy spectrum, so both the rotating waves which the linearly polarized pulse splits into are able to induce transitions. In order to visualize properly both the positive and negative resonance line in the spectrum, the functions for the analysis of the FID must be run as follows:
+In this case, however, the resonant frequencies of the system are both 1 and -1 MHz, due to the characteristics of the pure quadrupolar energy spectrum, so both the rotating waves that compose the linearly polarized pulse are able to induce transitions. In order to visualize properly both the positive and negative resonance lines in the spectrum, the functions for the analysis of the FID must be run as follows:
 ```
 f, ft, ft_n = fourier_transform_signal(t, fid, 0.5, 1.5, opposite_frequency=True)
     
 plot_fourier_transform(f, ft, ft_n)
 ```
 ![Pure_NQR - NMR_Spectrum](Figures_README/Pure_NQR_NMR_Spectrum.png)
-
-
-### GUI
 
 ### Acknowledgementes
