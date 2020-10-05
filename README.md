@@ -13,7 +13,7 @@ This project consists of a software which simulates a typical nuclear quadrupole
     - [Pure Zeeman experiment](#pure-zeeman-experiment)
     - [Perturbed Zeeman experiment](#perturbed-zeeman-experiment)
     - [Pure NQR experiment](#pure-nqr-experiment)
-  + [Acknowledgementes](#acknowledgementes)
+* [Acknowledgements](#acknowledgements)
 
 ## Physics background
 
@@ -338,7 +338,7 @@ plot_fourier_transform(f, ft, ft_n)
 ```
 ![Pure_NQR - NMR_Spectrum](Figures_README/Pure_NQR_NMR_Spectrum.png)
 
-## Acknowledgementes
+## Acknowledgements
 
 The program presented above was made possible thanks to professors Samuele Sanna (Università di Bologna) and Vesna Mitrovic (Brown University), who have been a great help in the interpretation of the physics simulated by the software.
 
