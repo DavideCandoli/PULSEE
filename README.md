@@ -187,6 +187,18 @@ Below, the content and usage of these modules is reported briefly:
      Computes the phase to be added to the FID in order to correct the shape of the Fourier spectrum of the system.
     
   Besides these functions, which execute the main computations of the simulation, the module contains the functions for the plot and visualization of the results.
+  
+* `NMR_NQR_GUI`
+
+  Graphical user interface of the program. The execution of the following command from the terminal
+  
+  `$ python NMR_NQR_GUI.py`
+  
+  launches the application **PulseBit**. This has been developed using the tools provided by the library Kivy.
+  
+  In the application, most of the features of the software are available, but not all of them (for instance, power absorption spectra are not accessible). An in-depth description of the GUI can be found in the related page of the wiki:
+  
+  https://github.com/DavideCandoli/NQR-NMRSimulationSoftware/wiki/GUI
     
 ### Examples of execution
 
@@ -321,9 +333,13 @@ while the evolved one is
 In this case, however, the resonant frequencies of the system are both 1 and -1 MHz, due to the characteristics of the pure quadrupolar energy spectrum, so both the rotating waves that compose the linearly polarized pulse are able to induce transitions. In order to visualize properly both the positive and negative resonance lines in the spectrum, the functions for the analysis of the FID must be run as follows:
 ```
 f, ft, ft_n = fourier_transform_signal(t, fid, 0.5, 1.5, opposite_frequency=True)
-    
+
 plot_fourier_transform(f, ft, ft_n)
 ```
 ![Pure_NQR - NMR_Spectrum](Figures_README/Pure_NQR_NMR_Spectrum.png)
 
 ### Acknowledgementes
+
+The program presented above was made possible thanks to professors Samuele Sanna (Università di Bologna) and Vesna Mitrovic (Brown University), who have been a great help in the interpretation of the physics simulated by the software.
+
+Further contributions to the developement of the program have been the advices given by Stephen Carr (Brown University) and professor Enrico Giampieri (Università di Bologna).
