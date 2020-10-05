@@ -338,7 +338,7 @@ plot_fourier_transform(f, ft, ft_n)
 ```
 ![Pure_NQR - NMR_Spectrum](Figures_README/Pure_NQR_NMR_Spectrum.png)
 
-### Acknowledgementes
+## Acknowledgementes
 
 The program presented above was made possible thanks to professors Samuele Sanna (Università di Bologna) and Vesna Mitrovic (Brown University), who have been a great help in the interpretation of the physics simulated by the software.
 
