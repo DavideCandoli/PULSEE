@@ -94,7 +94,7 @@ class Simulation_Manager:
     
     h_unperturbed = Observable(1)
         
-    relaxation_time = 100.
+    decoherence_time = 100.
         
     dm = np.ndarray(5, dtype=Density_Matrix)
 
@@ -238,7 +238,7 @@ class System_Parameters(FloatLayout):
             
             sim_man.quad_par['gamma_q'] = (float(null_string(self.gamma_q.text))*math.pi)/180
             
-            sim_man.relaxation_time = float(null_string(self.relax.text))
+            sim_man.decoherence_time = float(null_string(self.decoherence.text))
             
             self.store_and_write_nu_q(sim_man)
             
@@ -452,15 +452,15 @@ class System_Parameters(FloatLayout):
         
         self.quadrupole_parameters(0, 100)
         
-        # Relaxation time of the system
-        self.relax_label = Label(text='Relaxation time', size=(10, 5), pos=(-294, 45), font_size='16sp')
-        self.add_widget(self.relax_label)
+        # Decoherence time of the system
+        self.decoherence_label = Label(text='Decoherence time', size=(10, 5), pos=(-285, 45), font_size='16sp')
+        self.add_widget(self.decoherence_label)
         
-        self.relax = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(169.5, 530))
-        self.add_widget(self.relax)
+        self.decoherence = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(187.5, 530))
+        self.add_widget(self.decoherence)
         
-        self.relax_unit = Label(text='\N{GREEK SMALL LETTER MU}s', size=(10, 5), pos=(-153, 45), font_size='15sp')
-        self.add_widget(self.relax_unit)
+        self.decoherence_unit = Label(text='\N{GREEK SMALL LETTER MU}s', size=(10, 5), pos=(-135, 45), font_size='15sp')
+        self.add_widget(self.decoherence_unit)
         
         self.initial_dm_parameters(0, -30)
         
@@ -893,7 +893,7 @@ class Evolution_Results(FloatLayout):
     
             print("Temperature = " + str(sim_man.temperature) + " K")
             print("Initial density matrix = " + str(sim_man.dm[0].matrix))
-            print("Relaxation time = " + str(sim_man.relaxation_time) + " us")    
+            print("Decoherence time = " + str(sim_man.decoherence_time) + " us")    
 
             # Panels showing the diagram of the density matrix evolved at each stage of the pulse
             # sequence
@@ -978,7 +978,7 @@ class NMR_Spectrum(FloatLayout):
             sim_man.FID_times, sim_man.FID = FID_signal(sim_man.spin, sim_man.h_unperturbed, \
                                                         sim_man.dm[sim_man.n_pulses], \
                                                         acquisition_time=input_time_aq, \
-                                                        T2=sim_man.relaxation_time, \
+                                                        T2=sim_man.decoherence_time, \
                                                         theta=input_theta, \
                                                         phi=input_phi, \
                                                         n_points=input_n_points)
@@ -1280,6 +1280,7 @@ class PulseBit(App):
     sim_man = Simulation_Manager()
     
     def build(self):
+                
         return Panels(size=(500, 500), do_default_tab=False, tab_pos='top_mid', sim_man=self.sim_man)
     
 PulseBit().run()
