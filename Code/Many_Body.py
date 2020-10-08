@@ -4,6 +4,22 @@ import numpy as np
 from Operators import *
 
 def tensor_product_operator(A, B):
+    """
+    Returns the tensor product of two operators.
+    
+    Parameters
+    ----------
+    - A: Operator
+         Left factor in the product.
+    - B: Operator
+         Right factor in the product.
+    
+    Returns
+    -------
+    1. If both A and B belong to type Density_Matrix, the function returns a Density_Matrix object initialised with such a matrix;
+    2. If both A and B belong to type Observable, the function returns an Observable object initialised with such a matrix;
+    3. Otherwise, the function returns a generic Operator object initialised with such a matrix.
+    """
     
     d_A = A.dimension()
     d_B = B.dimension()
@@ -27,6 +43,26 @@ def tensor_product_operator(A, B):
         return Operator(A_tensor_B)
     
 def partial_trace(operator, subspaces_dimensions, index_position):
+    """
+    Returns the partial trace of an operator over the specified subspace of the Hilbert space.
+    
+    Parameters
+    ----------
+    
+    - operator: Operator
+                Operator to be sliced through the partial trace operation.
+    - subspaces_dimensions: list
+                            List of the dimensions of the subspaces whose direct sum is the Hilbert space where operator acts.
+    - index_position: int
+                      Indicates the subspace over which the partial trace of operator is to be taken by referring to the corresponding position along the list subspace_dimensions.
+
+    Returns
+    -------
+    There are 3 possibilities:
+    1. If operator belongs to type Density_Matrix, the function returns a Density_Matrix object representing the desired partial trace;
+    2. If operator belongs to type Observable, the function returns a Observable object representing the desired partial trace;
+    3. Otherwise, the function returns a generic Operator object representing the desired partial trace.
+    """
     m = operator.matrix
     
     d = subspaces_dimensions
