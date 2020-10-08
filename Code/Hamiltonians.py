@@ -8,6 +8,28 @@ from Operators import *
 from Nuclear_Spin import *
 
 def h_zeeman(spin, theta_z, phi_z, H_0):
+    """
+    Computes the term of the Hamiltonian associated with the Zeeman interaction between the nuclear spin and the external static field.
+    
+    Parameters
+    ----------
+    - spin: Nuclear_Spin
+            Spin under study;
+    - theta_z: float
+               Polar angle of the magnetic field in the laboratory coordinate system (expressed in radians);
+    - phi_z: float
+             Azimuthal angle of the magnetic field in the laboratory coordinate system (expressed in radians);
+    - H_0: non-negative float
+           Magnitude of the external magnetic field (expressed in tesla).
+    
+    Returns
+    -------
+    An Observable object which represents the Zeeman Hamiltonian in the laboratory reference frame (expressed in MHz).
+    
+    Raises
+    ------
+    ValueError, when the passed H_0 is a negative number.
+    """
     if H_0<0: raise ValueError("The modulus of the magnetic field must be a non-negative quantity")
     h_z = -spin.gyro_ratio_over_2pi*H_0* \
           (math.sin(theta_z)*math.cos(phi_z)*spin.I['x'] + \
@@ -16,6 +38,26 @@ def h_zeeman(spin, theta_z, phi_z, H_0):
     return Observable(h_z.matrix)
 
 def h_quadrupole(spin, e2qQ, eta, alpha_q, beta_q, gamma_q):
+    """
+    Computes the term of the Hamiltonian associated with the quadrupolar interaction.  
+  
+    Parameters
+    ----------
+    - spin: Nuclear_Spin
+            Spin under study;
+    - e2qQ: float
+            Product of the quadrupole moment constant, eQ, and the eigenvalue of the EFG tensor which is greatest in absolute value, eq. e2qQ is measured in MHz;
+    - eta: float in the interval [0, 1]
+           Asymmetry parameter of the EFG;
+    - alpha_q, beta_q, gamma_q: float
+                                Euler angles for the conversion from the system of the principal axes of the EFG tensor (PAS) to the lab system (LAB) (expressed in radians).
+                                
+    Returns
+    -------
+    If the quantum number of the spin is 1/2, the whole calculation is skipped and a null Observable object is returned.
+    Otherwise, the function returns the Observable object which correctly represents the quadrupolar Hamiltonian in the laboratory reference frame (expressed in MHz).
+
+    """
     if math.isclose(spin.quantum_number, 1/2, rel_tol=1e-10):
         return Observable(spin.d)*0
     I = spin.quantum_number
@@ -33,11 +75,51 @@ def h_quadrupole(spin, e2qQ, eta, alpha_q, beta_q, gamma_q):
     return Observable(h_q.matrix)
 
 def v0_EFG(eta, alpha_q, beta_q, gamma_q):
+    """
+    Returns the component V0 of the EFG tensor (divided by eq) as seen in the LAB system. This quantity is expressed in terms of the Euler angles which relate PAS and LAB systems and the parameter eta.
+    
+    Parameters
+    ----------
+    - eta: float in the interval [0, 1]
+           Asymmetry parameter of the EFG;
+    - alpha_q, beta_q, gamma_q: float
+                                Euler angles connecting the system of the principal axes of the EFG tensor (PAS) to the lab system (LAB) (expressed in radians).
+    
+    Returns
+    -------
+    A float representing the component V0 (divided by eq) of the EFG tensor evaluated in the LAB system.
+  
+    Raises
+    ValueError, when the passed eta is not in the interval [0, 1].
+    """
     if eta<0 or eta>1: raise ValueError("The asymmetry parameter must fall in the interval [0, 1]")
     v0 = (1/2)*(((3*(math.cos(beta_q))**2-1)/2) - (eta*(math.sin(beta_q))**2)*(math.cos(2*gamma_q))/2)
     return v0
 
 def v1_EFG(sign, eta, alpha_q, beta_q, gamma_q):
+    """
+    Returns the components V+/-1 of the EFG tensor (divided by eq) as seen in the LAB system. These quantities are expressed in terms of the Euler angles which relate PAS and LAB systems and the parameter eta.
+    
+    Parameters
+    ----------
+    - sign: float
+            Specifies wether the V+1 or the V-1 component is to be computed;
+    - eta: float in the interval [0, 1]
+           Asymmetry parameter of the EFG;
+    - alpha_q, beta_q, gamma_q: float
+                                Euler angles connecting the system of the principal axes of the EFG tensor (PAS) to the lab system (LAB) (expressed in radians).
+    
+    Returns
+    -------
+    A complex number representing the component:
+    - V<sup>+1</sup>, if sign is positive;
+    - V<sup>-1</sup>, if sign is negative.
+    of the EFG tensor (divided by eq).
+    
+    Raises
+    ------
+    ValueError, when the passed eta is not in the interval [0, 1].
+    """
     if eta<0 or eta>1: raise ValueError("The asymmetry parameter must fall in the interval [0, 1]")
     sign = np.sign(sign)
     v1 = (1/2)*\
@@ -52,6 +134,29 @@ def v1_EFG(sign, eta, alpha_q, beta_q, gamma_q):
     return v1
 
 def v2_EFG(sign, eta, alpha_q, beta_q, gamma_q):
+    """
+    Returns the components V+/-2 of the EFG tensor (divided by eq) as seen in the LAB system. These quantities are expressed in terms of the Euler angles which relate PAS and LAB systems and the parameter eta.
+    
+    Parameters
+    ----------
+    - sign: float
+            Specifies wether the V+2 or the V-2 component is to be returned;
+    - eta: float in the interval [0, 1]
+           Asymmetry parameter of the EFG tensor;
+    - alpha_q, beta_q, gamma_q: float
+                                Euler angles connecting the system of the principal axes of the EFG tensor (PAS) to the lab system (LAB) (expressed in radians).
+                                
+    Returns
+    -------
+    A float representing the component:
+    - V+2, if sign is positive;
+    - V-2, if sign is negative.
+    of the EFG tensor (divided by eq).
+    
+    Raises
+    ------
+    ValueError, when the passed eta is not in the interval [0, 1].
+    """
     if eta<0 or eta>1: raise ValueError("The asymmetry parameter must fall in the interval [0, 1]")
     sign = np.sign(sign)
     v2 = (1/2)*\
@@ -65,6 +170,34 @@ def v2_EFG(sign, eta, alpha_q, beta_q, gamma_q):
     return v2
 
 def h_single_mode_pulse(spin, frequency, H_1, phase, theta_1, phi_1, t):
+    """
+    Computes the term of the Hamiltonian describing the interaction with a monochromatic and linearly polarized electromagnetic pulse.
+    
+    Parameters
+    ----------
+    - spin: Nuclear_Spin
+            Spin under study.
+    - frequency: non-negative float
+                 Frequency of the monochromatic wave (expressed in MHz).
+    - phase: float
+             Inital phase of the wave (at t=0) (expressed in radians).
+    - H_1: non-negative float
+           Maximum amplitude of the oscillating magnetic field (expressed in tesla).
+    - theta_1, phi_1: float
+                      Polar and azimuthal angles of the direction of polarization of the magnetic wave in the LAB frame (expressed in radians);
+    - t: float
+         Time of evaluation of the Hamiltonian (expressed in microseconds).
+    
+    Returns
+    -------
+    An Observable object which represents the Hamiltonian of the coupling with the electromagnetic pulse evaluated at time t (expressed in MHz).
+    
+    Raises
+    ------
+    ValueError, in two distinct cases:
+    1. When the passed frequency parameter is a negative quantity;
+    2. When the passed H_1 parameter is a negative quantity.
+    """
     if frequency < 0: raise ValueError("The modulus of the angular frequency of the electromagnetic wave must be a positive quantity")
     if H_1 < 0: raise ValueError("The amplitude of the electromagnetic wave must be a positive quantity")
     h_pulse = -spin.gyro_ratio_over_2pi*H_1*\
@@ -76,6 +209,33 @@ def h_single_mode_pulse(spin, frequency, H_1, phase, theta_1, phi_1, t):
     return Observable(h_pulse.matrix)
 
 def h_multiple_mode_pulse(spin, mode, t):
+    """
+    Computes the term of the Hamiltonian describing the interaction with a superposition of single-mode electromagnetic pulses.
+    
+    Parameters
+    ----------
+    - spin: Nuclear_Spin
+            Spin under study;
+    - mode: pandas.DataFrame
+            Table of the parameters of each electromagnetic mode in the superposition. It is organised according to the following template:
+  
+    | index |  'frequency'  |  'amplitude'  |  'phase'  |  'theta_p'  |  'phi_p'  |
+    | ----- | ------------- | ------------- | --------- | ----------- | --------- |
+    |       |     (MHz)     |      (T)      |   (rad)   |    (rad)    |   (rad)   |
+    |   0   |    omega_0    |      H_0      |  phase_0  |   theta_0   |   phi_0   |
+    |   1   |    omega_1    |      H_1      |  phase_1  |   theta_1   |   phi_1   |
+    |  ...  |      ...      |      ...      |    ...    |     ...     |    ...    |
+    |   N   |    omega_N    |      H_N      |  phase_N  |   theta_N   |   phi_N   |
+  
+    where the meaning of each column is analogous to the corresponding parameters in h_single_mode_pulse.
+    
+    - t: float
+         Time of evaluation of the Hamiltonian (expressed in microseconds).
+         
+    Returns
+    -------
+    An Observable object which represents the Hamiltonian of the coupling with the superposition of the given modes evaluated at time t (expressed in MHz).
+    """
     h_pulse = Operator(spin.d)*0
     omega = mode['frequency']
     H = mode['amplitude']
@@ -89,6 +249,21 @@ def h_multiple_mode_pulse(spin, mode, t):
 # Global Hamiltonian of the system (stationary term + pulse term) cast in the picture generated by
 # the Operator h_change_of_picture
 def h_changed_picture(spin, mode, h_unperturbed, h_change_of_picture, t):
+    """
+    Returns the global Hamiltonian of the system, made up of the time-dependent term h_multiple_mode_pulse(spin, mode, t) and the stationary term h_unperturbed, cast in the picture generated by h_change_of_picture.
+    
+    Parameters
+    ----------
+    - spin, mode, t: same meaning as the corresponding arguments of h_multiple_mode_pulse;
+    - h_unperturbed: Operator
+                     Stationary term of the global Hamiltonian (in MHz);
+    - h_change_of_picture: Operator
+                           Operator which generates the new picture (in MHz).
+                           
+    Returns
+    -------
+    Observable object representing the Hamiltonian of the pulse evaluated at time t in the new picture (in MHz).
+    """
     h_cp = (h_unperturbed + h_multiple_mode_pulse(spin, mode, t) - \
             h_change_of_picture).changed_picture(h_change_of_picture, t)
     return Observable(h_cp.matrix)
