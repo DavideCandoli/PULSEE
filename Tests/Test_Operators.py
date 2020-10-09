@@ -12,7 +12,12 @@ from scipy.constants import Planck, Boltzmann
 import hypothesis.strategies as st
 from hypothesis import given, settings, note, assume
 
-from Operators import *
+from Operators import Operator, Density_Matrix, Observable, \
+                      random_operator, random_density_matrix, random_observable, \
+                      commutator, magnus_expansion_1st_term, \
+                      magnus_expansion_2nd_term, \
+                      magnus_expansion_3rd_term, \
+                      canonical_density_matrix
 
 def test_operator_initialisation_with_wrong_dimensions():
     wrong_input = np.ones((1, 2))

@@ -7,8 +7,11 @@ import numpy as np
 import hypothesis.strategies as st
 from hypothesis import given, note
 
-from Operators import *
-from Nuclear_Spin import *
+from Operators import Operator, Observable, \
+                      random_operator, random_density_matrix, random_observable, \
+                      commutator
+
+from Nuclear_Spin import Nuclear_Spin
         
 
 def test_spin_quantum_number_initialisation_with_non_half_integer():

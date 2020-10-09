@@ -331,8 +331,8 @@ class Density_Matrix(Operator):
     Density matrix formalism is particularly suitable for the representation of mixed states, which encode the (classical) distribution of the states in an ensemble of identical systems.
     The axiomatic definition of density matrix is based on the following properties:
     1. Hermitianity
-    1. Unit trace
-    1. Positivity
+    2. Unit trace
+    3. Positivity
     
     Methods
     -------

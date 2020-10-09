@@ -1,7 +1,7 @@
 import math
 import numpy as np
 
-from Operators import *
+from Operators import Operator, Observable
 
 class Nuclear_Spin:
     """

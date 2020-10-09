@@ -12,11 +12,16 @@ from matplotlib.pyplot import xticks, yticks
 import hypothesis.strategies as st
 from hypothesis import given, assume
 
-from Operators import *
-from Nuclear_Spin import *
-from Hamiltonians import *
-from Simulation import *
+from Operators import Operator, Density_Matrix, Observable
 
+from Nuclear_Spin import Nuclear_Spin
+
+from Simulation import nuclear_system_setup, \
+                       power_absorption_spectrum, \
+                       evolve, RRF_operator, \
+                       FID_signal, \
+                       fourier_transform_signal, \
+                       fourier_phase_shift
 
 def test_null_zeeman_contribution_for_0_gyromagnetic_ratio():
     spin_par = {'quantum number' : 3/2,

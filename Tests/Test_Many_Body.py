@@ -7,8 +7,10 @@ import numpy as np
 import hypothesis.strategies as st
 from hypothesis import given, settings, note
 
-from Operators import *
-from Many_Body import *
+from Operators import Operator, Density_Matrix, Observable, \
+                      random_operator, random_density_matrix, random_observable
+
+from Many_Body import tensor_product_operator, partial_trace
 
 @given(d = st.integers(min_value=1, max_value=8))
 @settings(deadline = None)

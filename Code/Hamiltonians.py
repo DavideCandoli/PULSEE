@@ -3,9 +3,9 @@ from cmath import exp
 import numpy as np
 import pandas as pd
 
-from Operators import *
+from Operators import Operator, Density_Matrix, Observable
 
-from Nuclear_Spin import *
+from Nuclear_Spin import Nuclear_Spin
 
 def h_zeeman(spin, theta_z, phi_z, H_0):
     """

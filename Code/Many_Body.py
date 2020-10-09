@@ -1,7 +1,7 @@
 import math
 import numpy as np
 
-from Operators import *
+from Operators import Operator, Density_Matrix, Observable
 
 def tensor_product_operator(A, B):
     """

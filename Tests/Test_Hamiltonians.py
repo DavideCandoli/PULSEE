@@ -8,9 +8,16 @@ import pandas as pd
 import hypothesis.strategies as st
 from hypothesis import given, note
 
-from Operators import *
-from Nuclear_Spin import *
-from Hamiltonians import *
+from Operators import Operator, Density_Matrix, Observable, \
+                      random_operator, random_density_matrix, random_observable
+
+from Nuclear_Spin import Nuclear_Spin
+
+from Hamiltonians import h_zeeman, h_quadrupole, \
+                         v0_EFG, v1_EFG, v2_EFG, \
+                         h_single_mode_pulse, \
+                         h_multiple_mode_pulse, \
+                         h_changed_picture
 
 @given(par = st.lists(st.floats(min_value=0, max_value=20), min_size=3, max_size=3))
 def test_zeeman_hamiltonian_changes_sign_when_magnetic_field_is_flipped(par):

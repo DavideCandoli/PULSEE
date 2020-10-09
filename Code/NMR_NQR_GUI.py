@@ -38,12 +38,19 @@ from kivy.uix.popup import Popup
 
 from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 
-from kivy.graphics import *
-
 # NMR-NQRSimulationSoftware imports
-from Operators import *
-from Nuclear_Spin import *
-from Simulation import *
+from Operators import Operator, Density_Matrix, Observable
+
+from Nuclear_Spin import Nuclear_Spin
+
+from Simulation import nuclear_system_setup, \
+                       power_absorption_spectrum, \
+                       evolve, RRF_operator, \
+                       plot_real_part_density_matrix, \
+                       FID_signal, plot_real_part_FID_signal, \
+                       fourier_transform_signal, \
+                       plot_fourier_transform, \
+                       fourier_phase_shift
 
 # This class defines the object responsible of the management of the inputs and outputs of the
 # simulation, mediating the interaction between the GUI and the computational core of the program.

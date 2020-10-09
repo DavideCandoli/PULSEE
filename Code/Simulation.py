@@ -7,11 +7,19 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.pyplot import xticks, yticks
 from matplotlib.axes import Axes
 
-from Operators import *
+from Operators import Operator, Density_Matrix, Observable, \
+                      magnus_expansion_1st_term, \
+                      magnus_expansion_2nd_term, \
+                      magnus_expansion_3rd_term, \
+                      canonical_density_matrix
 
-from Nuclear_Spin import *
+from Nuclear_Spin import Nuclear_Spin
 
-from Hamiltonians import *
+from Hamiltonians import h_zeeman, h_quadrupole, \
+                         v0_EFG, v1_EFG, v2_EFG, \
+                         h_single_mode_pulse, \
+                         h_multiple_mode_pulse, \
+                         h_changed_picture
 
 
 def nuclear_system_setup(spin_par, zeem_par, quad_par, initial_state='canonical', temperature=1e-4):
@@ -229,7 +237,6 @@ def plot_power_absorption_spectrum(frequencies, intensities, show=True, save=Fal
     Returns
     -------
     An object of the class matplotlib.figure.Figure representing the figure built up by the function.
-
     """
     fig = plt.figure()
     
@@ -316,7 +323,6 @@ def evolve(spin, h_unperturbed, dm_initial, \
     Returns
     -------
     The Density_Matrix object representing the state of the system (in the Schroedinger picture) evolved through a time pulse_time under the action of the specified pulse.
-
     """
     
     if pulse_time == 0 or np.all(np.absolute((dm_initial-Operator(spin.d)).matrix)<1e-10):
@@ -788,7 +794,7 @@ def plot_fourier_transform(frequencies, fourier, fourier_neg=None, square_modulu
     Action
     ------
     Builds up a plot of the Fourier transform of the passed complex signal as a function of the frequency.
-  If fourier_neg is different from None, two graphs are built up which represent respectively the Fourier spectra for counter-clockwise and clockwise rotation frequencies.
+    If fourier_neg is different from None, two graphs are built up which represent respectively the Fourier spectra for counter-clockwise and clockwise rotation frequencies.
     
     If show=True, the figure is printed on screen.  
   
