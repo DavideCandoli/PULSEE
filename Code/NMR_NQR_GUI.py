@@ -959,7 +959,7 @@ class NMR_Spectrum(FloatLayout):
     
     error_adj_phase = Label()
     tb_adj_phase = Button()
-
+    
     # Assigns the values of the inputs connected with the acquisition of the FID to the corresponding
     # variables of the Simulation_Manager and generates the FID signal
     def generate_FID(self, sim_man, y_shift, *args):
@@ -991,7 +991,7 @@ class NMR_Spectrum(FloatLayout):
             self.tb_FID.bind(on_release=partial(print_traceback, e))
             self.add_widget(self.tb_FID)
             
-    def calculate_and_plot_fourier(self, sim_man, phase=1):
+    def calculate_and_plot_fourier(self, sim_man):
             self.remove_widget(self.fourier_spectrum)
             plt.close(self.fourier_spectrum_figure)
             
@@ -1004,7 +1004,7 @@ class NMR_Spectrum(FloatLayout):
             if self.input_opposite_frequency == False:
                 sim_man.spectrum_frequencies, \
                 sim_man.spectrum_fourier = fourier_transform_signal(sim_man.FID_times, \
-                                                     phase*sim_man.FID,\
+                                                     sim_man.FID,\
                                                      frequency_start=self.input_frequency_left_bound, \
                                                      frequency_stop=self.input_frequency_right_bound)
                 plot_fourier_transform(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
@@ -1013,7 +1013,7 @@ class NMR_Spectrum(FloatLayout):
                 sim_man.spectrum_frequencies, \
                 sim_man.spectrum_fourier, \
                 sim_man.spectrum_fourier_neg = fourier_transform_signal(sim_man.FID_times, \
-                                                     phase*sim_man.FID, \
+                                                     sim_man.FID, \
                                                      frequency_start=self.input_frequency_left_bound, \
                                                      frequency_stop=self.input_frequency_right_bound, \
                                                      opposite_frequency=self.input_opposite_frequency)
@@ -1034,7 +1034,7 @@ class NMR_Spectrum(FloatLayout):
         try:
             self.remove_widget(self.error_fourier)
             self.remove_widget(self.tb_fourier)
-            
+                        
             self.calculate_and_plot_fourier(sim_man)
             
         except Exception as e:
@@ -1051,20 +1051,24 @@ class NMR_Spectrum(FloatLayout):
             self.remove_widget(self.error_adj_phase)
             self.remove_widget(self.tb_adj_phase)
             
-            peak_frequency_hint = float(null_string(self.peak_frequency.text))
+            peak_frequency = float(null_string(self.peak_frequency.text))
         
             search_window = float(null_string(self.search_range.text))
             
             if not self.flip_negative_freq_checkbox.active:
                 phi = fourier_phase_shift(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
-                                          peak_frequency_hint=peak_frequency_hint, \
-                                          search_window=search_window)
+                                          peak_frequency=peak_frequency, \
+                                          int_domain_width=search_window)
             else:
                 phi = fourier_phase_shift(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
                                           sim_man.spectrum_fourier_neg, \
-                                          peak_frequency_hint, search_window)
+                                          peak_frequency, search_window)
             
-            self.calculate_and_plot_fourier(sim_man, np.exp(1j*phi))
+            print(phi)
+            
+            sim_man.FID = np.exp(1j*phi)*sim_man.FID
+            
+            self.calculate_and_plot_fourier(sim_man)
             
         except Exception as e:
             self.error_adj_phase=Label(text=e.args[0], pos=(225, y_shift+45), size=(100, 100), bold=True, color=(1, 0, 0, 1), font_size='15sp')

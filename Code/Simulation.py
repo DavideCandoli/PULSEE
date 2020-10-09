@@ -246,35 +246,32 @@ def fourier_transform_signal(times, signal, frequency_start, frequency_stop, opp
 
 # Finds out the phase responsible for the displacement of the real and imaginary parts of the Fourier
 # spectrum of the FID with respect to the ideal absorptive/dispersive lorentzian shapes
-def fourier_phase_shift(frequencies, fourier, fourier_neg=None, peak_frequency_hint=0, search_window=0.1):
-
-    peak_pos = 0
+def fourier_phase_shift(frequencies, fourier, fourier_neg=None, peak_frequency=0, int_domain_width=0.5):
     
-    # When the Fourier spectrum for the opposite frequencies is passed, the search of the maximum is
-    # carried out in both the positive and negative range of frequencies
     if fourier_neg is not None:
         fourier = np.concatenate((fourier, fourier_neg))
         frequencies = np.concatenate((frequencies, -frequencies))
     
-    # Range where to look for the maximum of the square modulus of the Fourier spectrum
-    search_range = np.nonzero(np.isclose(frequencies, peak_frequency_hint, atol=search_window/2))[0]
+    integration_domain = np.nonzero(np.isclose(frequencies, peak_frequency, atol=int_domain_width/2))[0]
     
-    # Search of the maximum of the square modulus of the Fourier spectrum
-    fourier2_max=0
-    for i in search_range:
-        if (np.absolute(fourier[i])**2)>fourier2_max:
-            fourier2_max = np.absolute(fourier[i])
-            peak_pos = i
-            
-    re = np.real(fourier[peak_pos])
+    int_real_fourier = 0
+    int_imag_fourier = 0
     
-    im = np.imag(fourier[peak_pos])
+    for i in integration_domain:
+        int_real_fourier = int_real_fourier + np.real(fourier[i])
+        int_imag_fourier = int_imag_fourier + np.imag(fourier[i])
     
-    if im >= 0:
-        phase = math.atan(-im/re)
+    atan = math.atan(-int_imag_fourier/int_real_fourier)
+    
+    if np.absolute(int_real_fourier) < 1e-10 :
+        atan = -math.pi/2
+        
+    if int_imag_fourier >= 0:
+        phase = atan + math.pi/2
+    
     else:
-        phase = math.atan(-im/re) + math.pi
-    
+        phase = atan - math.pi/2
+        
     return phase
 
 
