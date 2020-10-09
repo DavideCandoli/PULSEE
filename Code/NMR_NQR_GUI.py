@@ -1053,7 +1053,7 @@ class NMR_Spectrum(FloatLayout):
             
             peak_frequency = float(null_string(self.peak_frequency.text))
         
-            search_window = float(null_string(self.search_range.text))
+            search_window = float(null_string(self.int_domain_width.text))
             
             if not self.flip_negative_freq_checkbox.active:
                 phi = fourier_phase_shift(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
@@ -1063,9 +1063,7 @@ class NMR_Spectrum(FloatLayout):
                 phi = fourier_phase_shift(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
                                           sim_man.spectrum_fourier_neg, \
                                           peak_frequency, search_window)
-            
-            print(phi)
-            
+                        
             sim_man.FID = np.exp(1j*phi)*sim_man.FID
             
             self.calculate_and_plot_fourier(sim_man)
@@ -1216,14 +1214,14 @@ class NMR_Spectrum(FloatLayout):
         self.peak_frequency_unit = Label(text='MHz', size=(10, 5), pos=(-150, y_shift+50), font_size='15sp')
         self.add_widget(self.peak_frequency_unit)
         
-        self.search_range_label = Label(text='Uncertainty', size=(10, 5), pos=(-50, y_shift+50), font_size='15sp')
-        self.add_widget(self.search_range_label)
+        self.int_domain_width_label = Label(text='Width of the domain of integration', size=(10, 5), pos=(0, y_shift+50), font_size='15sp')
+        self.add_widget(self.int_domain_width_label)
         
-        self.search_range = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(400, y_shift+535))
-        self.add_widget(self.search_range)
+        self.int_domain_width = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(525, y_shift+535))
+        self.add_widget(self.int_domain_width)
         
-        self.search_range_unit = Label(text='MHz', size=(10, 5), pos=(85, y_shift+50), font_size='15sp')
-        self.add_widget(self.search_range_unit)
+        self.int_domain_width_unit = Label(text='MHz', size=(10, 5), pos=(210, y_shift+50), font_size='15sp')
+        self.add_widget(self.int_domain_width_unit)
         
         self.phase_adj_btn = Button(text='Adjust phase', font_size='16sp', size_hint_y=None, height=35, size_hint_x=None, width=110, pos=(640, y_shift+560))
         self.phase_adj_btn.bind(on_press=partial(self.adjust_phase, sim_man, y_shift))
