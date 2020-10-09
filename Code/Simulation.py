@@ -264,11 +264,9 @@ def fourier_phase_shift(frequencies, fourier, fourier_neg=None, peak_frequency=0
     atan = math.atan(-int_imag_fourier/int_real_fourier)
     
     if np.absolute(int_real_fourier) < 1e-10 :
-        atan = -math.pi/2
-        
-    if int_imag_fourier >= 0:
+        phase = 0
+    elif int_real_fourier > 0:
         phase = atan + math.pi/2
-    
     else:
         phase = atan - math.pi/2
         
