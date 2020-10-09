@@ -227,6 +227,10 @@ class System_Parameters(FloatLayout):
             # Storage of the system's input parameters
             sim_man.spin_par['quantum number'] = float(Fraction(null_string(self.spin_qn.text)))
             
+            if self.canonical_checkbox.active == False and \
+               int(2*sim_man.spin_par['quantum number']+1) != self.d:
+                raise ValueError("The dimensions of the initial density matrix"+'\n'+"don't match the spin states' multiplicity")
+            
             sim_man.spin_par['gamma/2pi'] = float(null_string(self.gyro.text))
             
             sim_man.zeem_par['field magnitude'] = float(null_string(self.field_mag.text))
@@ -271,7 +275,7 @@ class System_Parameters(FloatLayout):
                                      sim_man.quad_par, \
                                      initial_state=sim_man.manual_dm, \
                                      temperature=300)
-            
+                        
             self.view_the_initial_density_matrix(sim_man)
             
             self.set_up_system.disabled = False
