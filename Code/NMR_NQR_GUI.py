@@ -164,7 +164,7 @@ class System_Parameters(FloatLayout):
     
     # Specifies the action carried out after the validation of the spin quantum number, i.e. the
     # creation of the inputs for the elements of the density matrix
-    def set_quantum_number(self, sim_man, *args):
+    def set_quantum_number(self, y_shift, *args):
         try:
             self.remove_widget(self.error_spin_qn)
             self.remove_widget(self.manual_dm)
@@ -175,7 +175,7 @@ class System_Parameters(FloatLayout):
             else: self.el_width = 30
         
         # Sets the grid representing the initial density matrix to be filled manually
-            self.manual_dm = GridLayout(cols=self.d, size=(self.el_width*self.d, self.el_width*self.d), size_hint=(None, None), pos=(50, 405-self.d*self.el_width))
+            self.manual_dm = GridLayout(cols=self.d, size=(self.el_width*self.d, self.el_width*self.d), size_hint=(None, None), pos=(50, y_shift+400-self.d*self.el_width))
             self.dm_elements = np.empty((self.d, self.d), dtype=TextInput)
             for j in range(self.d):
                 for i in range(self.d):
@@ -202,7 +202,7 @@ class System_Parameters(FloatLayout):
     def view_the_initial_density_matrix(self, sim_man):
         plot_real_part_density_matrix(sim_man.dm[0], show=False)
             
-        self.dm_graph_box = BoxLayout(size=(300, 300), size_hint=(None, None), pos=(470, 105))
+        self.dm_graph_box = BoxLayout(size=(300, 300), size_hint=(None, None), pos=(470, 95))
             
         self.dm_initial_figure = plt.gcf()
             
@@ -277,10 +277,10 @@ class System_Parameters(FloatLayout):
             self.set_up_system.disabled = False
             
         except Exception as e:
-            self.error_build_system=Label(text=e.args[0], pos=(0, -490), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+            self.error_build_system=Label(text=e.args[0], pos=(225, -480), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
             self.add_widget(self.error_build_system)
                         
-            self.tb_button=Button(text='traceback', size_hint=(0.1, 0.03), pos=(450, 25))
+            self.tb_button=Button(text='traceback', size_hint=(0.1, 0.03), pos=(442.5, 50))
             self.tb_button.bind(on_release=partial(print_traceback, e))
             self.add_widget(self.tb_button)
     
@@ -313,7 +313,6 @@ class System_Parameters(FloatLayout):
         self.add_widget(self.spin_qn_label)
         
         self.spin_qn = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(x_shift+355, y_shift+460))
-        self.spin_qn.bind(on_text_validate=partial(self.set_quantum_number, sim_man))
         self.add_widget(self.spin_qn)
         
         # After the selection of one of the options in the dropdown list, the spin quantum number
@@ -423,7 +422,7 @@ class System_Parameters(FloatLayout):
         self.initial_dm = Label(text='Initial density matrix', size=(10, 5), pos=(x_shift-260, y_shift+30), font_size='20sp')
         self.add_widget(self.initial_dm)
         
-        self.dm_par = GridLayout(cols=5, size=(500, 35), size_hint=(None, None), pos=(x_shift+50, y_shift+460))
+        self.dm_par = GridLayout(cols=5, size=(500, 35), size_hint=(None, None), pos=(x_shift+50, y_shift+470))
         
         # Checkbox to set the initial density matrix as the canonical one
         self.canonical_checkbox = CheckBox(size_hint_x=None, width=20)
@@ -447,31 +446,38 @@ class System_Parameters(FloatLayout):
         
         self.add_widget(self.dm_par)
         
+        # Button to generate the grid of elements of the initial density matrix
+        self.manual_dm_button = Button(text="Set density matrix element by element", font_size='15sp', size_hint_y=None, height=30, size_hint_x=None, width=280, pos=(50, y_shift+425))
+        
+        self.add_widget(self.manual_dm_button)
+        
+        self.manual_dm_button.bind(on_release=partial(self.set_quantum_number, y_shift))
+        
     def __init__(self, sim_man, **kwargs):
         super().__init__(**kwargs)
         
         self.parameters = Label(text='System parameters', size=(10, 5), pos=(0, 450), font_size='30sp')
         self.add_widget(self.parameters)
         
-        self.nuclear_spin_parameters(0, 400, sim_man=sim_man)
+        self.nuclear_spin_parameters(0, 405, sim_man=sim_man)
         
-        self.magnetic_field_parameters(0, 200)
+        self.magnetic_field_parameters(0, 220)
         
-        self.quadrupole_parameters(0, 100)
+        self.quadrupole_parameters(0, 130)
         
         # Decoherence time of the system
-        self.decoherence_label = Label(text='Decoherence time', size=(10, 5), pos=(-285, 45), font_size='16sp')
+        self.decoherence_label = Label(text='Decoherence time', size=(10, 5), pos=(-285, 70), font_size='16sp')
         self.add_widget(self.decoherence_label)
         
-        self.decoherence = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(187.5, 530))
+        self.decoherence = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(187.5, 555))
         self.add_widget(self.decoherence)
         
-        self.decoherence_unit = Label(text='\N{GREEK SMALL LETTER MU}s', size=(10, 5), pos=(-135, 45), font_size='15sp')
+        self.decoherence_unit = Label(text='\N{GREEK SMALL LETTER MU}s', size=(10, 5), pos=(-135, 70), font_size='15sp')
         self.add_widget(self.decoherence_unit)
         
-        self.initial_dm_parameters(0, -30)
+        self.initial_dm_parameters(0, -5)
         
-        self.set_up_system = Button(text='Set up the system', font_size='16sp', size_hint_y=None, height=40, size_hint_x=None, width=200, pos=(535, 25))
+        self.set_up_system = Button(text='Set up the system', font_size='16sp', size_hint_y=None, height=40, size_hint_x=None, width=200, pos=(525, 50))
         self.set_up_system.bind(on_release=partial(self.build_system, sim_man))
         
         self.add_widget(self.set_up_system)
