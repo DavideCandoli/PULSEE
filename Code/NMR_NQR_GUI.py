@@ -232,10 +232,12 @@ class System_Parameters(FloatLayout):
             # Storage of the system's input parameters
             sim_man.spin_par['quantum number'] = float(Fraction(null_string(self.spin_qn.text)))
             
+            n_s = int(2*sim_man.spin_par['quantum number']+1)
+            
             sim_man.canonical_dm_0 = self.canonical_checkbox.active
             
             if sim_man.canonical_dm_0 == False and \
-               int(2*sim_man.spin_par['quantum number']+1) != self.d:
+                n_s != self.d:
                 raise ValueError("The dimensions of the initial density matrix"+'\n'+"don't match the spin states' multiplicity")
             
             sim_man.spin_par['gamma/2pi'] = float(null_string(self.gyro.text))
@@ -255,13 +257,16 @@ class System_Parameters(FloatLayout):
             sim_man.quad_par['beta_q'] = (float(null_string(self.beta_q.text))*math.pi)/180
             
             sim_man.quad_par['gamma_q'] = (float(null_string(self.gamma_q.text))*math.pi)/180
+                        
+            self.store_and_write_nu_q(sim_man)
             
             sim_man.decoherence_time = float(null_string(self.decoherence.text))
             
-            self.store_and_write_nu_q(sim_man)
+            sim_man.temperature = float(null_string(self.temperature.text))
             
-            if self.canonical_checkbox.active:
-                sim_man.temperature = float(null_string(self.temperature.text))
+            sim_man.manual_dm = np.zeros((n_s, n_s), dtype=complex)
+            
+            if sim_man.canonical_dm_0:
                 sim_man.spin, sim_man.h_unperturbed, sim_man.dm[0] = \
                 nuclear_system_setup(sim_man.spin_par, \
                                      sim_man.zeem_par, \
@@ -269,9 +274,7 @@ class System_Parameters(FloatLayout):
                                      initial_state='canonical', \
                                      temperature=sim_man.temperature)
             
-            else:
-                sim_man.manual_dm = np.zeros((self.d, self.d), dtype=complex)
-            
+            else:            
                 for i in range(self.d):
                     for j in range(self.d):
                         sim_man.manual_dm[i, j] = complex(null_string(self.dm_elements[i, j].text))
@@ -284,9 +287,7 @@ class System_Parameters(FloatLayout):
                                      temperature=300)
                         
             self.view_the_initial_density_matrix(sim_man)
-            
-            self.set_up_system.disabled = False
-            
+                        
         except Exception as e:
             self.error_build_system=Label(text=e.args[0], pos=(225, -480), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
             self.add_widget(self.error_build_system)
@@ -464,7 +465,7 @@ class System_Parameters(FloatLayout):
         
         self.manual_dm_button.bind(on_release=partial(self.set_quantum_number, y_shift))
         
-    def __init__(self, sim_man, **kwargs):
+    def __init__(self, sim_man, retrieve_config_btn, retrieve_config_name, **kwargs):
         super().__init__(**kwargs)
         
         self.parameters = Label(text='System parameters', size=(10, 5), pos=(0, 450), font_size='30sp')
@@ -493,12 +494,9 @@ class System_Parameters(FloatLayout):
         
         self.add_widget(self.set_up_system)
         
-        self.retrieve_config_btn = Button(text='Retrieve configuration', size_hint=(0.23, 0.03), pos=(565, 945), bold=True, background_color=(2.07, 0, 0.15, 1), font_size='15')
-                
-        self.add_widget(self.retrieve_config_btn)
+        self.add_widget(retrieve_config_btn)
         
-        self.retrieve_config_name = TextInput(multiline=False, size_hint=(0.23, 0.03), pos=(565, 915))
-        self.add_widget(self.retrieve_config_name)
+        self.add_widget(retrieve_config_name)
 
         
 # Class of the page of the software which lists the parameters of the pulse sequence
@@ -537,13 +535,15 @@ class Pulse_Sequence(FloatLayout):
     
     n_pulses = 1
     
+    number_pulses = TextInput()
+    
     error_n_pulses = Label()
     
     error_set_up_pulse = Label()
     
     RRF_btn = np.ndarray(4, dtype=Button)
     
-    RRF_frequency_label = np.ndarray(4, dtype=Label)
+    RRF_frequency_label = np.ndarray(4, dtype=Label)    
     RRF_theta_label = np.ndarray(4, dtype=Label)
     RRF_phi_label = np.ndarray(4, dtype=Label)
     
@@ -555,118 +555,129 @@ class Pulse_Sequence(FloatLayout):
     RRF_theta_unit = np.ndarray(4, dtype=Label)
     RRF_phi_unit = np.ndarray(4, dtype=Label)
     
+    for i in range(4):
+        RRF_frequency_label[i] = Label()
+        RRF_theta_label[i] = Label()
+        RRF_phi_label[i] = Label()
+        RRF_frequency[i] = TextInput()
+        RRF_theta[i] = TextInput()
+        RRF_phi[i] = TextInput()
+        RRF_frequency_unit[i] = Label()
+        RRF_theta_unit[i] = Label()
+        RRF_phi_unit[i] = Label()
+    
     IP_btn = np.ndarray(4, dtype=Button)
     
     # Adds a new line of TextInputs in the table of the n-th pulse
     def add_new_mode(self, n, *args):
         
-        if self.n_modes[n-1] < 2:
-            self.single_pulse_table[n-1].size[1] = self.single_pulse_table[n-1].size[1] + 28
-            self.single_pulse_table[n-1].pos[1] = self.single_pulse_table[n-1].pos[1] - 28
+        if self.n_modes[n] < 2:
+            self.single_pulse_table[n].size[1] = self.single_pulse_table[n].size[1] + 28
+            self.single_pulse_table[n].pos[1] = self.single_pulse_table[n].pos[1] - 28
             
-            self.frequency[n-1][self.n_modes[n-1]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
-            self.single_pulse_table[n-1].add_widget(self.frequency[n-1][self.n_modes[n-1]])
+            self.frequency[n][self.n_modes[n]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+            self.single_pulse_table[n].add_widget(self.frequency[n][self.n_modes[n]])
             
-            self.amplitude[n-1][self.n_modes[n-1]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
-            self.single_pulse_table[n-1].add_widget(self.amplitude[n-1][self.n_modes[n-1]])
+            self.amplitude[n][self.n_modes[n]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+            self.single_pulse_table[n].add_widget(self.amplitude[n][self.n_modes[n]])
             
-            self.phase[n-1][self.n_modes[n-1]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
-            self.single_pulse_table[n-1].add_widget(self.phase[n-1][self.n_modes[n-1]])
+            self.phase[n][self.n_modes[n]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+            self.single_pulse_table[n].add_widget(self.phase[n][self.n_modes[n]])
             
-            self.theta1[n-1][self.n_modes[n-1]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
-            self.single_pulse_table[n-1].add_widget(self.theta1[n-1][self.n_modes[n-1]])
+            self.theta1[n][self.n_modes[n]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+            self.single_pulse_table[n].add_widget(self.theta1[n][self.n_modes[n]])
             
-            self.phi1[n-1][self.n_modes[n-1]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
-            self.single_pulse_table[n-1].add_widget(self.phi1[n-1][self.n_modes[n-1]])
+            self.phi1[n][self.n_modes[n]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+            self.single_pulse_table[n].add_widget(self.phi1[n][self.n_modes[n]])
             
-            self.n_modes[n-1] = self.n_modes[n-1]+1
+            self.n_modes[n] = self.n_modes[n]+1
             
         else:
             pass
     
     # Removes a line of TextInputs in the table of the n-th pulse
     def remove_mode(self, n, sim_man, *args):
-        if self.n_modes[n-1]>1:
+        if self.n_modes[n]>1:
             
-            self.n_modes[n-1] = self.n_modes[n-1]-1
+            self.n_modes[n] = self.n_modes[n]-1
             
-            self.single_pulse_table[n-1].remove_widget(self.frequency[n-1][self.n_modes[n-1]])
-            self.single_pulse_table[n-1].remove_widget(self.amplitude[n-1][self.n_modes[n-1]])
-            self.single_pulse_table[n-1].remove_widget(self.phase[n-1][self.n_modes[n-1]])
-            self.single_pulse_table[n-1].remove_widget(self.theta1[n-1][self.n_modes[n-1]])
-            self.single_pulse_table[n-1].remove_widget(self.phi1[n-1][self.n_modes[n-1]])
+            self.single_pulse_table[n].remove_widget(self.frequency[n][self.n_modes[n]])
+            self.single_pulse_table[n].remove_widget(self.amplitude[n][self.n_modes[n]])
+            self.single_pulse_table[n].remove_widget(self.phase[n][self.n_modes[n]])
+            self.single_pulse_table[n].remove_widget(self.theta1[n][self.n_modes[n]])
+            self.single_pulse_table[n].remove_widget(self.phi1[n][self.n_modes[n]])
             
-            sim_man.pulse[n-1]['frequency'][self.n_modes[n-1]] = 0
-            sim_man.pulse[n-1]['amplitude'][self.n_modes[n-1]] = 0
-            sim_man.pulse[n-1]['phase'][self.n_modes[n-1]] = 0
-            sim_man.pulse[n-1]['theta_p'][self.n_modes[n-1]] = 0
-            sim_man.pulse[n-1]['phi_p'][self.n_modes[n-1]] = 0
+            sim_man.pulse[n]['frequency'][self.n_modes[n]] = 0
+            sim_man.pulse[n]['amplitude'][self.n_modes[n]] = 0
+            sim_man.pulse[n]['phase'][self.n_modes[n]] = 0
+            sim_man.pulse[n]['theta_p'][self.n_modes[n]] = 0
+            sim_man.pulse[n]['phi_p'][self.n_modes[n]] = 0
             
-            self.single_pulse_table[n-1].size[1] = self.single_pulse_table[n-1].size[1] - 28
-            self.single_pulse_table[n-1].pos[1] = self.single_pulse_table[n-1].pos[1] + 28
+            self.single_pulse_table[n].size[1] = self.single_pulse_table[n].size[1] - 28
+            self.single_pulse_table[n].pos[1] = self.single_pulse_table[n].pos[1] + 28
         else:
             pass
     
     # Prints on screen the controls for the parameters of the RRF
     def set_RRF_par(self, n, y_shift):
-        self.RRF_frequency_label[n-1] = Label(text='\N{GREEK SMALL LETTER OMEGA}RRF', size=(10, 5), pos=(195, y_shift-145), font_size='15sp')
-        self.add_widget(self.RRF_frequency_label[n-1])
-        self.RRF_frequency[n-1] = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(620, y_shift+340))
-        self.add_widget(self.RRF_frequency[n-1])
-        self.RRF_frequency_unit[n-1] = Label(text='MHz', size=(10, 5), pos=(300, y_shift-145), font_size='15sp')
-        self.add_widget(self.RRF_frequency_unit[n-1])
+        self.RRF_frequency_label[n] = Label(text='\N{GREEK SMALL LETTER OMEGA}RRF', size=(10, 5), pos=(195, y_shift-145), font_size='15sp')
+        self.add_widget(self.RRF_frequency_label[n])
+        self.RRF_frequency[n] = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(620, y_shift+340))
+        self.add_widget(self.RRF_frequency[n])
+        self.RRF_frequency_unit[n] = Label(text='MHz', size=(10, 5), pos=(300, y_shift-145), font_size='15sp')
+        self.add_widget(self.RRF_frequency_unit[n])
             
-        self.RRF_theta_label[n-1] = Label(text='\N{GREEK SMALL LETTER THETA}RRF', size=(10, 5), pos=(195, y_shift-180), font_size='15sp')
-        self.add_widget(self.RRF_theta_label[n-1])
-        self.RRF_theta[n-1] = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(620, y_shift+305))
-        self.add_widget(self.RRF_theta[n-1])
-        self.RRF_theta_unit[n-1] = Label(text='°', size=(10, 5), pos=(300, y_shift-180), font_size='15sp')
-        self.add_widget(self.RRF_theta_unit[n-1])
+        self.RRF_theta_label[n] = Label(text='\N{GREEK SMALL LETTER THETA}RRF', size=(10, 5), pos=(195, y_shift-180), font_size='15sp')
+        self.add_widget(self.RRF_theta_label[n])
+        self.RRF_theta[n] = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(620, y_shift+305))
+        self.add_widget(self.RRF_theta[n])
+        self.RRF_theta_unit[n] = Label(text='°', size=(10, 5), pos=(300, y_shift-180), font_size='15sp')
+        self.add_widget(self.RRF_theta_unit[n])
             
-        self.RRF_phi_label[n-1] = Label(text='\N{GREEK SMALL LETTER PHI}RRF', size=(10, 5), pos=(195, y_shift-215), font_size='15sp')
-        self.add_widget(self.RRF_phi_label[n-1])
-        self.RRF_phi[n-1] = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(620, y_shift+270))
-        self.add_widget(self.RRF_phi[n-1])
-        self.RRF_phi_unit[n-1] = Label(text='°', size=(10, 5), pos=(300, y_shift-215), font_size='15sp')
-        self.add_widget(self.RRF_phi_unit[n-1])
+        self.RRF_phi_label[n] = Label(text='\N{GREEK SMALL LETTER PHI}RRF', size=(10, 5), pos=(195, y_shift-215), font_size='15sp')
+        self.add_widget(self.RRF_phi_label[n])
+        self.RRF_phi[n] = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(620, y_shift+270))
+        self.add_widget(self.RRF_phi[n])
+        self.RRF_phi_unit[n] = Label(text='°', size=(10, 5), pos=(300, y_shift-215), font_size='15sp')
+        self.add_widget(self.RRF_phi_unit[n])
 
     # Removes from the screen the controls of the parameters of the RRF
     def remove_RRF_par(self, n):
-        self.remove_widget(self.RRF_frequency_label[n-1])
-        self.remove_widget(self.RRF_frequency[n-1])
-        self.remove_widget(self.RRF_frequency_unit[n-1])
+        self.remove_widget(self.RRF_frequency_label[n])
+        self.remove_widget(self.RRF_frequency[n])
+        self.remove_widget(self.RRF_frequency_unit[n])
            
-        self.remove_widget(self.RRF_theta_label[n-1])
-        self.remove_widget(self.RRF_theta[n-1])
-        self.remove_widget(self.RRF_theta_unit[n-1])
+        self.remove_widget(self.RRF_theta_label[n])
+        self.remove_widget(self.RRF_theta[n])
+        self.remove_widget(self.RRF_theta_unit[n])
               
-        self.remove_widget(self.RRF_phi_label[n-1])
-        self.remove_widget(self.RRF_phi[n-1])
-        self.remove_widget(self.RRF_phi_unit[n-1])
+        self.remove_widget(self.RRF_phi_label[n])
+        self.remove_widget(self.RRF_phi[n])
+        self.remove_widget(self.RRF_phi_unit[n])
     
     def set_RRF_evolution(self, n, y_shift, sim_man, *args):
-        if self.RRF_btn[n-1].state == 'down':
-            sim_man.evolution_algorithm[n-1] = 'RRF'
-            self.IP_btn[n-1].state = 'normal'
+        if self.RRF_btn[n].state == 'down':
+            sim_man.evolution_algorithm[n] = 'RRF'
+            self.IP_btn[n].state = 'normal'
             
             self.set_RRF_par(n, y_shift)
             
         else:
             self.remove_RRF_par(n)
             
-            sim_man.evolution_algorithm[n-1] = 'IP'
-            self.IP_btn[n-1].state = 'down'
+            sim_man.evolution_algorithm[n] = 'IP'
+            self.IP_btn[n].state = 'down'
     
     def set_IP_evolution(self, n, y_shift, sim_man, *args):
-        if self.IP_btn[n-1].state == 'down':
+        if self.IP_btn[n].state == 'down':
             self.remove_RRF_par(n)
             
-            sim_man.evolution_algorithm[n-1] = 'IP'
-            self.RRF_btn[n-1].state = 'normal'
+            sim_man.evolution_algorithm[n] = 'IP'
+            self.RRF_btn[n].state = 'normal'
             
         else:
-            sim_man.evolution_algorithm[n-1] = 'RRF'
-            self.RRF_btn[n-1].state = 'down'
+            sim_man.evolution_algorithm[n] = 'RRF'
+            self.RRF_btn[n].state = 'down'
             
             self.set_RRF_par(n, y_shift)
     
@@ -674,88 +685,88 @@ class Pulse_Sequence(FloatLayout):
     # n is an integer which labels successive pulses
     def single_pulse_par(self, n, y_shift, sim_man):
         
-        self.pulse_label[n-1] = Label(text='Pulse #%r' % n, size=(10, 5), pos=(-285, y_shift), font_size='20sp')
-        self.add_widget(self.pulse_label[n-1])
+        self.pulse_label[n] = Label(text='Pulse #%r' % n, size=(10, 5), pos=(-285, y_shift), font_size='20sp')
+        self.add_widget(self.pulse_label[n])
         
         # Duration of the pulse
-        self.pulse_t_label[n-1] = Label(text='Time', size=(10, 5), pos=(-150, y_shift-2.5), font_size='15sp')
-        self.add_widget(self.pulse_t_label[n-1])
+        self.pulse_t_label[n] = Label(text='Time', size=(10, 5), pos=(-150, y_shift-2.5), font_size='15sp')
+        self.add_widget(self.pulse_t_label[n])
         
-        self.pulse_times[n-1] = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(275, y_shift+482.5))
-        self.add_widget(self.pulse_times[n-1])
+        self.pulse_times[n] = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(275, y_shift+482.5))
+        self.add_widget(self.pulse_times[n])
         
-        self.pulse_t_unit[n-1] = Label(text='\N{GREEK SMALL LETTER MU}s', size=(10, 5), pos=(-50, y_shift-2.5), font_size='15sp')
-        self.add_widget(self.pulse_t_unit[n-1])
+        self.pulse_t_unit[n] = Label(text='\N{GREEK SMALL LETTER MU}s', size=(10, 5), pos=(-50, y_shift-2.5), font_size='15sp')
+        self.add_widget(self.pulse_t_unit[n])
         
         # Parameters of the electromagnetic wave
-        self.single_pulse_table[n-1] = GridLayout(cols=5, size=(400, 100), size_hint=(None, None), pos=(71, y_shift+375))
+        self.single_pulse_table[n] = GridLayout(cols=5, size=(400, 100), size_hint=(None, None), pos=(71, y_shift+375))
         
-        self.frequency_label[n-1] = Label(text='Frequency', font_size='15sp')
-        self.single_pulse_table[n-1].add_widget(self.frequency_label[n-1])
+        self.frequency_label[n] = Label(text='Frequency', font_size='15sp')
+        self.single_pulse_table[n].add_widget(self.frequency_label[n])
         
-        self.amplitude_label[n-1] = Label(text='Amplitude', font_size='15sp')
-        self.single_pulse_table[n-1].add_widget(self.amplitude_label[n-1])
+        self.amplitude_label[n] = Label(text='Amplitude', font_size='15sp')
+        self.single_pulse_table[n].add_widget(self.amplitude_label[n])
         
-        self.phase_label[n-1] = Label(text='Phase', font_size='15sp')
-        self.single_pulse_table[n-1].add_widget(self.phase_label[n-1])
+        self.phase_label[n] = Label(text='Phase', font_size='15sp')
+        self.single_pulse_table[n].add_widget(self.phase_label[n])
         
         self.theta1_label = Label(text='\N{GREEK SMALL LETTER THETA}', font_size='15sp')
-        self.single_pulse_table[n-1].add_widget(self.theta1_label)
+        self.single_pulse_table[n].add_widget(self.theta1_label)
         
-        self.phi1_label[n-1] = Label(text='\N{GREEK SMALL LETTER PHI}', font_size='15sp')
-        self.single_pulse_table[n-1].add_widget(self.phi1_label[n-1])
+        self.phi1_label[n] = Label(text='\N{GREEK SMALL LETTER PHI}', font_size='15sp')
+        self.single_pulse_table[n].add_widget(self.phi1_label[n])
         
-        self.frequency_unit[n-1] = Label(text='(MHz)', font_size='15sp')
-        self.single_pulse_table[n-1].add_widget(self.frequency_unit[n-1])
+        self.frequency_unit[n] = Label(text='(MHz)', font_size='15sp')
+        self.single_pulse_table[n].add_widget(self.frequency_unit[n])
         
-        self.amplitude_unit[n-1] = Label(text='(T)', font_size='15sp')
-        self.single_pulse_table[n-1].add_widget(self.amplitude_unit[n-1])
+        self.amplitude_unit[n] = Label(text='(T)', font_size='15sp')
+        self.single_pulse_table[n].add_widget(self.amplitude_unit[n])
         
-        self.phase_unit[n-1] = Label(text='(°)', font_size='15sp')
-        self.single_pulse_table[n-1].add_widget(self.phase_unit[n-1])
+        self.phase_unit[n] = Label(text='(°)', font_size='15sp')
+        self.single_pulse_table[n].add_widget(self.phase_unit[n])
         
         self.theta1_unit = Label(text='(°)', font_size='15sp')
-        self.single_pulse_table[n-1].add_widget(self.theta1_unit)
+        self.single_pulse_table[n].add_widget(self.theta1_unit)
         
-        self.phi1_unit[n-1] = Label(text='(°)', font_size='15sp')
-        self.single_pulse_table[n-1].add_widget(self.phi1_unit[n-1])
+        self.phi1_unit[n] = Label(text='(°)', font_size='15sp')
+        self.single_pulse_table[n].add_widget(self.phi1_unit[n])
         
-        self.add_widget(self.single_pulse_table[n-1])
+        self.add_widget(self.single_pulse_table[n])
         
-        self.frequency[n-1][0] = TextInput(multiline=False, size_hint=(0.5, 0.75))
-        self.single_pulse_table[n-1].add_widget(self.frequency[n-1][0])
+        self.frequency[n][0] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+        self.single_pulse_table[n].add_widget(self.frequency[n][0])
         
-        self.amplitude[n-1][0] = TextInput(multiline=False, size_hint=(0.5, 0.75))
-        self.single_pulse_table[n-1].add_widget(self.amplitude[n-1][0])
+        self.amplitude[n][0] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+        self.single_pulse_table[n].add_widget(self.amplitude[n][0])
         
-        self.phase[n-1][0] = TextInput(multiline=False, size_hint=(0.5, 0.75))
-        self.single_pulse_table[n-1].add_widget(self.phase[n-1][0])
+        self.phase[n][0] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+        self.single_pulse_table[n].add_widget(self.phase[n][0])
         
-        self.theta1[n-1, 0] = TextInput(multiline=False, size_hint=(0.5, 0.75))
-        self.single_pulse_table[n-1].add_widget(self.theta1[n-1, 0])
+        self.theta1[n, 0] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+        self.single_pulse_table[n].add_widget(self.theta1[n, 0])
         
-        self.phi1[n-1][0] = TextInput(multiline=False, size_hint=(0.5, 0.75))
-        self.single_pulse_table[n-1].add_widget(self.phi1[n-1][0])
+        self.phi1[n][0] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+        self.single_pulse_table[n].add_widget(self.phi1[n][0])
         
         # Button for the addition of another mode of radiation
-        self.more_modes_btn[n-1] = Button(text='+', font_size = '15sp', size_hint=(None, None), size=(30, 30), pos=(485, y_shift+374))
-        self.more_modes_btn[n-1].bind(on_press=partial(self.add_new_mode, n))
-        self.add_widget(self.more_modes_btn[n-1])
+        self.more_modes_btn[n] = Button(text='+', font_size = '15sp', size_hint=(None, None), size=(30, 30), pos=(485, y_shift+374))
+        self.more_modes_btn[n].bind(on_press=partial(self.add_new_mode, n))
+        self.add_widget(self.more_modes_btn[n])
         
         # Button for the removal of a mode of radiation
-        self.less_modes_btn[n-1] = Button(text='-', font_size = '15sp', size_hint=(None, None), size=(30, 30), pos=(517.5, y_shift+374))
-        self.less_modes_btn[n-1].bind(on_press=partial(self.remove_mode, n, sim_man))
-        self.add_widget(self.less_modes_btn[n-1])
+        self.less_modes_btn[n] = Button(text='-', font_size = '15sp', size_hint=(None, None), size=(30, 30), pos=(517.5, y_shift+374))
+        self.less_modes_btn[n].bind(on_press=partial(self.remove_mode, n, sim_man))
+        self.add_widget(self.less_modes_btn[n])
         
         # Buttons which specify the methods of numerical evolution of the system: RRF and IP
-        self.RRF_btn[n-1] = ToggleButton(text='RRF', font_size = '15sp', size_hint=(None, None), size=(40, 30), pos=(575, y_shift+374))
-        self.RRF_btn[n-1].bind(on_press=partial(self.set_RRF_evolution, n, y_shift, sim_man))
-        self.add_widget(self.RRF_btn[n-1])
+        self.RRF_btn[n] = ToggleButton(text='RRF', font_size = '15sp', size_hint=(None, None), size=(40, 30), pos=(575, y_shift+374))
+        self.RRF_btn[n].bind(on_press=partial(self.set_RRF_evolution, n, y_shift, sim_man))
+        self.add_widget(self.RRF_btn[n])
         
-        self.IP_btn[n-1] = ToggleButton(text='IP', font_size = '15sp', size_hint=(None, None), size=(40, 30), pos=(619, y_shift+374))
-        self.IP_btn[n-1].bind(on_press=partial(self.set_IP_evolution, n, y_shift, sim_man))
-        self.IP_btn[n-1].state = 'down'
-        self.add_widget(self.IP_btn[n-1])
+        self.IP_btn[n] = ToggleButton(text='IP', font_size = '15sp', size_hint=(None, None), size=(40, 30), pos=(619, y_shift+374))
+        self.IP_btn[n].bind(on_press=partial(self.set_IP_evolution, n, y_shift, sim_man))
+        self.IP_btn[n].state = 'down'
+        self.add_widget(self.IP_btn[n])
     
     # Shows all the controls associated with the pulses in the sequence
     def set_pulse_controls(self, sim_man, *args):
@@ -779,10 +790,10 @@ class Pulse_Sequence(FloatLayout):
                     self.remove_widget(self.RRF_btn[i])
                     self.remove_widget(self.IP_btn[i])
                     if self.RRF_btn[i].state == 'down':
-                        self.remove_RRF_par(i+1)
+                        self.remove_RRF_par(i)
             else:
                 for i in range(self.n_pulses, new_n_pulses):
-                    self.single_pulse_par(n=i+1, y_shift=400-i*200, sim_man=sim_man)
+                    self.single_pulse_par(n=i, y_shift=400-i*200, sim_man=sim_man)
                 
             self.n_pulses = new_n_pulses
             
@@ -829,7 +840,7 @@ class Pulse_Sequence(FloatLayout):
         self.pulse_sequence_label = Label(text='Pulse sequence', size=(10, 5), pos=(0, 450), font_size='30sp')
         self.add_widget(self.pulse_sequence_label)
         
-        self.single_pulse_par(n=1, y_shift=400, sim_man=sim_man)
+        self.single_pulse_par(n=0, y_shift=400, sim_man=sim_man)
         
         # Question mark connected with the explanation of RRF and IP buttons
         self.RRF_IP_question_mark = Label(text='[ref=?]?[/ref]', markup=True, size=(20, 20), pos=(280, 290), font_size='20sp')
@@ -1267,9 +1278,7 @@ class NMR_Spectrum(FloatLayout):
         configuration['zeem_par'] = sim_man.zeem_par
         
         configuration['quad_par'] = sim_man.quad_par
-        
-        configuration['nu_q'] = sim_man.nu_q
-        
+                
         configuration['initial state at equilibrium'] = str(sim_man.canonical_dm_0)
         
         configuration['temperature'] = sim_man.temperature
@@ -1278,7 +1287,7 @@ class NMR_Spectrum(FloatLayout):
         
         for i in range(sim_man.manual_dm.shape[0]):
             for j in range(sim_man.manual_dm.shape[1]):
-                configuration['manual initial density matrix'][str(i) + str(j)] = sim_man.manual_dm[i, j]
+                configuration['manual initial density matrix'][str(i) + str(j)] = str(sim_man.manual_dm[i, j])
         
         configuration['n_pulses'] = sim_man.n_pulses
         
@@ -1323,9 +1332,8 @@ class NMR_Spectrum(FloatLayout):
         self.add_widget(self.NMR_spectrum_label)
         
         self.save_config_btn = Button(text='Save configuration', size_hint=(0.23, 0.03), pos=(565, 945), bold=True, background_color=(2.07, 0, 0.15, 1), font_size='15')
-        self.add_widget(self.save_config_btn)
-        
         self.save_config_btn.bind(on_release=partial(self.save_config, sim_man))
+        self.add_widget(self.save_config_btn)
 
         self.save_config_name = TextInput(multiline=False, size_hint=(0.23, 0.03), pos=(565, 915))
         self.add_widget(self.save_config_name)
@@ -1339,12 +1347,132 @@ class NMR_Spectrum(FloatLayout):
 
 # Class of the object on top of the individual panels
 class Panels(TabbedPanel):
+    
+    def retrieve_config(self, sim_man, *args):
+        
+        with open(self.retrieve_config_name.text) as config_file:
+            configuration = json.load(config_file)
+             
+        p1 = self.sys_par
+                
+        p1.spin_qn.text = str(configuration['spin_par']['quantum number'])
+        
+        p1.gyro.text = str(configuration['spin_par']['quantum number'])
+        
+        p1.field_mag.text = str(configuration['zeem_par']['field magnitude'])
+        
+        p1.theta_z.text = str(configuration['zeem_par']['theta_z']*180/math.pi)
+        
+        p1.phi_z.text = str(configuration['zeem_par']['phi_z']*180/math.pi)
+
+        p1.coupling.text = str(configuration['quad_par']['coupling constant'])            
+        
+        p1.asymmetry.text = str(configuration['quad_par']['asymmetry parameter'])
+        
+        p1.alpha_q.text = str(configuration['quad_par']['alpha_q']*180/math.pi)
+        
+        p1.beta_q.text = str(configuration['quad_par']['beta_q']*180/math.pi)
+        
+        p1.gamma_q.text = str(configuration['quad_par']['gamma_q']*180/math.pi)
+                                                
+        p1.remove_widget(p1.nu_q_label)
+        
+        p1.decoherence.text = str(configuration['decoherence time'])
+        
+        p1.temperature.text = str(configuration['temperature'])
+        
+        if configuration['initial state at equilibrium'] == "True":
+            p1.canonical_checkbox.active = True
+        else:
+            p1.canonical_checkbox.active = False
+        
+        p1.set_quantum_number(-5)
+        
+        for i in range(p1.d):
+            for j in range(p1.d):
+                p1.dm_elements[i, j].text = str(configuration['manual initial density matrix'][str(i) + str(j)])
+                
+        p2 = self.pulse_par
+                
+        p2.number_pulses.text = str(configuration['n_pulses'])
+        
+        p2.set_pulse_controls(self, sim_man, *args)
+        
+        for n in range(int(p2.number_pulses.text)):
+            
+            p2.pulse_times[n].text = str(configuration['pulse #' + str(n+1) + ' time'])
+            
+            p2.add_new_mode(n)
+            
+            for m in range(2):
+                
+                p2.frequency[n][m].text = str(configuration['pulse #' + str(n+1)]['frequency'][str(m)])
+                
+                p2.amplitude[n][m].text = str(configuration['pulse #' + str(n+1)]['amplitude'][str(m)])
+                
+                p2.phase[n][m].text = str(configuration['pulse #' + str(n+1)]['phase'][str(m)])
+                
+                p2.theta1[n][m].text = str(configuration['pulse #' + str(n+1)]['theta_p'][str(m)])
+                
+                p2.phi1[n][m].text = str(configuration['pulse #' + str(n+1)]['phi_p'][str(m)])
+                
+                p2.n_modes[n] = 2
+            
+            if configuration['pulse #' + str(n+1) + ' evolution algorithm'] == "RRF":
+                
+                p2.RRF_btn[n].state ='down'
+                
+                p2.set_RRF_evolution(n, y_shift=400-n*200, sim_man=sim_man)
+                                
+                p2.RRF_frequency[n].text = str(configuration['pulse #' + str(n+1) + ' RRF parameters']['nu_RRF'])
+                p2.RRF_theta[n].text = str(configuration['pulse #' + str(n+1) + ' RRF parameters']['theta_RRF'])
+                p2.RRF_phi[n].text = str(configuration['pulse #' + str(n+1) + ' RRF parameters']['phi_RRF'])
+                
+            elif configuration['pulse #' + str(n+1) + ' evolution algorithm'] == "IP":
+                
+                p2.IP_btn[n].state = 'down'
+                
+                p2.set_IP_evolution(n, y_shift=400-n*200, sim_man=sim_man)
+            
+        p4 = self.spectrum_page
+            
+        p4.coil_theta.text = str(configuration['coil_theta'])
+            
+        p4.coil_phi.text = str(configuration['coil_phi'])
+            
+        p4.time_aq.text = str(configuration['acquisition time'])
+            
+        p4.sample_points.text = str(configuration['#points/us'])
+        
+        if configuration['plot for opposite frequencies'] == 'True':
+            p4.flip_negative_freq_checkbox.active = True
+        else:
+            p4.flip_negative_freq_checkbox.active = False
+        
+        if configuration['plot square modulus'] == 'True':
+            p4.sq_mod_checkbox.active = True
+        else:
+            p4.sq_mod_checkbox.active = False
+        
+        p4.frequency_left_bound.text = str(configuration['frequency domain left bound'])
+        p4.frequency_right_bound.text = str(configuration['frequency domain right bound'])
+        
+        p4.peak_frequency.text = str(configuration['peak frequency to be adjusted'])
+        
+        p4.int_domain_width.text = str(configuration['integration domain width'])
+    
     def __init__(self, sim_man, **kwargs):
         super().__init__(**kwargs)
         
+        self.retrieve_config_btn = Button(text='Retrieve configuration', size_hint=(0.23, 0.03), pos=(565, 945), bold=True, background_color=(2.07, 0, 0.15, 1), font_size='15')
+        
+        self.retrieve_config_btn.bind(on_release=partial(self.retrieve_config, sim_man))
+                
+        self.retrieve_config_name = TextInput(multiline=False, size_hint=(0.23, 0.03), pos=(565, 915))
+        
         self.tab_sys_par = TabbedPanelItem(text='System')
         self.scroll_window =  ScrollView(size_hint=(1, None), size=(Window.width, 500))
-        self.sys_par = System_Parameters(size_hint=(1, None), size=(Window.width, 1000), sim_man=sim_man)
+        self.sys_par = System_Parameters(size_hint=(1, None), size=(Window.width, 1000), sim_man=sim_man, retrieve_config_btn=self.retrieve_config_btn, retrieve_config_name=self.retrieve_config_name)
         
         self.scroll_window.add_widget(self.sys_par)
         self.tab_sys_par.add_widget(self.scroll_window)
