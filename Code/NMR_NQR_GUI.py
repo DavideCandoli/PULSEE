@@ -5,6 +5,9 @@ import pandas as pd
 from fractions import Fraction
 from functools import partial
 
+# Write to file import
+import json
+
 # Generic graphics imports
 import matplotlib
 import matplotlib.pylab as plt
@@ -92,11 +95,13 @@ class Simulation_Manager:
         RRF_par[i] = {'nu_RRF': 0.,
                       'theta_RRF': 0.,
                       'phi_RRF': 0.}
+        
+    canonical_dm_0 = False
     
     temperature = 300.
     
-    manual_dm = 0
-    
+    manual_dm = np.ones((1, 1))
+        
     spin = Nuclear_Spin()
     
     h_unperturbed = Observable(1)
@@ -227,7 +232,9 @@ class System_Parameters(FloatLayout):
             # Storage of the system's input parameters
             sim_man.spin_par['quantum number'] = float(Fraction(null_string(self.spin_qn.text)))
             
-            if self.canonical_checkbox.active == False and \
+            sim_man.canonical_dm_0 = self.canonical_checkbox.active
+            
+            if sim_man.canonical_dm_0 == False and \
                int(2*sim_man.spin_par['quantum number']+1) != self.d:
                 raise ValueError("The dimensions of the initial density matrix"+'\n'+"don't match the spin states' multiplicity")
             
@@ -486,10 +493,11 @@ class System_Parameters(FloatLayout):
         
         self.add_widget(self.set_up_system)
         
-        self.retrieve_config_btn = Button(text='Retrieve configuration', size_hint=(0.23, 0.03), pos=(570, 945), bold=True, background_color=(2.07, 0, 0.15, 1), font_size='15')
+        self.retrieve_config_btn = Button(text='Retrieve configuration', size_hint=(0.23, 0.03), pos=(565, 945), bold=True, background_color=(2.07, 0, 0.15, 1), font_size='15')
+                
         self.add_widget(self.retrieve_config_btn)
         
-        self.retrieve_config_name = TextInput(multiline=False, size_hint=(0.23, 0.03), pos=(570, 915))
+        self.retrieve_config_name = TextInput(multiline=False, size_hint=(0.23, 0.03), pos=(565, 915))
         self.add_widget(self.retrieve_config_name)
 
         
@@ -1249,6 +1257,64 @@ class NMR_Spectrum(FloatLayout):
         self.phase_adj_btn = Button(text='Adjust phase', font_size='16sp', size_hint_y=None, height=35, size_hint_x=None, width=110, pos=(640, y_shift+560))
         self.phase_adj_btn.bind(on_press=partial(self.adjust_phase, sim_man, y_shift))
         self.add_widget(self.phase_adj_btn)
+        
+    def save_config(self, sim_man, *args):
+        
+        configuration = {}
+        
+        configuration['spin_par'] = sim_man.spin_par
+        
+        configuration['zeem_par'] = sim_man.zeem_par
+        
+        configuration['quad_par'] = sim_man.quad_par
+        
+        configuration['nu_q'] = sim_man.nu_q
+        
+        configuration['initial state at equilibrium'] = str(sim_man.canonical_dm_0)
+        
+        configuration['temperature'] = sim_man.temperature
+        
+        configuration['manual initial density matrix'] = {}
+        
+        for i in range(sim_man.manual_dm.shape[0]):
+            for j in range(sim_man.manual_dm.shape[1]):
+                configuration['manual initial density matrix'][str(i) + str(j)] = sim_man.manual_dm[i, j]
+        
+        configuration['n_pulses'] = sim_man.n_pulses
+        
+        for n in range(sim_man.n_pulses):
+            configuration['pulse #' + str(n+1)] = sim_man.pulse[n].to_dict()
+            
+            configuration['pulse #' + str(n+1) + ' time'] = sim_man.pulse_time[n]
+            
+            configuration['pulse #' + str(n+1) + ' evolution algorithm'] = sim_man.evolution_algorithm[n]
+    
+            configuration['pulse #' + str(n+1) + ' RRF parameters'] = sim_man.RRF_par[n]
+                    
+        configuration['decoherence time'] = sim_man.decoherence_time
+        
+        configuration['coil_theta'] = null_string(self.coil_theta.text)
+        
+        configuration['coil_phi'] = null_string(self.coil_phi.text)
+
+        configuration['acquisition time'] = null_string(self.time_aq.text)
+        
+        configuration['#points/us'] = null_string(self.sample_points.text)
+                
+        configuration['plot for opposite frequencies'] = str(self.flip_negative_freq_checkbox.active)
+        
+        configuration['plot square modulus'] = str(self.sq_mod_checkbox.active)
+        
+        configuration['frequency domain left bound'] = null_string(self.frequency_left_bound.text)
+
+        configuration['frequency domain right bound'] = null_string(self.frequency_right_bound.text)
+        
+        configuration['peak frequency to be adjusted'] = null_string(self.peak_frequency.text)
+        
+        configuration['integration domain width'] = null_string(self.int_domain_width.text)
+        
+        with open(self.save_config_name.text, 'w') as config_file:
+            json.dump(configuration, config_file)
     
     def __init__(self, sim_man, **kwargs):
         super().__init__(**kwargs)
@@ -1256,8 +1322,13 @@ class NMR_Spectrum(FloatLayout):
         self.NMR_spectrum_label = Label(text='NMR/NQR spectrum', size=(10, 5), pos=(0, 450), font_size='30sp')
         self.add_widget(self.NMR_spectrum_label)
         
-        self.save_config_btn = Button(text='Save configuration', size_hint=(0.2, 0.03), pos=(590, 930), bold=True, background_color=(2.07, 0, 0.15, 1), font_size='15')
+        self.save_config_btn = Button(text='Save configuration', size_hint=(0.23, 0.03), pos=(565, 945), bold=True, background_color=(2.07, 0, 0.15, 1), font_size='15')
         self.add_widget(self.save_config_btn)
+        
+        self.save_config_btn.bind(on_release=partial(self.save_config, sim_man))
+
+        self.save_config_name = TextInput(multiline=False, size_hint=(0.23, 0.03), pos=(565, 915))
+        self.add_widget(self.save_config_name)
         
         self.FID_parameters(sim_man, 0)
         
