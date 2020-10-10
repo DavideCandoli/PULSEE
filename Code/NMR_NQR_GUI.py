@@ -485,6 +485,12 @@ class System_Parameters(FloatLayout):
         self.set_up_system.bind(on_release=partial(self.build_system, sim_man))
         
         self.add_widget(self.set_up_system)
+        
+        self.retrieve_config_btn = Button(text='Retrieve configuration', size_hint=(0.23, 0.03), pos=(570, 945), bold=True, background_color=(2.07, 0, 0.15, 1), font_size='15')
+        self.add_widget(self.retrieve_config_btn)
+        
+        self.retrieve_config_name = TextInput(multiline=False, size_hint=(0.23, 0.03), pos=(570, 915))
+        self.add_widget(self.retrieve_config_name)
 
         
 # Class of the page of the software which lists the parameters of the pulse sequence
@@ -1249,6 +1255,9 @@ class NMR_Spectrum(FloatLayout):
         
         self.NMR_spectrum_label = Label(text='NMR/NQR spectrum', size=(10, 5), pos=(0, 450), font_size='30sp')
         self.add_widget(self.NMR_spectrum_label)
+        
+        self.save_config_btn = Button(text='Save configuration', size_hint=(0.2, 0.03), pos=(590, 930), bold=True, background_color=(2.07, 0, 0.15, 1), font_size='15')
+        self.add_widget(self.save_config_btn)
         
         self.FID_parameters(sim_man, 0)
         
