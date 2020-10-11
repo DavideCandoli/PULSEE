@@ -492,8 +492,8 @@ class System_Parameters(FloatLayout):
         
         self.add_widget(self.set_up_system)
         
+        # Button and TextInput which allow to retrieve all the values of the inputs of a previous simulation saved in a json file
         self.add_widget(retrieve_config_btn)
-        
         self.add_widget(retrieve_config_name)
 
         
@@ -1273,6 +1273,7 @@ class NMR_Spectrum(FloatLayout):
         self.NMR_spectrum_label = Label(text='NMR/NQR spectrum', size=(10, 5), pos=(0, 450), font_size='30sp')
         self.add_widget(self.NMR_spectrum_label)
         
+        # Button and TextInput which allow to save all the inputs written throughout the program in a json file
         self.add_widget(save_config_btn)
         self.add_widget(save_config_name)
         
@@ -1286,206 +1287,236 @@ class NMR_Spectrum(FloatLayout):
 # Class of the object on top of the individual panels
 class Panels(TabbedPanel):
     
+    error_retrieve_config = Label()
+    tb_retrieve_config = Button()
+    
+    error_save_config = Label()
+    tb_save_config = Button()
+    
     def retrieve_config(self, sim_man, *args):
         
-        with open(self.retrieve_config_name.text) as config_file:
-            configuration = json.load(config_file)
-             
-        p1 = self.sys_par
-                
-        p1.spin_qn.text = configuration['spin_par']['quantum number']
+        try:
+            
+            self.remove_widget(self.error_retrieve_config)
+            self.remove_widget(self.tb_retrieve_config)
         
-        p1.gyro.text = configuration['spin_par']['gamma/2pi']
-        
-        p1.field_mag.text = configuration['zeem_par']['field magnitude']
-        
-        p1.theta_z.text = configuration['zeem_par']['theta_z']
-        
-        p1.phi_z.text = configuration['zeem_par']['phi_z']
+            with open(self.retrieve_config_name.text) as config_file:
+                configuration = json.load(config_file)
 
-        p1.coupling.text = configuration['quad_par']['coupling constant']        
-        
-        p1.asymmetry.text = configuration['quad_par']['asymmetry parameter']
-        
-        p1.alpha_q.text = configuration['quad_par']['alpha_q']
-        
-        p1.beta_q.text = configuration['quad_par']['beta_q']
-        
-        p1.gamma_q.text = configuration['quad_par']['gamma_q']
-                                                
-        p1.remove_widget(p1.nu_q_label)
-        
-        p1.decoherence.text = configuration['decoherence time']
-        
-        p1.temperature.text = configuration['temperature']
-        
-        p1.canonical_checkbox.active = configuration['initial state at equilibrium']
-        
-        if len(configuration['manual initial density matrix']) > 1:
-        
-            p1.set_dm_grid(-5)
-        
-            for i in range(p1.d):
-                for j in range(p1.d):
-                    p1.dm_elements[i, j].text = configuration['manual initial density matrix'][str(i) + str(j)]
-                
-                
-        p2 = self.pulse_par
-                
-        p2.number_pulses.text = configuration['n_pulses']
-        
-        p2.set_pulse_controls(self, sim_man, *args)
-        
-        for n in range(int(null_string(p2.number_pulses.text))):
+            p1 = self.sys_par
+
+            p1.spin_qn.text = configuration['spin_par']['quantum number']
+
+            p1.gyro.text = configuration['spin_par']['gamma/2pi']
+
+            p1.field_mag.text = configuration['zeem_par']['field magnitude']
+
+            p1.theta_z.text = configuration['zeem_par']['theta_z']
+
+            p1.phi_z.text = configuration['zeem_par']['phi_z']
+
+            p1.coupling.text = configuration['quad_par']['coupling constant']        
+
+            p1.asymmetry.text = configuration['quad_par']['asymmetry parameter']
+
+            p1.alpha_q.text = configuration['quad_par']['alpha_q']
+
+            p1.beta_q.text = configuration['quad_par']['beta_q']
+
+            p1.gamma_q.text = configuration['quad_par']['gamma_q']
+
+            p1.remove_widget(p1.nu_q_label)
+
+            p1.decoherence.text = configuration['decoherence time']
+
+            p1.temperature.text = configuration['temperature']
+
+            p1.canonical_checkbox.active = configuration['initial state at equilibrium']
+
+            if len(configuration['manual initial density matrix']) > 1:
+
+                p1.set_dm_grid(-5)
+
+                for i in range(p1.d):
+                    for j in range(p1.d):
+                        p1.dm_elements[i, j].text = configuration['manual initial density matrix'][str(i) + str(j)]
+
+
+            p2 = self.pulse_par
+
+            p2.number_pulses.text = configuration['n_pulses']
+
+            p2.set_pulse_controls(self, sim_man, *args)
+
+            for n in range(int(null_string(p2.number_pulses.text))):
+
+                p2.pulse_times[n].text = configuration['pulse #' + str(n+1) + ' time']
+
+                if p2.n_modes[n] < int(configuration['n_modes #' + str(n+1)]):
+                    p2.add_new_mode(n)
+                elif p2.n_modes[n] > int(configuration['n_modes #' + str(n+1)]):
+                    p2.remove_mode(n, sim_man)
+
+                p2.n_modes[n] = configuration['n_modes #' + str(n+1)]
+
+                for m in range(p2.n_modes[n]):
+
+                    p2.frequency[n][m].text = str(configuration['pulse #' + str(n+1)]['mode #' + str(m+1)]['frequency'])
+
+                    p2.amplitude[n][m].text = str(configuration['pulse #' + str(n+1)]['mode #' + str(m+1)]['amplitude'])
+
+                    p2.phase[n][m].text = str(configuration['pulse #' + str(n+1)]['mode #' + str(m+1)]['phase'])
+
+                    p2.theta_p[n][m].text = str(configuration['pulse #' + str(n+1)]['mode #' + str(m+1)]['theta_p'])
+
+                    p2.phi_p[n][m].text = str(configuration['pulse #' + str(n+1)]['mode #' + str(m+1)]['phi_p'])
+
+                if configuration['pulse #' + str(n+1) + ' evolution algorithm'] == "RRF":
+
+                    p2.RRF_btn[n].state ='down'
+
+                    p2.set_RRF_evolution(n, y_shift=400-n*200, sim_man=sim_man)
+
+                    p2.RRF_frequency[n].text = str(configuration['pulse #' + str(n+1) + ' RRF parameters']['nu_RRF'])
+                    p2.RRF_theta[n].text = str(configuration['pulse #' + str(n+1) + ' RRF parameters']['theta_RRF'])
+                    p2.RRF_phi[n].text = str(configuration['pulse #' + str(n+1) + ' RRF parameters']['phi_RRF'])
+
+                elif configuration['pulse #' + str(n+1) + ' evolution algorithm'] == "IP":
+
+                    p2.IP_btn[n].state = 'down'
+
+                    p2.set_IP_evolution(n, y_shift=400-n*200, sim_man=sim_man)
+
+
+            p4 = self.spectrum_page
+
+            p4.coil_theta.text = configuration['coil_theta']
+
+            p4.coil_phi.text = configuration['coil_phi']
+
+            p4.time_aq.text = configuration['acquisition time']
+
+            p4.sample_points.text = configuration['#points/us']
+
+            p4.flip_negative_freq_checkbox.active = configuration['plot for opposite frequencies']
+
+            p4.sq_mod_checkbox.active = configuration['plot square modulus']
+
+            p4.frequency_left_bound.text = configuration['frequency domain left bound']
+            p4.frequency_right_bound.text = configuration['frequency domain right bound']
+
+            p4.peak_frequency.text = configuration['peak frequency to be adjusted']
+
+            p4.int_domain_width.text = configuration['integration domain width']
             
-            p2.pulse_times[n].text = configuration['pulse #' + str(n+1) + ' time']
+        except Exception as e:
             
-            if p2.n_modes[n] < int(configuration['n_modes #' + str(n+1)]):
-                p2.add_new_mode(n)
-            elif p2.n_modes[n] > int(configuration['n_modes #' + str(n+1)]):
-                p2.remove_mode(n, sim_man)
+            p1 = self.sys_par
             
-            p2.n_modes[n] = configuration['n_modes #' + str(n+1)]
-            
-            for m in range(p2.n_modes[n]):
-                
-                p2.frequency[n][m].text = str(configuration['pulse #' + str(n+1)]['mode #' + str(m+1)]['frequency'])
-                
-                p2.amplitude[n][m].text = str(configuration['pulse #' + str(n+1)]['mode #' + str(m+1)]['amplitude'])
-                
-                p2.phase[n][m].text = str(configuration['pulse #' + str(n+1)]['mode #' + str(m+1)]['phase'])
-                
-                p2.theta_p[n][m].text = str(configuration['pulse #' + str(n+1)]['mode #' + str(m+1)]['theta_p'])
-                
-                p2.phi_p[n][m].text = str(configuration['pulse #' + str(n+1)]['mode #' + str(m+1)]['phi_p'])
-                            
-            if configuration['pulse #' + str(n+1) + ' evolution algorithm'] == "RRF":
-                
-                p2.RRF_btn[n].state ='down'
-                
-                p2.set_RRF_evolution(n, y_shift=400-n*200, sim_man=sim_man)
-                                
-                p2.RRF_frequency[n].text = str(configuration['pulse #' + str(n+1) + ' RRF parameters']['nu_RRF'])
-                p2.RRF_theta[n].text = str(configuration['pulse #' + str(n+1) + ' RRF parameters']['theta_RRF'])
-                p2.RRF_phi[n].text = str(configuration['pulse #' + str(n+1) + ' RRF parameters']['phi_RRF'])
-                
-            elif configuration['pulse #' + str(n+1) + ' evolution algorithm'] == "IP":
-                
-                p2.IP_btn[n].state = 'down'
-                
-                p2.set_IP_evolution(n, y_shift=400-n*200, sim_man=sim_man)
-            
-        
-        p4 = self.spectrum_page
-            
-        p4.coil_theta.text = configuration['coil_theta']
-            
-        p4.coil_phi.text = configuration['coil_phi']
-            
-        p4.time_aq.text = configuration['acquisition time']
-            
-        p4.sample_points.text = configuration['#points/us']
-        
-        p4.flip_negative_freq_checkbox.active = configuration['plot for opposite frequencies']
-        
-        p4.sq_mod_checkbox.active = configuration['plot square modulus']
-        
-        p4.frequency_left_bound.text = configuration['frequency domain left bound']
-        p4.frequency_right_bound.text = configuration['frequency domain right bound']
-        
-        p4.peak_frequency.text = configuration['peak frequency to be adjusted']
-        
-        p4.int_domain_width.text = configuration['integration domain width']
-        
-        
+            self.error_retrieve_config=Label(text=e.args[1], pos=(254, 405), size=(100, 100), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+            p1.add_widget(self.error_retrieve_config)
+
+    
     def save_config(self, sim_man, *args):
         
-        configuration = {}
+        try:
+            
+            self.remove_widget(self.error_save_config)
+            self.remove_widget(self.tb_save_config)
         
-        p1 = self.sys_par
-        
-        configuration['spin_par'] = {'quantum number' : p1.spin_qn.text, \
-                                     'gamma/2pi' : p1.gyro.text}
-        
-        configuration['zeem_par'] = {'field magnitude' : p1.field_mag.text,
-                                     'theta_z' : p1.theta_z.text, 
-                                     'phi_z' : p1.phi_z.text}
+            configuration = {}
 
-        configuration['quad_par'] = {'coupling constant' : p1.coupling.text,
-                                     'asymmetry parameter' : p1.asymmetry.text,
-                                     'alpha_q' : p1.alpha_q.text,
-                                     'beta_q' : p1.beta_q.text, 
-                                     'gamma_q' : p1.gamma_q.text}
+            p1 = self.sys_par
 
-        configuration['decoherence time'] = p1.decoherence.text
-        
-        configuration['initial state at equilibrium'] = sim_man.canonical_dm_0
+            configuration['spin_par'] = {'quantum number' : p1.spin_qn.text, \
+                                         'gamma/2pi' : p1.gyro.text}
+
+            configuration['zeem_par'] = {'field magnitude' : p1.field_mag.text,
+                                         'theta_z' : p1.theta_z.text, 
+                                         'phi_z' : p1.phi_z.text}
+
+            configuration['quad_par'] = {'coupling constant' : p1.coupling.text,
+                                         'asymmetry parameter' : p1.asymmetry.text,
+                                         'alpha_q' : p1.alpha_q.text,
+                                         'beta_q' : p1.beta_q.text, 
+                                         'gamma_q' : p1.gamma_q.text}
+
+            configuration['decoherence time'] = p1.decoherence.text
+
+            configuration['initial state at equilibrium'] = sim_man.canonical_dm_0
+
+            configuration['temperature'] = p1.temperature.text
+
+            configuration['manual initial density matrix'] = {}
+
+            for i in range(p1.dm_elements.shape[0]):
+                for j in range(p1.dm_elements.shape[1]):
+                    configuration['manual initial density matrix'][str(i) + str(j)] = p1.dm_elements[i, j].text
+
+            p2 = self.pulse_par
+
+            configuration['n_pulses'] = p2.number_pulses.text
+
+            for n in range(int(null_string(p2.number_pulses.text))):
+
+                configuration['pulse #' + str(n+1) + ' time'] = p2.pulse_times[n].text
+
+                configuration['n_modes #' + str(n+1)] = str(p2.n_modes[n])
+
+                configuration['pulse #' + str(n+1)] = {}
+
+                for m in range(p2.n_modes[n]):
+
+                    configuration['pulse #' + str(n+1)]['mode #' + str(m+1)] = \
+                        {'frequency' : p2.frequency[n][m].text, 
+                         'amplitude' : p2.amplitude[n][m].text, 
+                         'phase' : p2.phase[n][m].text,
+                         'theta_p' : p2.theta_p[n][m].text, 
+                         'phi_p' : p2.phi_p[n][m].text}
+
+                if p2.RRF_btn[n].state == 'down':
+                    configuration['pulse #' + str(n+1) + ' evolution algorithm'] = "RRF"
+
+                    configuration['pulse #' + str(n+1) + ' RRF parameters'] = \
+                        {'nu_RRF' : p2.RRF_frequency[n].text, \
+                         'theta_RRF' : p2.RRF_theta[n].text, \
+                         'phi_RRF' : p2.RRF_phi[n].text}
+
+                else:
+                    configuration['pulse #' + str(n+1) + ' evolution algorithm'] = "IP"
+
+
+            p4 = self.spectrum_page
+
+            configuration['coil_theta'] = p4.coil_theta.text
+
+            configuration['coil_phi'] = p4.coil_phi.text
+
+            configuration['acquisition time'] = p4.time_aq.text
+
+            configuration['#points/us'] = p4.sample_points.text
+
+            configuration['plot for opposite frequencies'] = p4.flip_negative_freq_checkbox.active
+
+            configuration['plot square modulus'] = p4.sq_mod_checkbox.active
+
+            configuration['frequency domain left bound'] = p4.frequency_left_bound.text
+
+            configuration['frequency domain right bound'] = p4.frequency_right_bound.text
+
+            configuration['peak frequency to be adjusted'] = p4.peak_frequency.text
+
+            configuration['integration domain width'] = p4.int_domain_width.text
+
+            with open(self.save_config_name.text, 'w') as config_file:
+                json.dump(configuration, config_file)
                 
-        configuration['temperature'] = p1.temperature.text
-        
-        configuration['manual initial density matrix'] = {}
-        
-        for i in range(p1.dm_elements.shape[0]):
-            for j in range(p1.dm_elements.shape[1]):
-                configuration['manual initial density matrix'][str(i) + str(j)] = p1.dm_elements[i, j].text
-        
-        p2 = self.pulse_par
-        
-        configuration['n_pulses'] = p2.number_pulses.text
-        
-        for n in range(int(null_string(p2.number_pulses.text))):
+        except Exception as e:
             
-            configuration['pulse #' + str(n+1) + ' time'] = p2.pulse_times[n].text
+            p4 = self.spectrum_page
             
-            configuration['n_modes #' + str(n+1)] = str(p2.n_modes[n])
-            
-            configuration['pulse #' + str(n+1)] = {}
-            
-            for m in range(p2.n_modes[n]):
-                
-                configuration['pulse #' + str(n+1)]['mode #' + str(m+1)] = \
-                    {'frequency' : p2.frequency[n][m].text, 
-                     'amplitude' : p2.amplitude[n][m].text, 
-                     'phase' : p2.phase[n][m].text,
-                     'theta_p' : p2.theta_p[n][m].text, 
-                     'phi_p' : p2.phi_p[n][m].text}
-            
-            if p2.RRF_btn[n].state == 'down':
-                configuration['pulse #' + str(n+1) + ' evolution algorithm'] = "RRF"
-            
-                configuration['pulse #' + str(n+1) + ' RRF parameters'] = \
-                    {'nu_RRF' : p2.RRF_frequency[n].text, \
-                     'theta_RRF' : p2.RRF_theta[n].text, \
-                     'phi_RRF' : p2.RRF_phi[n].text}
-
-            else:
-                configuration['pulse #' + str(n+1) + ' evolution algorithm'] = "IP"
-                    
-        
-        p4 = self.spectrum_page
-        
-        configuration['coil_theta'] = p4.coil_theta.text
-        
-        configuration['coil_phi'] = p4.coil_phi.text
-
-        configuration['acquisition time'] = p4.time_aq.text
-        
-        configuration['#points/us'] = p4.sample_points.text
-                
-        configuration['plot for opposite frequencies'] = p4.flip_negative_freq_checkbox.active
-        
-        configuration['plot square modulus'] = p4.sq_mod_checkbox.active
-        
-        configuration['frequency domain left bound'] = p4.frequency_left_bound.text
-
-        configuration['frequency domain right bound'] = p4.frequency_right_bound.text
-        
-        configuration['peak frequency to be adjusted'] = p4.peak_frequency.text
-        
-        configuration['integration domain width'] = p4.int_domain_width.text
-        
-        with open(self.save_config_name.text, 'w') as config_file:
-            json.dump(configuration, config_file)
+            self.error_save_config=Label(text=str(e.args[1]), pos=(254, 405), size=(100, 100), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+            p4.add_widget(self.error_save_config)
     
     def __init__(self, sim_man, **kwargs):
         super().__init__(**kwargs)
