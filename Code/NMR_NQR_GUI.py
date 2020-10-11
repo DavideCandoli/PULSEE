@@ -167,7 +167,7 @@ class System_Parameters(FloatLayout):
     
     # Specifies the action carried out after the validation of the spin quantum number, i.e. the
     # creation of the inputs for the elements of the density matrix
-    def set_quantum_number(self, y_shift, *args):
+    def set_dm_grid(self, y_shift, *args):
         try:
             self.remove_widget(self.error_spin_qn)
             self.remove_widget(self.manual_dm)
@@ -461,7 +461,7 @@ class System_Parameters(FloatLayout):
         
         self.add_widget(self.manual_dm_button)
         
-        self.manual_dm_button.bind(on_release=partial(self.set_quantum_number, y_shift))
+        self.manual_dm_button.bind(on_release=partial(self.set_dm_grid, y_shift))
         
     def __init__(self, sim_man, retrieve_config_btn, retrieve_config_name, **kwargs):
         super().__init__(**kwargs)
@@ -1323,7 +1323,7 @@ class Panels(TabbedPanel):
         
         if len(configuration['manual initial density matrix']) > 1:
         
-            p1.set_quantum_number(-5)
+            p1.set_dm_grid(-5)
         
             for i in range(p1.d):
                 for j in range(p1.d):
