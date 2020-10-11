@@ -236,7 +236,7 @@ class System_Parameters(FloatLayout):
             
             if sim_man.canonical_dm_0 == False and \
                 n_s != self.d:
-                raise ValueError("The dimensions of the initial density matrix"+'\n'+"don't match the spin states' multiplicity")
+                raise IndexError("The dimensions of the initial density matrix"+'\n'+"don't match the spin states' multiplicity")
             
             sim_man.spin_par['gamma/2pi'] = float(null_string(self.gyro.text))
             
@@ -1406,8 +1406,10 @@ class Panels(TabbedPanel):
             p4.int_domain_width.text = configuration['integration domain width']
             
         except Exception as e:
+            
+            kind_of_error = len(e.args)-1
                                     
-            self.error_retrieve_config=Label(text=str(e.args), pos=(254, 405), size=(100, 100), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+            self.error_retrieve_config=Label(text=str(e.args[kind_of_error]), pos=(254, 405), size=(100, 100), bold=True, color=(1, 0, 0, 1), font_size='15sp')
             p1.add_widget(self.error_retrieve_config)
 
     
@@ -1449,6 +1451,10 @@ class Panels(TabbedPanel):
             for i in range(p1.dm_elements.shape[0]):
                 for j in range(p1.dm_elements.shape[1]):
                     configuration['manual initial density matrix'][str(i) + str(j)] = p1.dm_elements[i, j].text
+                    
+            if len(configuration['manual initial density matrix']) > 1:
+                if p1.d != int(2*float(configuration['spin_par']['quantum number'])+1):
+                    raise IndexError("The dimensions of the initial density matrix"+'\n'+"don't match the spin states' multiplicity")
 
             configuration['n_pulses'] = p2.number_pulses.text
 
@@ -1505,8 +1511,10 @@ class Panels(TabbedPanel):
                 json.dump(configuration, config_file)
                 
         except Exception as e:
+            
+            kind_of_error = len(e.args)-1
                         
-            self.error_save_config=Label(text=str(e.args), pos=(254, 405), size=(100, 100), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+            self.error_save_config=Label(text=str(e.args[kind_of_error]), pos=(254, 405), size=(100, 100), bold=True, color=(1, 0, 0, 1), font_size='15sp')
             p4.add_widget(self.error_save_config)
     
     def __init__(self, sim_man, **kwargs):
@@ -1552,8 +1560,8 @@ class Panels(TabbedPanel):
         self.scroll_window.add_widget(self.spectrum_page)
         self.tab_spectrum.add_widget(self.scroll_window)
         self.add_widget(self.tab_spectrum)
-        
-        
+
+
 # Class of the application and main class of the program
 class PulseBit(App):
     
