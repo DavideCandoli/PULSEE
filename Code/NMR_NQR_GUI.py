@@ -99,9 +99,7 @@ class Simulation_Manager:
     canonical_dm_0 = False
     
     temperature = 300.
-    
-    manual_dm = np.ones((1, 1))
-        
+            
     spin = Nuclear_Spin()
     
     h_unperturbed = Observable(1)
@@ -174,7 +172,7 @@ class System_Parameters(FloatLayout):
             self.remove_widget(self.error_spin_qn)
             self.remove_widget(self.manual_dm)
                     
-            self.d = int(Fraction(self.spin_qn.text)*2+1)
+            self.d = int(Fraction(null_string(self.spin_qn.text))*2+1)
         
             if self.d <= 8: self.el_width = 40
             else: self.el_width = 30
@@ -191,7 +189,7 @@ class System_Parameters(FloatLayout):
             
         # Prints any error raised after the validation of the spin quantum number below its TextInput
         except Exception as e:
-            self.error_spin_qn=Label(text=e.args[0], pos=(-10, 337.5), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+            self.error_spin_qn=Label(text=e.args[0], pos=(50, -65), size=(200, 200), bold=True, color=(1, 0, 0, 1), font_size='15sp')
             self.add_widget(self.error_spin_qn)
             
     # Stores the value of nu_q among the attributes of sim_man and writes it on screen
@@ -264,7 +262,7 @@ class System_Parameters(FloatLayout):
             
             sim_man.temperature = float(null_string(self.temperature.text))
             
-            sim_man.manual_dm = np.zeros((n_s, n_s), dtype=complex)
+            self.manual_dm_elements = np.zeros((n_s, n_s), dtype=complex)
             
             if sim_man.canonical_dm_0:
                 sim_man.spin, sim_man.h_unperturbed, sim_man.dm[0] = \
@@ -277,13 +275,13 @@ class System_Parameters(FloatLayout):
             else:            
                 for i in range(self.d):
                     for j in range(self.d):
-                        sim_man.manual_dm[i, j] = complex(null_string(self.dm_elements[i, j].text))
+                        self.manual_dm_elements[i, j] = complex(null_string(self.dm_elements[i, j].text))
             
                 sim_man.spin, sim_man.h_unperturbed, sim_man.dm[0] = \
                 nuclear_system_setup(sim_man.spin_par, \
                                      sim_man.zeem_par, \
                                      sim_man.quad_par, \
-                                     initial_state=sim_man.manual_dm, \
+                                     initial_state=self.manual_dm_elements, \
                                      temperature=300)
                         
             self.view_the_initial_density_matrix(sim_man)
@@ -513,20 +511,20 @@ class Pulse_Sequence(FloatLayout):
     frequency_label = np.ndarray(4, dtype=Label)
     amplitude_label = np.ndarray(4, dtype=Label)
     phase_label = np.ndarray(4, dtype=Label)
-    theta1_label = np.ndarray(4, dtype=Label)
-    phi1_label = np.ndarray(4, dtype=Label)
+    theta_p_label = np.ndarray(4, dtype=Label)
+    phi_p_label = np.ndarray(4, dtype=Label)
     
     frequency_unit = np.ndarray(4, dtype=Label)
     amplitude_unit = np.ndarray(4, dtype=Label)
     phase_unit = np.ndarray(4, dtype=Label)
-    theta1_unit = np.ndarray(4, dtype=Label)
-    phi1_unit = np.ndarray(4, dtype=Label)
+    theta_p_unit = np.ndarray(4, dtype=Label)
+    phi_p_unit = np.ndarray(4, dtype=Label)
     
     frequency = np.ndarray((4, 2), dtype=TextInput)
     amplitude = np.ndarray((4, 2), dtype=TextInput)
     phase = np.ndarray((4, 2), dtype=TextInput)
-    theta1 = np.ndarray((4, 2), dtype=TextInput)
-    phi1 = np.ndarray((4, 2), dtype=TextInput)
+    theta_p = np.ndarray((4, 2), dtype=TextInput)
+    phi_p = np.ndarray((4, 2), dtype=TextInput)
     
     n_modes = np.ones(4, dtype=int)
     
@@ -584,11 +582,11 @@ class Pulse_Sequence(FloatLayout):
             self.phase[n][self.n_modes[n]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
             self.single_pulse_table[n].add_widget(self.phase[n][self.n_modes[n]])
             
-            self.theta1[n][self.n_modes[n]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
-            self.single_pulse_table[n].add_widget(self.theta1[n][self.n_modes[n]])
+            self.theta_p[n][self.n_modes[n]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+            self.single_pulse_table[n].add_widget(self.theta_p[n][self.n_modes[n]])
             
-            self.phi1[n][self.n_modes[n]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
-            self.single_pulse_table[n].add_widget(self.phi1[n][self.n_modes[n]])
+            self.phi_p[n][self.n_modes[n]] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+            self.single_pulse_table[n].add_widget(self.phi_p[n][self.n_modes[n]])
             
             self.n_modes[n] = self.n_modes[n]+1
             
@@ -604,8 +602,8 @@ class Pulse_Sequence(FloatLayout):
             self.single_pulse_table[n].remove_widget(self.frequency[n][self.n_modes[n]])
             self.single_pulse_table[n].remove_widget(self.amplitude[n][self.n_modes[n]])
             self.single_pulse_table[n].remove_widget(self.phase[n][self.n_modes[n]])
-            self.single_pulse_table[n].remove_widget(self.theta1[n][self.n_modes[n]])
-            self.single_pulse_table[n].remove_widget(self.phi1[n][self.n_modes[n]])
+            self.single_pulse_table[n].remove_widget(self.theta_p[n][self.n_modes[n]])
+            self.single_pulse_table[n].remove_widget(self.phi_p[n][self.n_modes[n]])
             
             sim_man.pulse[n]['frequency'][self.n_modes[n]] = 0
             sim_man.pulse[n]['amplitude'][self.n_modes[n]] = 0
@@ -710,11 +708,11 @@ class Pulse_Sequence(FloatLayout):
         self.phase_label[n] = Label(text='Phase', font_size='15sp')
         self.single_pulse_table[n].add_widget(self.phase_label[n])
         
-        self.theta1_label = Label(text='\N{GREEK SMALL LETTER THETA}', font_size='15sp')
-        self.single_pulse_table[n].add_widget(self.theta1_label)
+        self.theta_p_label = Label(text='\N{GREEK SMALL LETTER THETA}', font_size='15sp')
+        self.single_pulse_table[n].add_widget(self.theta_p_label)
         
-        self.phi1_label[n] = Label(text='\N{GREEK SMALL LETTER PHI}', font_size='15sp')
-        self.single_pulse_table[n].add_widget(self.phi1_label[n])
+        self.phi_p_label[n] = Label(text='\N{GREEK SMALL LETTER PHI}', font_size='15sp')
+        self.single_pulse_table[n].add_widget(self.phi_p_label[n])
         
         self.frequency_unit[n] = Label(text='(MHz)', font_size='15sp')
         self.single_pulse_table[n].add_widget(self.frequency_unit[n])
@@ -725,11 +723,11 @@ class Pulse_Sequence(FloatLayout):
         self.phase_unit[n] = Label(text='(°)', font_size='15sp')
         self.single_pulse_table[n].add_widget(self.phase_unit[n])
         
-        self.theta1_unit = Label(text='(°)', font_size='15sp')
-        self.single_pulse_table[n].add_widget(self.theta1_unit)
+        self.theta_p_unit = Label(text='(°)', font_size='15sp')
+        self.single_pulse_table[n].add_widget(self.theta_p_unit)
         
-        self.phi1_unit[n] = Label(text='(°)', font_size='15sp')
-        self.single_pulse_table[n].add_widget(self.phi1_unit[n])
+        self.phi_p_unit[n] = Label(text='(°)', font_size='15sp')
+        self.single_pulse_table[n].add_widget(self.phi_p_unit[n])
         
         self.add_widget(self.single_pulse_table[n])
         
@@ -742,11 +740,11 @@ class Pulse_Sequence(FloatLayout):
         self.phase[n][0] = TextInput(multiline=False, size_hint=(0.5, 0.75))
         self.single_pulse_table[n].add_widget(self.phase[n][0])
         
-        self.theta1[n, 0] = TextInput(multiline=False, size_hint=(0.5, 0.75))
-        self.single_pulse_table[n].add_widget(self.theta1[n, 0])
+        self.theta_p[n, 0] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+        self.single_pulse_table[n].add_widget(self.theta_p[n, 0])
         
-        self.phi1[n][0] = TextInput(multiline=False, size_hint=(0.5, 0.75))
-        self.single_pulse_table[n].add_widget(self.phi1[n][0])
+        self.phi_p[n][0] = TextInput(multiline=False, size_hint=(0.5, 0.75))
+        self.single_pulse_table[n].add_widget(self.phi_p[n][0])
         
         # Button for the addition of another mode of radiation
         self.more_modes_btn[n] = Button(text='+', font_size = '15sp', size_hint=(None, None), size=(30, 30), pos=(485, y_shift+374))
@@ -773,7 +771,7 @@ class Pulse_Sequence(FloatLayout):
         try:
             self.remove_widget(self.error_n_pulses)
             
-            new_n_pulses = int(self.number_pulses.text)
+            new_n_pulses = int(null_string(self.number_pulses.text))
             
             if new_n_pulses < 1 or new_n_pulses > 4:
                 raise ValueError("The number of pulses in the sequence"+'\n'+"must fall between 1 and 4")
@@ -812,8 +810,8 @@ class Pulse_Sequence(FloatLayout):
                     sim_man.pulse[i]['frequency'][j] = float(null_string(self.frequency[i][j].text))
                     sim_man.pulse[i]['amplitude'][j] = float(null_string(self.amplitude[i][j].text))
                     sim_man.pulse[i]['phase'][j] = (float(null_string(self.phase[i][j].text))*math.pi)/180
-                    sim_man.pulse[i]['theta_p'][j] = (float(null_string(self.theta1[i][j].text))*math.pi)/180
-                    sim_man.pulse[i]['phi_p'][j] = (float(null_string(self.phi1[i][j].text))*math.pi)/180
+                    sim_man.pulse[i]['theta_p'][j] = (float(null_string(self.theta_p[i][j].text))*math.pi)/180
+                    sim_man.pulse[i]['phi_p'][j] = (float(null_string(self.phi_p[i][j].text))*math.pi)/180
                     sim_man.pulse_time[i] = float(null_string(self.pulse_times[i].text))
                                 
                 if self.RRF_btn[i].state == 'down':
@@ -1268,75 +1266,15 @@ class NMR_Spectrum(FloatLayout):
         self.phase_adj_btn = Button(text='Adjust phase', font_size='16sp', size_hint_y=None, height=35, size_hint_x=None, width=110, pos=(640, y_shift+560))
         self.phase_adj_btn.bind(on_press=partial(self.adjust_phase, sim_man, y_shift))
         self.add_widget(self.phase_adj_btn)
-        
-    def save_config(self, sim_man, *args):
-        
-        configuration = {}
-        
-        configuration['spin_par'] = sim_man.spin_par
-        
-        configuration['zeem_par'] = sim_man.zeem_par
-        
-        configuration['quad_par'] = sim_man.quad_par
-                
-        configuration['initial state at equilibrium'] = str(sim_man.canonical_dm_0)
-        
-        configuration['temperature'] = sim_man.temperature
-        
-        configuration['manual initial density matrix'] = {}
-        
-        for i in range(sim_man.manual_dm.shape[0]):
-            for j in range(sim_man.manual_dm.shape[1]):
-                configuration['manual initial density matrix'][str(i) + str(j)] = str(sim_man.manual_dm[i, j])
-        
-        configuration['n_pulses'] = sim_man.n_pulses
-        
-        for n in range(sim_man.n_pulses):
-            configuration['pulse #' + str(n+1)] = sim_man.pulse[n].to_dict()
-            
-            configuration['pulse #' + str(n+1) + ' time'] = sim_man.pulse_time[n]
-            
-            configuration['pulse #' + str(n+1) + ' evolution algorithm'] = sim_man.evolution_algorithm[n]
     
-            configuration['pulse #' + str(n+1) + ' RRF parameters'] = sim_man.RRF_par[n]
-                    
-        configuration['decoherence time'] = sim_man.decoherence_time
-        
-        configuration['coil_theta'] = null_string(self.coil_theta.text)
-        
-        configuration['coil_phi'] = null_string(self.coil_phi.text)
-
-        configuration['acquisition time'] = null_string(self.time_aq.text)
-        
-        configuration['#points/us'] = null_string(self.sample_points.text)
-                
-        configuration['plot for opposite frequencies'] = str(self.flip_negative_freq_checkbox.active)
-        
-        configuration['plot square modulus'] = str(self.sq_mod_checkbox.active)
-        
-        configuration['frequency domain left bound'] = null_string(self.frequency_left_bound.text)
-
-        configuration['frequency domain right bound'] = null_string(self.frequency_right_bound.text)
-        
-        configuration['peak frequency to be adjusted'] = null_string(self.peak_frequency.text)
-        
-        configuration['integration domain width'] = null_string(self.int_domain_width.text)
-        
-        with open(self.save_config_name.text, 'w') as config_file:
-            json.dump(configuration, config_file)
-    
-    def __init__(self, sim_man, **kwargs):
+    def __init__(self, save_config_btn, save_config_name, sim_man, **kwargs):
         super().__init__(**kwargs)
         
         self.NMR_spectrum_label = Label(text='NMR/NQR spectrum', size=(10, 5), pos=(0, 450), font_size='30sp')
         self.add_widget(self.NMR_spectrum_label)
         
-        self.save_config_btn = Button(text='Save configuration', size_hint=(0.23, 0.03), pos=(565, 945), bold=True, background_color=(2.07, 0, 0.15, 1), font_size='15')
-        self.save_config_btn.bind(on_release=partial(self.save_config, sim_man))
-        self.add_widget(self.save_config_btn)
-
-        self.save_config_name = TextInput(multiline=False, size_hint=(0.23, 0.03), pos=(565, 915))
-        self.add_widget(self.save_config_name)
+        self.add_widget(save_config_btn)
+        self.add_widget(save_config_name)
         
         self.FID_parameters(sim_man, 0)
         
@@ -1355,69 +1293,72 @@ class Panels(TabbedPanel):
              
         p1 = self.sys_par
                 
-        p1.spin_qn.text = str(configuration['spin_par']['quantum number'])
+        p1.spin_qn.text = configuration['spin_par']['quantum number']
         
-        p1.gyro.text = str(configuration['spin_par']['quantum number'])
+        p1.gyro.text = configuration['spin_par']['gamma/2pi']
         
-        p1.field_mag.text = str(configuration['zeem_par']['field magnitude'])
+        p1.field_mag.text = configuration['zeem_par']['field magnitude']
         
-        p1.theta_z.text = str(configuration['zeem_par']['theta_z']*180/math.pi)
+        p1.theta_z.text = configuration['zeem_par']['theta_z']
         
-        p1.phi_z.text = str(configuration['zeem_par']['phi_z']*180/math.pi)
+        p1.phi_z.text = configuration['zeem_par']['phi_z']
 
-        p1.coupling.text = str(configuration['quad_par']['coupling constant'])            
+        p1.coupling.text = configuration['quad_par']['coupling constant']        
         
-        p1.asymmetry.text = str(configuration['quad_par']['asymmetry parameter'])
+        p1.asymmetry.text = configuration['quad_par']['asymmetry parameter']
         
-        p1.alpha_q.text = str(configuration['quad_par']['alpha_q']*180/math.pi)
+        p1.alpha_q.text = configuration['quad_par']['alpha_q']
         
-        p1.beta_q.text = str(configuration['quad_par']['beta_q']*180/math.pi)
+        p1.beta_q.text = configuration['quad_par']['beta_q']
         
-        p1.gamma_q.text = str(configuration['quad_par']['gamma_q']*180/math.pi)
+        p1.gamma_q.text = configuration['quad_par']['gamma_q']
                                                 
         p1.remove_widget(p1.nu_q_label)
         
-        p1.decoherence.text = str(configuration['decoherence time'])
+        p1.decoherence.text = configuration['decoherence time']
         
-        p1.temperature.text = str(configuration['temperature'])
+        p1.temperature.text = configuration['temperature']
         
-        if configuration['initial state at equilibrium'] == "True":
-            p1.canonical_checkbox.active = True
-        else:
-            p1.canonical_checkbox.active = False
+        p1.canonical_checkbox.active = configuration['initial state at equilibrium']
         
-        p1.set_quantum_number(-5)
+        if len(configuration['manual initial density matrix']) > 1:
         
-        for i in range(p1.d):
-            for j in range(p1.d):
-                p1.dm_elements[i, j].text = str(configuration['manual initial density matrix'][str(i) + str(j)])
+            p1.set_quantum_number(-5)
+        
+            for i in range(p1.d):
+                for j in range(p1.d):
+                    p1.dm_elements[i, j].text = configuration['manual initial density matrix'][str(i) + str(j)]
+                
                 
         p2 = self.pulse_par
                 
-        p2.number_pulses.text = str(configuration['n_pulses'])
+        p2.number_pulses.text = configuration['n_pulses']
         
         p2.set_pulse_controls(self, sim_man, *args)
         
-        for n in range(int(p2.number_pulses.text)):
+        for n in range(int(null_string(p2.number_pulses.text))):
             
-            p2.pulse_times[n].text = str(configuration['pulse #' + str(n+1) + ' time'])
+            p2.pulse_times[n].text = configuration['pulse #' + str(n+1) + ' time']
             
-            p2.add_new_mode(n)
+            if p2.n_modes[n] < int(configuration['n_modes #' + str(n+1)]):
+                p2.add_new_mode(n)
+            elif p2.n_modes[n] > int(configuration['n_modes #' + str(n+1)]):
+                p2.remove_mode(n, sim_man)
             
-            for m in range(2):
-                
-                p2.frequency[n][m].text = str(configuration['pulse #' + str(n+1)]['frequency'][str(m)])
-                
-                p2.amplitude[n][m].text = str(configuration['pulse #' + str(n+1)]['amplitude'][str(m)])
-                
-                p2.phase[n][m].text = str(configuration['pulse #' + str(n+1)]['phase'][str(m)])
-                
-                p2.theta1[n][m].text = str(configuration['pulse #' + str(n+1)]['theta_p'][str(m)])
-                
-                p2.phi1[n][m].text = str(configuration['pulse #' + str(n+1)]['phi_p'][str(m)])
-                
-                p2.n_modes[n] = 2
+            p2.n_modes[n] = configuration['n_modes #' + str(n+1)]
             
+            for m in range(p2.n_modes[n]):
+                
+                p2.frequency[n][m].text = str(configuration['pulse #' + str(n+1)]['mode #' + str(m+1)]['frequency'])
+                
+                p2.amplitude[n][m].text = str(configuration['pulse #' + str(n+1)]['mode #' + str(m+1)]['amplitude'])
+                
+                p2.phase[n][m].text = str(configuration['pulse #' + str(n+1)]['mode #' + str(m+1)]['phase'])
+                
+                p2.theta_p[n][m].text = str(configuration['pulse #' + str(n+1)]['mode #' + str(m+1)]['theta_p'])
+                
+                p2.phi_p[n][m].text = str(configuration['pulse #' + str(n+1)]['mode #' + str(m+1)]['phi_p'])
+                            
             if configuration['pulse #' + str(n+1) + ' evolution algorithm'] == "RRF":
                 
                 p2.RRF_btn[n].state ='down'
@@ -1434,32 +1375,117 @@ class Panels(TabbedPanel):
                 
                 p2.set_IP_evolution(n, y_shift=400-n*200, sim_man=sim_man)
             
+        
         p4 = self.spectrum_page
             
-        p4.coil_theta.text = str(configuration['coil_theta'])
+        p4.coil_theta.text = configuration['coil_theta']
             
-        p4.coil_phi.text = str(configuration['coil_phi'])
+        p4.coil_phi.text = configuration['coil_phi']
             
-        p4.time_aq.text = str(configuration['acquisition time'])
+        p4.time_aq.text = configuration['acquisition time']
             
-        p4.sample_points.text = str(configuration['#points/us'])
+        p4.sample_points.text = configuration['#points/us']
         
-        if configuration['plot for opposite frequencies'] == 'True':
-            p4.flip_negative_freq_checkbox.active = True
-        else:
-            p4.flip_negative_freq_checkbox.active = False
+        p4.flip_negative_freq_checkbox.active = configuration['plot for opposite frequencies']
         
-        if configuration['plot square modulus'] == 'True':
-            p4.sq_mod_checkbox.active = True
-        else:
-            p4.sq_mod_checkbox.active = False
+        p4.sq_mod_checkbox.active = configuration['plot square modulus']
         
-        p4.frequency_left_bound.text = str(configuration['frequency domain left bound'])
-        p4.frequency_right_bound.text = str(configuration['frequency domain right bound'])
+        p4.frequency_left_bound.text = configuration['frequency domain left bound']
+        p4.frequency_right_bound.text = configuration['frequency domain right bound']
         
-        p4.peak_frequency.text = str(configuration['peak frequency to be adjusted'])
+        p4.peak_frequency.text = configuration['peak frequency to be adjusted']
         
-        p4.int_domain_width.text = str(configuration['integration domain width'])
+        p4.int_domain_width.text = configuration['integration domain width']
+        
+        
+    def save_config(self, sim_man, *args):
+        
+        configuration = {}
+        
+        p1 = self.sys_par
+        
+        configuration['spin_par'] = {'quantum number' : p1.spin_qn.text, \
+                                     'gamma/2pi' : p1.gyro.text}
+        
+        configuration['zeem_par'] = {'field magnitude' : p1.field_mag.text,
+                                     'theta_z' : p1.theta_z.text, 
+                                     'phi_z' : p1.phi_z.text}
+
+        configuration['quad_par'] = {'coupling constant' : p1.coupling.text,
+                                     'asymmetry parameter' : p1.asymmetry.text,
+                                     'alpha_q' : p1.alpha_q.text,
+                                     'beta_q' : p1.beta_q.text, 
+                                     'gamma_q' : p1.gamma_q.text}
+
+        configuration['decoherence time'] = p1.decoherence.text
+        
+        configuration['initial state at equilibrium'] = sim_man.canonical_dm_0
+                
+        configuration['temperature'] = p1.temperature.text
+        
+        configuration['manual initial density matrix'] = {}
+        
+        for i in range(p1.dm_elements.shape[0]):
+            for j in range(p1.dm_elements.shape[1]):
+                configuration['manual initial density matrix'][str(i) + str(j)] = p1.dm_elements[i, j].text
+        
+        p2 = self.pulse_par
+        
+        configuration['n_pulses'] = p2.number_pulses.text
+        
+        for n in range(int(null_string(p2.number_pulses.text))):
+            
+            configuration['pulse #' + str(n+1) + ' time'] = p2.pulse_times[n].text
+            
+            configuration['n_modes #' + str(n+1)] = str(p2.n_modes[n])
+            
+            configuration['pulse #' + str(n+1)] = {}
+            
+            for m in range(p2.n_modes[n]):
+                
+                configuration['pulse #' + str(n+1)]['mode #' + str(m+1)] = \
+                    {'frequency' : p2.frequency[n][m].text, 
+                     'amplitude' : p2.amplitude[n][m].text, 
+                     'phase' : p2.phase[n][m].text,
+                     'theta_p' : p2.theta_p[n][m].text, 
+                     'phi_p' : p2.phi_p[n][m].text}
+            
+            if p2.RRF_btn[n].state == 'down':
+                configuration['pulse #' + str(n+1) + ' evolution algorithm'] = "RRF"
+            
+                configuration['pulse #' + str(n+1) + ' RRF parameters'] = \
+                    {'nu_RRF' : p2.RRF_frequency[n].text, \
+                     'theta_RRF' : p2.RRF_theta[n].text, \
+                     'phi_RRF' : p2.RRF_phi[n].text}
+
+            else:
+                configuration['pulse #' + str(n+1) + ' evolution algorithm'] = "IP"
+                    
+        
+        p4 = self.spectrum_page
+        
+        configuration['coil_theta'] = p4.coil_theta.text
+        
+        configuration['coil_phi'] = p4.coil_phi.text
+
+        configuration['acquisition time'] = p4.time_aq.text
+        
+        configuration['#points/us'] = p4.sample_points.text
+                
+        configuration['plot for opposite frequencies'] = p4.flip_negative_freq_checkbox.active
+        
+        configuration['plot square modulus'] = p4.sq_mod_checkbox.active
+        
+        configuration['frequency domain left bound'] = p4.frequency_left_bound.text
+
+        configuration['frequency domain right bound'] = p4.frequency_right_bound.text
+        
+        configuration['peak frequency to be adjusted'] = p4.peak_frequency.text
+        
+        configuration['integration domain width'] = p4.int_domain_width.text
+        
+        with open(self.save_config_name.text, 'w') as config_file:
+            json.dump(configuration, config_file)
     
     def __init__(self, sim_man, **kwargs):
         super().__init__(**kwargs)
@@ -1493,9 +1519,14 @@ class Panels(TabbedPanel):
         self.tab_evolve.add_widget(self.scroll_window)
         self.add_widget(self.tab_evolve)
         
+        self.save_config_btn = Button(text='Save configuration', size_hint=(0.23, 0.03), pos=(565, 945), bold=True, background_color=(2.07, 0, 0.15, 1), font_size='15')
+        self.save_config_btn.bind(on_release=partial(self.save_config, sim_man))
+        
+        self.save_config_name = TextInput(multiline=False, size_hint=(0.23, 0.03), pos=(565, 915))
+        
         self.tab_spectrum = TabbedPanelItem(text='Spectrum')
         self.scroll_window =  ScrollView(size_hint=(1, None), size=(Window.width, 500))
-        self.spectrum_page = NMR_Spectrum(size_hint=(1, None), size=(Window.width, 1000), sim_man=sim_man)
+        self.spectrum_page = NMR_Spectrum(size_hint=(1, None), size=(Window.width, 1000), save_config_btn=self.save_config_btn, save_config_name=self.save_config_name, sim_man=sim_man)
         self.scroll_window.add_widget(self.spectrum_page)
         self.tab_spectrum.add_widget(self.scroll_window)
         self.add_widget(self.tab_spectrum)
