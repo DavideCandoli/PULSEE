@@ -308,15 +308,21 @@ class System_Parameters(FloatLayout):
         # button and assigns it to the button nuclear_species
         self.nucleus_dd.bind(on_select=lambda instance, x: setattr(self.nuclear_species, 'text', x))
         
-        self.Cl_btn = Button(text='Cl', size_hint_y=None, height=25)
-        # When a button in the list is pressed, the on_select event is triggered and the text of the
-        # chosen button is passed as the argument x in the callback launched by nucleus_dd
-        self.Cl_btn.bind(on_release=lambda btn: self.nucleus_dd.select(btn.text))
-        self.nucleus_dd.add_widget(self.Cl_btn)
+        # Reads the properties of various nuclear species from a json file
+        with open("nuclear_species.txt") as ns_file:
+             ns_data = json.load(ns_file)
         
-        self.Na_btn = Button(text='Na', size_hint_y=None, height=25)
-        self.Na_btn.bind(on_release=lambda btn: self.nucleus_dd.select(btn.text))
-        self.nucleus_dd.add_widget(self.Na_btn)
+        ns_names = ns_data.keys()
+        
+        self.species_btn = {}
+                
+        for name in ns_names:
+            
+            self.species_btn[name] = Button(text=name, size_hint_y=None, height=25)
+            # When a button in the list is pressed, the on_select event is triggered and the text of
+            # the chosen button is passed as the argument x in the callback launched by nucleus_dd
+            self.species_btn[name].bind(on_release=lambda btn: self.nucleus_dd.select(btn.text))
+            self.nucleus_dd.add_widget(self.species_btn[name])
         
         # Spin quantum number
         self.spin_qn_label = Label(text='Spin quantum number', size=(10, 5), pos=(x_shift-130, y_shift-25), font_size='15sp')
@@ -327,8 +333,9 @@ class System_Parameters(FloatLayout):
         
         # After the selection of one of the options in the dropdown list, the spin quantum number
         # takes the corresponding value
-        self.Cl_btn.bind(on_release=partial(clear_and_write_text, self.spin_qn, '3/2'))
-        self.Na_btn.bind(on_release=partial(clear_and_write_text, self.spin_qn, '3/2'))
+        for name in ns_names:
+            self.species_btn[name].bind(on_release=partial(clear_and_write_text, self.spin_qn, \
+                                                           str(ns_data[name]['spin quantum number'])))
         
         # Gyromagnetic ratio
         self.gyro_label = Label(text='\N{GREEK SMALL LETTER GAMMA}/2\N{GREEK SMALL LETTER PI}', size=(10, 5), pos=(x_shift+100, y_shift-25), font_size='15sp')
@@ -337,8 +344,9 @@ class System_Parameters(FloatLayout):
         self.gyro = TextInput(multiline=False, size_hint=(0.075, 0.03), pos=(x_shift+530, y_shift+460))
         self.add_widget(self.gyro)
         
-        self.Cl_btn.bind(on_release=partial(clear_and_write_text, self.gyro, '4.00'))
-        self.Na_btn.bind(on_release=partial(clear_and_write_text, self.gyro, '11.26'))
+        for name in ns_names:
+            self.species_btn[name].bind(on_release=partial(clear_and_write_text, self.gyro, \
+                                                           str(ns_data[name]['gamma/2pi'])))
         
         self.gyro_unit_label = Label(text='MHz/T', size=(10, 5), pos=(x_shift+220, y_shift-25), font_size='15sp')
         self.add_widget(self.gyro_unit_label)
@@ -1454,7 +1462,7 @@ class Panels(TabbedPanel):
                     
             if len(configuration['manual initial density matrix']) > 1:
                 if p1.d != int(2*float(configuration['spin_par']['quantum number'])+1):
-                    raise IndexError("The dimensions of the initial density matrix"+'\n'+"don't match the spin states' multiplicity")
+                    raise IndexError("The dimensions of the grid for the initial state"+'\n'+"don't match the spin states' multiplicity")
 
             configuration['n_pulses'] = p2.number_pulses.text
 
