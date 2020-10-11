@@ -1288,22 +1288,22 @@ class NMR_Spectrum(FloatLayout):
 class Panels(TabbedPanel):
     
     error_retrieve_config = Label()
-    tb_retrieve_config = Button()
-    
     error_save_config = Label()
-    tb_save_config = Button()
     
     def retrieve_config(self, sim_man, *args):
         
+        p1 = self.sys_par
+        
+        p2 = self.pulse_par
+        
+        p4 = self.spectrum_page
+        
         try:
             
-            self.remove_widget(self.error_retrieve_config)
-            self.remove_widget(self.tb_retrieve_config)
+            p1.remove_widget(self.error_retrieve_config)
         
             with open(self.retrieve_config_name.text) as config_file:
                 configuration = json.load(config_file)
-
-            p1 = self.sys_par
 
             p1.spin_qn.text = configuration['spin_par']['quantum number']
 
@@ -1341,8 +1341,6 @@ class Panels(TabbedPanel):
                     for j in range(p1.d):
                         p1.dm_elements[i, j].text = configuration['manual initial density matrix'][str(i) + str(j)]
 
-
-            p2 = self.pulse_par
 
             p2.number_pulses.text = configuration['n_pulses']
 
@@ -1387,9 +1385,7 @@ class Panels(TabbedPanel):
 
                     p2.set_IP_evolution(n, y_shift=400-n*200, sim_man=sim_man)
 
-
-            p4 = self.spectrum_page
-
+                    
             p4.coil_theta.text = configuration['coil_theta']
 
             p4.coil_phi.text = configuration['coil_phi']
@@ -1410,23 +1406,24 @@ class Panels(TabbedPanel):
             p4.int_domain_width.text = configuration['integration domain width']
             
         except Exception as e:
-            
-            p1 = self.sys_par
-            
-            self.error_retrieve_config=Label(text=e.args[1], pos=(254, 405), size=(100, 100), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+                                    
+            self.error_retrieve_config=Label(text=str(e.args), pos=(254, 405), size=(100, 100), bold=True, color=(1, 0, 0, 1), font_size='15sp')
             p1.add_widget(self.error_retrieve_config)
 
     
     def save_config(self, sim_man, *args):
         
+        p1 = self.sys_par
+        
+        p2 = self.pulse_par
+        
+        p4 = self.spectrum_page
+        
         try:
             
-            self.remove_widget(self.error_save_config)
-            self.remove_widget(self.tb_save_config)
+            p4.remove_widget(self.error_save_config)
         
             configuration = {}
-
-            p1 = self.sys_par
 
             configuration['spin_par'] = {'quantum number' : p1.spin_qn.text, \
                                          'gamma/2pi' : p1.gyro.text}
@@ -1452,8 +1449,6 @@ class Panels(TabbedPanel):
             for i in range(p1.dm_elements.shape[0]):
                 for j in range(p1.dm_elements.shape[1]):
                     configuration['manual initial density matrix'][str(i) + str(j)] = p1.dm_elements[i, j].text
-
-            p2 = self.pulse_par
 
             configuration['n_pulses'] = p2.number_pulses.text
 
@@ -1486,8 +1481,6 @@ class Panels(TabbedPanel):
                     configuration['pulse #' + str(n+1) + ' evolution algorithm'] = "IP"
 
 
-            p4 = self.spectrum_page
-
             configuration['coil_theta'] = p4.coil_theta.text
 
             configuration['coil_phi'] = p4.coil_phi.text
@@ -1512,10 +1505,8 @@ class Panels(TabbedPanel):
                 json.dump(configuration, config_file)
                 
         except Exception as e:
-            
-            p4 = self.spectrum_page
-            
-            self.error_save_config=Label(text=str(e.args[1]), pos=(254, 405), size=(100, 100), bold=True, color=(1, 0, 0, 1), font_size='15sp')
+                        
+            self.error_save_config=Label(text=str(e.args), pos=(254, 405), size=(100, 100), bold=True, color=(1, 0, 0, 1), font_size='15sp')
             p4.add_widget(self.error_save_config)
     
     def __init__(self, sim_man, **kwargs):
