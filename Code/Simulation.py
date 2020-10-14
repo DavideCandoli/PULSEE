@@ -663,7 +663,7 @@ def fourier_transform_signal(times, signal, frequency_start, frequency_stop, opp
         for nu in frequencies:
             integral = np.zeros(sign_options, dtype=complex)
             for t in range(len(times)):
-                integral[s] = integral[s] + np.exp(1j*2*math.pi*(1-2*s)*nu*times[t])*signal[t]*dt
+                integral[s] = integral[s] + np.exp(-1j*2*math.pi*(1-2*s)*nu*times[t])*signal[t]*dt
             fourier[s].append(integral[s])
         
     if opposite_frequency == False:
