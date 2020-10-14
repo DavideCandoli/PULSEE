@@ -476,7 +476,7 @@ def plot_real_part_density_matrix(dm, show=True, save=False, name='RealPartDensi
     return fig
 
 
-def FID_signal(spin, h_unperturbed, dm, acquisition_time, T2=100, theta=0, phi=0, n_points=10):
+def FID_signal(spin, h_unperturbed, dm, acquisition_time, T2=100, theta=0, phi=0, reference_frequency=0, n_points=10):
     """ 
     Simulates the free induction decay signal (FID) measured after the shut-off of the electromagnetic pulse, once the evolved density matrix of the system, the time interval of acquisition, the relaxation time T2 and the direction of the detection coils are given.
   
@@ -543,7 +543,7 @@ def FID_signal(spin, h_unperturbed, dm, acquisition_time, T2=100, theta=0, phi=0
     I_plus_rotated = (1j*phi*Iz).exp()*(1j*theta*Iy).exp()*spin.I['+']*(-1j*theta*Iy).exp()*(-1j*phi*Iz).exp()
     for t in times:
         dm_t = dm.free_evolution(h_unperturbed, t)
-        FID.append((dm_t*I_plus_rotated*np.exp(-t/T2)).trace())
+        FID.append((dm_t*I_plus_rotated*np.exp(-t/T2)).trace()*np.exp(-1j*2*math.pi*reference_frequency))
     
     return times, np.array(FID)
 
@@ -651,7 +651,7 @@ def fourier_transform_signal(times, signal, frequency_start, frequency_stop, opp
     dt = times[1]-times[0]
     
     frequencies = np.linspace(start=frequency_start, stop=frequency_stop, num=1000)
-        
+    
     fourier = [[], []]
     
     if opposite_frequency == False:
