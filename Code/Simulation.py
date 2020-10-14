@@ -509,6 +509,11 @@ def FID_signal(spin, h_unperturbed, dm, acquisition_time, T2=100, theta=0, phi=0
                   Polar and azimuthal angles which specify the normal to the plane of detection of the FID signal (in radians).
     
                   Default values are theta=0, phi=0.
+                  
+    - reference_frequency: float
+    
+                           Specifies the frequency of rotation of the measurement apparatus with respect to the LAB system.
+                           Default value is 0.
     
     - n_points: float
   
