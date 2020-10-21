@@ -308,7 +308,7 @@ class System_Parameters(FloatLayout):
         # button and assigns it to the button nuclear_species
         self.nucleus_dd.bind(on_select=lambda instance, x: setattr(self.nuclear_species, 'text', x))
         
-        # Reads the properties of various nuclear species from a json file
+        # Reads the properties of various nuclear species from a JSON file
         with open("nuclear_species.txt") as ns_file:
              ns_data = json.load(ns_file)
         
@@ -500,7 +500,7 @@ class System_Parameters(FloatLayout):
         
         self.add_widget(self.set_up_system)
         
-        # Button and TextInput which allow to retrieve all the values of the inputs of a previous simulation saved in a json file
+        # Button and TextInput which allow to retrieve all the values of the inputs of a previous simulation saved in a JSON file
         self.add_widget(retrieve_config_btn)
         self.add_widget(retrieve_config_name)
 
@@ -1039,32 +1039,14 @@ class NMR_Spectrum(FloatLayout):
             self.tb_FID.bind(on_release=partial(print_traceback, e))
             self.add_widget(self.tb_FID)
             
-    def calculate_and_plot_fourier(self, sim_man):
+    def plot_fourier(self, sim_man):
             self.remove_widget(self.fourier_spectrum)
             plt.close(self.fourier_spectrum_figure)
             
-            self.input_opposite_frequency = self.flip_negative_freq_checkbox.active
-            self.input_square_modulus = self.sq_mod_checkbox.active
-            
-            self.input_frequency_left_bound = float(null_string(self.frequency_left_bound.text))
-            self.input_frequency_right_bound = float(null_string(self.frequency_right_bound.text))
-            
             if self.input_opposite_frequency == False:
-                sim_man.spectrum_frequencies, \
-                sim_man.spectrum_fourier = fourier_transform_signal(sim_man.FID_times, \
-                                                     sim_man.FID,\
-                                                     frequency_start=self.input_frequency_left_bound, \
-                                                     frequency_stop=self.input_frequency_right_bound)
                 plot_fourier_transform(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
                                        square_modulus=self.input_square_modulus, show=False)
             else:
-                sim_man.spectrum_frequencies, \
-                sim_man.spectrum_fourier, \
-                sim_man.spectrum_fourier_neg = fourier_transform_signal(sim_man.FID_times, \
-                                                     sim_man.FID, \
-                                                     frequency_start=self.input_frequency_left_bound, \
-                                                     frequency_stop=self.input_frequency_right_bound, \
-                                                     opposite_frequency=self.input_opposite_frequency)
                 plot_fourier_transform(sim_man.spectrum_frequencies, sim_man.spectrum_fourier, \
                                        sim_man.spectrum_fourier_neg, \
                                        square_modulus=self.input_square_modulus, show=False)
@@ -1082,8 +1064,29 @@ class NMR_Spectrum(FloatLayout):
         try:
             self.remove_widget(self.error_fourier)
             self.remove_widget(self.tb_fourier)
-                        
-            self.calculate_and_plot_fourier(sim_man)
+            
+            self.input_opposite_frequency = self.flip_negative_freq_checkbox.active
+            self.input_square_modulus = self.sq_mod_checkbox.active
+            
+            self.input_frequency_left_bound = float(null_string(self.frequency_left_bound.text))
+            self.input_frequency_right_bound = float(null_string(self.frequency_right_bound.text))
+            
+            if self.input_opposite_frequency == False:
+                sim_man.spectrum_frequencies, \
+                sim_man.spectrum_fourier = fourier_transform_signal(sim_man.FID_times, \
+                                                     sim_man.FID,\
+                                                     frequency_start=self.input_frequency_left_bound, \
+                                                     frequency_stop=self.input_frequency_right_bound)
+            else:
+                sim_man.spectrum_frequencies, \
+                sim_man.spectrum_fourier, \
+                sim_man.spectrum_fourier_neg = fourier_transform_signal(sim_man.FID_times, \
+                                                     sim_man.FID, \
+                                                     frequency_start=self.input_frequency_left_bound, \
+                                                     frequency_stop=self.input_frequency_right_bound, \
+                                                     opposite_frequency=self.input_opposite_frequency)
+            
+            self.plot_fourier(sim_man)
             
         except Exception as e:
             self.error_fourier=Label(text=e.args[0], pos=(220, y_shift+200), size=(200, 205), bold=True, color=(1, 0, 0, 1), font_size='15sp')
@@ -1112,9 +1115,9 @@ class NMR_Spectrum(FloatLayout):
                                           sim_man.spectrum_fourier_neg, \
                                           peak_frequency, search_window)
                         
-            sim_man.FID = np.exp(1j*phi)*sim_man.FID
+            sim_man.spectrum_fourier = np.exp(1j*phi)*sim_man.spectrum_fourier
             
-            self.calculate_and_plot_fourier(sim_man)
+            self.plot_fourier(sim_man)
             
         except Exception as e:
             self.error_adj_phase=Label(text=e.args[0], pos=(225, y_shift+45), size=(100, 100), bold=True, color=(1, 0, 0, 1), font_size='15sp')
@@ -1281,7 +1284,7 @@ class NMR_Spectrum(FloatLayout):
         self.NMR_spectrum_label = Label(text='NMR/NQR spectrum', size=(10, 5), pos=(0, 450), font_size='30sp')
         self.add_widget(self.NMR_spectrum_label)
         
-        # Button and TextInput which allow to save all the inputs written throughout the program in a json file
+        # Button and TextInput which allow to save all the inputs written throughout the program in a JSON file
         self.add_widget(save_config_btn)
         self.add_widget(save_config_name)
         
