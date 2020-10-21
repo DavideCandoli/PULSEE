@@ -284,7 +284,7 @@ def test_two_methods_phase_adjustment():
     f, fourier0 = fourier_transform_signal(t, fid, 9, 11)
             
     phi = fourier_phase_shift(f, fourier0, peak_frequency=10, int_domain_width=1)
-    f, fourier1 = fourier_transform_signal(t, np.exp(1j*phi)*fid, 9, 11)
+    fourier1 = np.exp(1j*phi)*fourier0
             
     t, fid_rephased = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=500, phi=-phi)
     f, fourier2 = fourier_transform_signal(t, fid_rephased, 9, 11)
