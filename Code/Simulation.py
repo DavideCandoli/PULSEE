@@ -548,7 +548,7 @@ def FID_signal(spin, h_unperturbed, dm, acquisition_time, T2=100, theta=0, phi=0
     I_plus_rotated = (1j*phi*Iz).exp()*(1j*theta*Iy).exp()*spin.I['+']*(-1j*theta*Iy).exp()*(-1j*phi*Iz).exp()
     for t in times:
         dm_t = dm.free_evolution(h_unperturbed, t)
-        FID.append((dm_t*I_plus_rotated*np.exp(-t/T2)).trace()*np.exp(-1j*2*math.pi*reference_frequency))
+        FID.append((dm_t*I_plus_rotated*np.exp(-t/T2)*np.exp(-1j*2*math.pi*reference_frequency*t)).trace())
     
     return times, np.array(FID)
 
@@ -681,7 +681,7 @@ def fourier_transform_signal(times, signal, frequency_start, frequency_stop, opp
 # spectrum of the FID with respect to the ideal absorptive/dispersive lorentzian shapes
 def fourier_phase_shift(frequencies, fourier, fourier_neg=None, peak_frequency=0, int_domain_width=0.5):
     """
-    Computes the phase factor which is to be added to the FID signal connected with the passed Fourier spectrum (fourier) in such a way that the real and imaginary part of the adjusted spectrum exhibit the conventional dispersive/absorptive shapes at the peak specified by peak_frequency.
+    Computes the phase factor which must multiply the Fourier spectrum (`fourier`) in order to have the real and imaginary part of the adjusted spectrum showing the conventional dispersive/absorptive shapes at the peak specified by `peak_frequency`.
 
     Parameters
     ----------
