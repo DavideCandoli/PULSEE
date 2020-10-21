@@ -297,9 +297,7 @@ As one can see, the real and imaginary parts of the spectrum at each peak don't 
 ```
 phi = fourier_phase_shift(f, ft, peak_frequency_hint=-0.9)
 
-f, ft_correct = fourier_transform_signal(t, np.exp(1j*phi)*fid, -1.5, -0.5)
-
-plot_fourier_transform(f, ft_correct)
+plot_fourier_transform(f, np.exp(1j*phi)*ft)
 ```
 ![Perturbed Zeeman - Corrected NMR Spectrum](Figures_README/Perturbed_Zeeman_Corrected_NMR_Spectrum.png)
 
