@@ -120,7 +120,7 @@ def v1_EFG(sign, eta, alpha_q, beta_q, gamma_q):
     ------
     ValueError, when the passed eta is not in the interval [0, 1].
     """
-    if eta<0 or eta>1: raise ValueError("The asymmetry parameter must fall in the interval [0, 1]")
+    if eta<0 or eta>1: raise ValueError("The asymmetry parameter must fall within the interval [0, 1]")
     sign = np.sign(sign)
     v1 = (1/2)*\
          (
@@ -169,7 +169,7 @@ def v2_EFG(sign, eta, alpha_q, beta_q, gamma_q):
          )
     return v2
 
-def h_single_mode_pulse(spin, frequency, H_1, phase, theta_1, phi_1, t):
+def h_single_mode_pulse(spin, frequency, B_1, phase, theta_1, phi_1, t):
     """
     Computes the term of the Hamiltonian describing the interaction with a monochromatic and linearly polarized electromagnetic pulse.
     
@@ -181,7 +181,7 @@ def h_single_mode_pulse(spin, frequency, H_1, phase, theta_1, phi_1, t):
                  Frequency of the monochromatic wave (expressed in MHz).
     - phase: float
              Inital phase of the wave (at t=0) (expressed in radians).
-    - H_1: non-negative float
+    - B_1: non-negative float
            Maximum amplitude of the oscillating magnetic field (expressed in tesla).
     - theta_1, phi_1: float
                       Polar and azimuthal angles of the direction of polarization of the magnetic wave in the LAB frame (expressed in radians);
@@ -196,11 +196,11 @@ def h_single_mode_pulse(spin, frequency, H_1, phase, theta_1, phi_1, t):
     ------
     ValueError, in two distinct cases:
     1. When the passed frequency parameter is a negative quantity;
-    2. When the passed H_1 parameter is a negative quantity.
+    2. When the passed B_1 parameter is a negative quantity.
     """
     if frequency < 0: raise ValueError("The modulus of the angular frequency of the electromagnetic wave must be a positive quantity")
-    if H_1 < 0: raise ValueError("The amplitude of the electromagnetic wave must be a positive quantity")
-    h_pulse = -spin.gyro_ratio_over_2pi*H_1*\
+    if B_1 < 0: raise ValueError("The amplitude of the electromagnetic wave must be a positive quantity")
+    h_pulse = -spin.gyro_ratio_over_2pi*B_1*\
               (math.sin(theta_1)*math.cos(phi_1)*spin.I['x'] +\
                math.sin(theta_1)*math.sin(phi_1)*spin.I['y'] +\
                math.cos(theta_1)*spin.I['z']
