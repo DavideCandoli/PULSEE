@@ -7,7 +7,7 @@ from Operators import Operator, Density_Matrix, Observable
 
 from Nuclear_Spin import Nuclear_Spin
 
-def h_zeeman(spin, theta_z, phi_z, H_0):
+def h_zeeman(spin, theta_z, phi_z, B_0):
     """
     Computes the term of the Hamiltonian associated with the Zeeman interaction between the nuclear spin and the external static field.
     
@@ -19,7 +19,7 @@ def h_zeeman(spin, theta_z, phi_z, H_0):
                Polar angle of the magnetic field in the laboratory coordinate system (expressed in radians);
     - phi_z: float
              Azimuthal angle of the magnetic field in the laboratory coordinate system (expressed in radians);
-    - H_0: non-negative float
+    - B_0: non-negative float
            Magnitude of the external magnetic field (expressed in tesla).
     
     Returns
@@ -28,10 +28,10 @@ def h_zeeman(spin, theta_z, phi_z, H_0):
     
     Raises
     ------
-    ValueError, when the passed H_0 is a negative number.
+    ValueError, when the passed B_0 is a negative number.
     """
-    if H_0<0: raise ValueError("The modulus of the magnetic field must be a non-negative quantity")
-    h_z = -spin.gyro_ratio_over_2pi*H_0* \
+    if B_0<0: raise ValueError("The modulus of the magnetic field must be a non-negative quantity")
+    h_z = -spin.gyro_ratio_over_2pi*B_0* \
           (math.sin(theta_z)*math.cos(phi_z)*spin.I['x'] + \
            math.sin(theta_z)*math.sin(phi_z)*spin.I['y'] + \
            math.cos(theta_z)*spin.I['z'])
