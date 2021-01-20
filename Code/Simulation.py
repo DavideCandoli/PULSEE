@@ -752,7 +752,7 @@ def fourier_phase_shift(frequencies, fourier, fourier_neg=None, peak_frequency=0
 # If another set of data is passed as fourier_neg, the function plots a couple of graphs, with the
 # one at the top interpreted as the NMR signal produced by a magnetization rotating counter-clockwise,
 # the one at the bottom corresponding to the opposite sense of rotation
-def plot_fourier_transform(frequencies, fourier, fourier_neg=None, square_modulus=False, show=True, save=False, name='FTSignal', destination=''):
+def plot_fourier_transform(frequencies, fourier, fourier_neg=None, square_modulus=False, scaling_factor=None, show=True, save=False, name='FTSignal', destination=''):
     """
     Plots the Fourier transform of a signal as a function of the frequency.
   
@@ -775,6 +775,10 @@ def plot_fourier_transform(frequencies, fourier, fourier_neg=None, square_modulu
     - square_modulus: bool
   
                       When True, makes the function plot the square modulus of the Fourier spectrum rather than the separate real and imaginary parts, which is the default option (by default, square_modulus=False).
+                      
+    - scaling_factor: float
+    
+                      When it is not None, it specifies the scaling factor which multiplies the data to be plotted. It applies simultaneously to all the plots in the resulting figure.
     
     - show: bool
   
@@ -819,10 +823,14 @@ def plot_fourier_transform(frequencies, fourier, fourier_neg=None, square_modulu
         fourier_data = [fourier, fourier_neg]
         plot_title = ["Counter-clockwise precession", "Clockwise precession"]
     
-    fig, ax = plt.subplots(n_plots, 1, gridspec_kw={'hspace':0.5})
+    fig, ax = plt.subplots(n_plots, 1, sharey=True, gridspec_kw={'hspace':0.5})
     
     if fourier_neg is None:
         ax = [ax]
+        
+    if scaling_factor is not None:
+        for i in range(n_plots):
+            fourier_data[i] = scaling_factor*fourier_data[i]
         
     for i in range(n_plots):
         if not square_modulus:
