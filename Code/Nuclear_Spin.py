@@ -65,8 +65,8 @@ class Nuclear_Spin:
             raise ValueError("The given spin quantum number is not a half-integer number")
         self.quantum_number = s
         self.d = self.multiplicity()
-        self.I = {'+': self.lowering_operator(),
-                  '-': self.raising_operator(),
+        self.I = {'-': self.lowering_operator(),
+                  '+': self.raising_operator(),
                   'x': self.cartesian_operator()[0],
                   'y': self.cartesian_operator()[1],
                   'z': self.cartesian_operator()[2]}
@@ -117,4 +117,12 @@ class Nuclear_Spin:
         I.append(Observable(self.d))
         for m in range(self.d):
             I[2].matrix[m, m] = self.quantum_number - m
-        return I
+        return I    
+    
+
+            
+            
+            
+            
+            
+            
