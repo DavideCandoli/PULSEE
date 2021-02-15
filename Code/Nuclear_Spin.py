@@ -3,6 +3,8 @@ import numpy as np
 
 from Operators import Operator, Observable
 
+from Many_Body import tensor_product_operator
+
 class Nuclear_Spin:
     """
     An instance of the following class is to be thought as an all-round representation of the nuclear spin angular momentum. Indeed, it includes all the operators typically associated with the spin and also specific parameters like the spin quantum number and the spin multiplicity.
@@ -118,9 +120,51 @@ class Nuclear_Spin:
         for m in range(self.d):
             I[2].matrix[m, m] = self.quantum_number - m
         return I    
-    
 
+
+class Many_Spins(Nuclear_Spin):
+    
+    def __init__(self, *spins):
+        
+        self.n_spins = len(spins)
+        
+        self.spin = []
+        
+        self.quantum_number = []
+        
+        self.d = 1
+        
+        self.gyro_ratio_over_2pi = []
+        
+        self.I = {}
+        
+        for x in spins:
+            self.spin.append(x)
             
+            self.quantum_number.append(x.quantum_number)
+            self.d = self.d*x.d
+            
+            self.gyro_ratio_over_2pi.append(x.gyro_ratio_over_2pi)
+            
+        self.I['-'] = self.many_spin_operator('-')
+        self.I['+'] = self.many_spin_operator('+')
+        self.I['x'] = self.many_spin_operator('x').cast_to_observable()
+        self.I['y'] = self.many_spin_operator('y').cast_to_observable()
+        self.I['z'] = self.many_spin_operator('z').cast_to_observable()
+    
+    def many_spin_operator(self, component):
+
+        many_spin_op = Operator(self.d)*0
+        
+        for i in range(self.n_spins):
+            term = self.spin[i].I[component]
+            for j in range(self.n_spins)[:i]:
+                term = tensor_product_operator(Operator(self.spin[j].d), term)
+            for k in range(self.n_spins)[i+1:]:
+                term = tensor_product_operator(term, Operator(self.spin[k].d))
+            many_spin_op = many_spin_op + term
+        
+        return many_spin_op
             
             
             
