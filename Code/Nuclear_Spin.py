@@ -123,37 +123,63 @@ class Nuclear_Spin:
 
 
 class Many_Spins(Nuclear_Spin):
-    
+    """
+    An instance of this class represents a system made up of many nuclear spins, and its attributes include the individual Nuclear_Spin objects, the dimensions of the full Hilbert space and the components of the overall spin operator.
+    """
     def __init__(self, *spins):
+        """
+        Constructs an instance of Many_Spins.
+  
+        Parameters
+        ----------
+        - spins: list
+                 List of the Nuclear_Spin objects which represent the spins in the system.
         
+        Action
+        ------
+        Stores the Nuclear_Spin objects contained in the spins argument into the attribute spin, maintaining their original ordering.
+  
+        Initialises the attribute d with the product of each spin's dimensions d.
+  
+        Initialises the elements of the dictionary I from the corresponding attributes of its spin components by calling the method many_spin_operator.
+
+        Returns
+        -------
+        The initialised Many_Spins object.
+        """        
         self.n_spins = len(spins)
         
         self.spin = []
-        
-        self.quantum_number = []
-        
+                
         self.d = 1
-        
-        self.gyro_ratio_over_2pi = []
-        
+                
         self.I = {}
         
         for x in spins:
             self.spin.append(x)
             
-            self.quantum_number.append(x.quantum_number)
             self.d = self.d*x.d
-            
-            self.gyro_ratio_over_2pi.append(x.gyro_ratio_over_2pi)
             
         self.I['-'] = self.many_spin_operator('-')
         self.I['+'] = self.many_spin_operator('+')
-        self.I['x'] = self.many_spin_operator('x').cast_to_observable()
-        self.I['y'] = self.many_spin_operator('y').cast_to_observable()
-        self.I['z'] = self.many_spin_operator('z').cast_to_observable()
+        self.I['x'] = self.many_spin_operator('x')
+        self.I['y'] = self.many_spin_operator('y')
+        self.I['z'] = self.many_spin_operator('z')
     
     def many_spin_operator(self, component):
-
+        """
+        Returns the specified spherical or cartesian component of the spin operator of the Many_Spins system.
+  
+        Parameters
+        ----------
+        - component: string
+                     Specifies which component of the overall spin is to be computed, following the key-value correspondence of the attribute I of Nuclear_Spin.
+        
+        Returns
+        -------
+        If component = +, -, an Operator object representing the corresponding spherical spin component is returned.
+        If component = x, y, z, an Observable object representing the corresponding cartesian spin component is returned.
+        """
         many_spin_op = Operator(self.d)*0
         
         for i in range(self.n_spins):
@@ -163,6 +189,9 @@ class Many_Spins(Nuclear_Spin):
             for k in range(self.n_spins)[i+1:]:
                 term = tensor_product_operator(term, Operator(self.spin[k].d))
             many_spin_op = many_spin_op + term
+            
+        if component in 'xyz':
+            many_spin_op = many_spin_op.cast_to_observable()
         
         return many_spin_op
             
