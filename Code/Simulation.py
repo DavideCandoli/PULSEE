@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import math
+from fractions import Fraction
 
 import matplotlib.pylab as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -337,17 +338,17 @@ def evolve(spin, h_unperturbed, dm_initial, \
     h_new_picture = []
     for t in times:
         h_new_picture.append(h_changed_picture(spin, mode, h_unperturbed, o_change_of_picture, t))
-    
+            
     magnus_exp = magnus_expansion_1st_term(h_new_picture, time_step)
     if order>1:
         magnus_exp = magnus_exp + magnus_expansion_2nd_term(h_new_picture, time_step)
         if order>2:
             magnus_exp = magnus_exp + magnus_expansion_3rd_term(h_new_picture, time_step)
-
+                                    
     dm_evolved_new_picture = dm_initial.sim_trans(-magnus_exp, exp=True)
-
-    dm_evolved = dm_evolved_new_picture.changed_picture(o_change_of_picture, pulse_time, invert=True)
     
+    dm_evolved = dm_evolved_new_picture.changed_picture(o_change_of_picture, pulse_time, invert=True)
+        
     return Density_Matrix(dm_evolved.matrix)
 
 
@@ -388,7 +389,7 @@ def RRF_operator(spin, RRF_par):
     return Observable(RRF_o.matrix)
 
 
-def plot_real_part_density_matrix(dm, show=True, save=False, name='RealPartDensityMatrix', destination=''):
+def plot_real_part_density_matrix(dm, many_spin_indexing = None, show=True, save=False, name='RealPartDensityMatrix', destination=''):
     """
     Generates a 3D histogram displaying the real part of the elements of the passed density matrix.
   
@@ -397,6 +398,11 @@ def plot_real_part_density_matrix(dm, show=True, save=False, name='RealPartDensi
     - dm: Density_Matrix
   
           Density matrix to be plotted.
+          
+    - many_spin_indexing: either None or list
+  
+                          If it is different from None, the density matrix dm is interpreted as the state of a many spins' system, and this parameter provides the list of the dimensions of the subspaces of the full Hilbert space related to the individual nuclei of the system. The ordering of the elements of many_spin_indexing should match that of the single spins' density matrices in their tensor product resulting in dm.
+                          Default value is None.
     
     - show: bool
   
@@ -458,10 +464,42 @@ def plot_real_part_density_matrix(dm, show=True, save=False, name='RealPartDensi
              np.zeros(len(z_data)),
              dx, dy, z_data)
     
-    s = (data_array.shape[0]-1)/2
+    d = data_array.shape[0]
+    tick_label = []
+    
+    if many_spin_indexing is None:
+        for i in range(d):
+            tick_label.append('|' + str(Fraction((d-1)/2-i)) + '>')
+    else:        
+        d_sub = many_spin_indexing
+        n_sub = len(d_sub)
+        m_dict = []
+        
+        for i in range(n_sub):
+            m_dict.append({})
+            for j in range(d_sub[i]):
+                m_dict[i][j] = str(Fraction((d_sub[i]-1)/2-j))
+        
+        for i in range(d):
+            tick_label.append('>')
 
-    xticks(np.arange(start=0.5, stop=data_array.shape[0]+0.5), np.arange(start=s, stop=-s-1, step=-1))
-    yticks(np.arange(start=0.5, stop=data_array.shape[0]+0.5), np.arange(start=s, stop=-s-1, step=-1))
+        for i in range(n_sub)[::-1]:
+            d_downhill = int(np.prod(d_sub[i+1:n_sub]))
+            d_uphill = int(np.prod(d_sub[0:i]))
+            
+            for j in range(d_uphill):
+                for k in range(d_sub[i]):
+                    for l in range(d_downhill):
+                        tick_label[j*d_sub[i]*d_downhill + k*d_downhill + l] = m_dict[i][k] + \
+                            ', ' + tick_label[j*d_sub[i]*d_downhill + k*d_downhill + l]
+        
+        for i in range(d):
+            tick_label[i] = '|' + tick_label[i]
+            
+        ax.tick_params(axis='both', which='major', labelsize=6)
+            
+    xticks(np.arange(start=0.5, stop=data_array.shape[0]+0.5), tick_label)
+    yticks(np.arange(start=0.5, stop=data_array.shape[0]+0.5), tick_label)
     
     ax.set_xlabel("m")    
     ax.set_ylabel("m")
