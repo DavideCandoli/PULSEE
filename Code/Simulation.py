@@ -163,15 +163,15 @@ def nuclear_system_setup(spin_par, quad_par, zeem_par, j_matrix=None, initial_st
         return spin_system, Observable(h_unperturbed.matrix), dm_initial
 
 
-def power_absorption_spectrum(spin, h_unperturbed, normalized=True, dm_initial='none'):
+def power_absorption_spectrum(spin, h_unperturbed, normalized=True, dm_initial=None):
     """
-    Computes the spectrum of power absorption of the system due to x-polarized single-mode pulses.
+    Computes the spectrum of power absorption of the system due to x-polarized monochromatic pulses.
       
     Parameters
     ----------
-    - spin: Nuclear_Spin
+    - spin: Nuclear_Spin / Many_Spins
   
-            Spin under study.
+            Single spin/spin system under study.
   
     - h_unperturbed: Operator
     
@@ -179,21 +179,21 @@ def power_absorption_spectrum(spin, h_unperturbed, normalized=True, dm_initial='
     
     - normalized: bool
                 
-                  Specifies wether the difference between the states' populations are to be taken into account in the calculation of the line intensities. When normalized=True, they are not, when normalized=False, the intensities are weighted by the differences p(b)-p(a) just like in the formula above.
+                  Specifies whether the difference between the states' populations are to be taken into account in the calculation of the line intensities. When normalized=True, they are not, when normalized=False, the intensities are weighted by the differences p(b)-p(a) just like in the formula above.
     
                   Default value is True.
   
-    - dm_initial: Density_Matrix
+    - dm_initial: Density_Matrix or None
   
                   Density matrix of the system at time t=0, just before the application of the pulse.
     
-                  The default value is 'none', and it should be left so only when normalized=True, since the initial density matrix is not needed.
+                  The default value is None, and it should be left so only when normalized=True, since the initial density matrix is not needed.
   
     Action
     ------
     Diagonalises h_unperturbed and computes the frequencies of transitions between its eigenstates.
   
-    Then, it determines the relative proportions of the power absorption for different lines applying the formula above (with or without the states' populations, according to normalized).
+    Then, it determines the relative proportions of the power absorption for different lines applying the formula derived from Fermi golden rule (taking or not taking into account the states' populations, according to the value of normalized).
   
     Returns
     -------
@@ -209,20 +209,29 @@ def power_absorption_spectrum(spin, h_unperturbed, normalized=True, dm_initial='
     
     d = h_unperturbed.dimension()
     
+    # Operator of the magnetic moment of the spin system
+    if isinstance(spin,  Many_Spins):
+        magnetic_moment = Operator(spin.d)*0
+        for i in range(spin.n_spins):
+            mm_i = spin.spin[i].gyro_ratio_over_2pi*spin.spin[i].I['x']
+            for j in range(i):
+                mm_i = tensor_product_operator(Operator(spin.spin[j].d), mm_i)
+            for k in range(spin.n_spins)[i+1:]:
+                mm_i = tensor_product_operator(mm_i, Operator(spin.spin[k].d))
+            magnetic_moment = magnetic_moment + mm_i
+    else:
+        magnetic_moment = spin.gyro_ratio_over_2pi*spin.I['x']
+    
+    mm_in_basis_of_eigenstates = magnetic_moment.sim_trans(o_change_of_basis)
+    
     for i in range(d):
         for j in range(d):
             if i < j:
                 nu = np.absolute(energies[j] - energies[i])
                 transition_frequency.append(nu)
                 
-                # Operator of the magnetic moment of the spin expressed in the basis of energy
-                # eigenstates, defined in order to extract the matrix elements required by Fermi's
-                # golden rule
-                magnetization_in_basis_of_eigenstates=\
-                    spin.gyro_ratio_over_2pi*spin.I['x'].sim_trans(o_change_of_basis)
-                
                 intensity_nu = nu*\
-                    (np.absolute(magnetization_in_basis_of_eigenstates.matrix[j, i]))**2
+                    (np.absolute(mm_in_basis_of_eigenstates.matrix[j, i]))**2
                 
                 if not normalized:
                     p_i = dm_initial.matrix[i, i]
