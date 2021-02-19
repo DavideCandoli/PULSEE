@@ -281,9 +281,39 @@ def h_changed_picture(spin, mode, h_unperturbed, h_change_of_picture, t):
             h_change_of_picture).changed_picture(h_change_of_picture, t)
     return Observable(h_cp.matrix)
 
-
-
-
-
+def h_j_coupling(spins, j_matrix):
+    """
+    Returns the term of the Hamiltonian describing the j-coupling between the spins of a system of many nuclei.  
+  
+    Parameters
+    ----------
+    - spins: Many_Spins
+             Spins' system under study;
+             
+    - j_matrix: np.ndarray
+                Array storing the coefficients Jmn which enter the formula for the computation of the Hamiltonian for the j-coupling.
+                Remark: j_matrix doesn't have to be symmetric, since the function reads only those elements located in the upper half with respect to the diagonal. This means that the elements j_matrix[m, n] which matter are those for which m<n.
+                
+    Returns
+    -------
+    Observable object acting on the full Hilbert space of the spins' system representing the Hamiltonian of the j-coupling between the spins.
+    """
+    h_j = Operator(spins.d)*0
+    
+    for m in range(j_matrix.shape[0]):
+        for n in range(m):            
+            term_nm = j_matrix[n, m]*spins.spin[n].I['z']
+            for l in range(n):
+                term_nm = tensor_product_operator(Operator(spins.spin[l].d), term_nm)
+            for k in range(m)[n+1:]:
+                term_nm = tensor_product_operator(term_nm, Operator(spins.spin[k].d))
+            term_nm = tensor_product_operator(term_nm, spins.spin[m].I['z'])
+            for j in range(spins.n_spins)[m+1:]:
+                term_nm = tensor_product_operator(term_nm, Operator(spins.spin[j].d))
+                            
+            h_j = h_j + term_nm
+            
+    return h_j.cast_to_observable()
+        
 
 

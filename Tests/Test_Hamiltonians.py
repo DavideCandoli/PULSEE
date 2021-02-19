@@ -11,13 +11,16 @@ from hypothesis import given, note
 from Operators import Operator, Density_Matrix, Observable, \
                       random_operator, random_density_matrix, random_observable
 
-from Nuclear_Spin import Nuclear_Spin
+from Many_Body import tensor_product_operator, partial_trace
+
+from Nuclear_Spin import Nuclear_Spin, Many_Spins
 
 from Hamiltonians import h_zeeman, h_quadrupole, \
                          v0_EFG, v1_EFG, v2_EFG, \
                          h_single_mode_pulse, \
                          h_multiple_mode_pulse, \
-                         h_changed_picture
+                         h_changed_picture, \
+                         h_j_coupling
 
 @given(par = st.lists(st.floats(min_value=0, max_value=20), min_size=3, max_size=3))
 def test_zeeman_hamiltonian_changes_sign_when_magnetic_field_is_flipped(par):
@@ -92,7 +95,26 @@ def test_interaction_picture_leaves_pulse_hamiltonian_unaltered_when_commutative
     h_pulse = h_multiple_mode_pulse(spin, mode, 10.)
     h_pulse_ip = h_changed_picture(spin, mode, h_unperturbed, h_unperturbed, 10.)
     assert np.all(np.isclose(h_pulse.matrix, h_pulse_ip.matrix, rtol=1e-10))
-
+    
+def test_partial_trace_j_coupling_hamiltonian_over_non_interacting_spins_subspaces():
+    spins = []
+    for i in range(4):
+        spins.append(Nuclear_Spin())
+    
+    spin_system = Many_Spins(spins)
+    
+    j_matrix = np.zeros((4, 4))
+    
+    for i in range(3):
+        j_matrix[i, i+1]
+        
+    h_j = h_j_coupling(spin_system, j_matrix)
+    
+    h_j_1 = partial_trace(h_j, [3, 3, 3, 3], 1)
+    h_j_2 = partial_trace(h_j, [3, 3, 3, 3], 2)
+    
+    assert np.all(np.isclose(h_j_2.matrix, 0*Operator(27).matrix, rtol = 1e-10))
+    
     
     
     
