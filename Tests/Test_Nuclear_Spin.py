@@ -52,7 +52,7 @@ def test_dimensions_many_spin_operator(dim):
     for i in range(3):
         spin.append(Nuclear_Spin((dim[i]-1)/2))
         
-    many_spins = Many_Spins(spin[0], spin[1], spin[2])
+    many_spins = Many_Spins([spin[0], spin[1], spin[2]])
     note("spin[0].I[-] = %r" % (spin[0].I['-'].matrix))
     note("spin[1].I[-] = %r" % (spin[1].I['-'].matrix))
     note("spin[2].I[-] = %r" % (spin[2].I['-'].matrix))
@@ -66,7 +66,7 @@ def test_angular_momentum_sum_rules():
     spin1 = Nuclear_Spin(3/2)
     spin2 = Nuclear_Spin(5/2)
     
-    spin_system = Many_Spins(spin1, spin2)
+    spin_system = Many_Spins([spin1, spin2])
     
     I_sq_mod = spin_system.I['x']**2 + spin_system.I['y']**2 + spin_system.I['z']**2
     
