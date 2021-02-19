@@ -14,24 +14,27 @@ from Operators import Operator, Density_Matrix, Observable, \
                       magnus_expansion_3rd_term, \
                       canonical_density_matrix
 
-from Nuclear_Spin import Nuclear_Spin
+from Many_Body import tensor_product_operator
+
+from Nuclear_Spin import Nuclear_Spin, Many_Spins
 
 from Hamiltonians import h_zeeman, h_quadrupole, \
                          v0_EFG, v1_EFG, v2_EFG, \
                          h_single_mode_pulse, \
                          h_multiple_mode_pulse, \
-                         h_changed_picture
+                         h_changed_picture, \
+                         h_j_coupling
 
 
-def nuclear_system_setup(spin_par, zeem_par, quad_par, initial_state='canonical', temperature=1e-4):
+def nuclear_system_setup(spin_par, quad_par, zeem_par, j_matrix=None, initial_state='canonical', temperature=1e-4):
     """
-    Sets up the nuclear system under study, returning the objects representing the spin, the unperturbed Hamiltonian (made up of the Zeeman and quadrupolar contributions) and the initial state of the system.
+    Sets up the nuclear system under study, returning the objects representing the spin (either a single one or a multiple spins' system), the unperturbed Hamiltonian (made up of the Zeeman, quadrupolar and J-coupling contributions) and the initial state of the system.
 
     Parameters
     ----------
-    - spin_par: dict
+    - spin_par: dict / list of dict
   
-      Map containing information about the nuclear spin under consideration. The keys and values required to this argument are shown in the table below.
+      Map/list of maps containing information about the nuclear spin/spins under consideration. The keys and values required to each dictionary in this argument are shown in the table below.
   
       |           key          |         value        |
       |           ---          |         -----        |
@@ -39,22 +42,10 @@ def nuclear_system_setup(spin_par, zeem_par, quad_par, initial_state='canonical'
       |       'gamma/2pi'      |         float        |
     
       The second item is the gyromagnetic ratio over 2 pi, measured in MHz/T.
-  
-    - zeem_par: dict
-   
-      Map containing information about the magnetic field interacting with the nuclear magnetic moment. The keys and values required to this argument are shown in the table below:
 
-      |         key         |       value      |
-      |         ---         |       -----      |
-      |      'theta_z'      |       float      |
-      |       'phi_z'       |       float      |
-      |  'field magnitude'  |  positive float  |
-
-      where 'theta_z' and 'phi_z' are the polar and azimuthal angles of the magnetic field with respect to the LAB system (to be measured in radians), while field magnitude is to be expressed in tesla.
-
-    - quad_par: dict
+    - quad_par: dict / list of dict
     
-      Map containing information about the quadrupolar interaction between the nucleus and the EFG. The keys and values required to this argument are shown in the table below:
+      Map/maps containing information about the quadrupolar interaction between the electric quadrupole moment and the EFG for each nucleus in the system. The keys and values required to each dictionary in this argument are shown in the table below:
   
       |           key           |       value        |
       |           ---           |       -----        |
@@ -65,6 +56,26 @@ def nuclear_system_setup(spin_par, zeem_par, quad_par, initial_state='canonical'
       |        'gamma_q'        |       float        |
     
     where 'coupling constant' stands for the product e2qQ in the expression of the quadrupole term of the Hamiltonian (to be provided in MHz), 'asymmetry parameter' refers to the same-named property of the EFG, and 'alpha_q', 'beta_q' and 'gamma_q' are the Euler angles for the conversion from the system of the principal axes of the EFG tensor (PAS) to the LAB system (to be expressed in radians).
+    
+    - zeem_par: dict
+   
+      Map containing information about the magnetic field interacting with the magnetic moment of each nucleus in the system. The keys and values required to this argument are shown in the table below:
+
+      |         key         |       value      |
+      |         ---         |       -----      |
+      |      'theta_z'      |       float      |
+      |       'phi_z'       |       float      |
+      |  'field magnitude'  |  positive float  |
+
+      where 'theta_z' and 'phi_z' are the polar and azimuthal angles of the magnetic field with respect to the LAB system (to be measured in radians), while field magnitude is to be expressed in tesla.
+    
+    - j_matrix: None or np.ndarray
+    
+      When it is None, the J-coupling effects are not taken into account.
+    
+      Array whose elements represent the coefficients Jmn which determine the strength of the J-coupling between each pair of spins in the system. For the details on these data, see the description of the same-named parameter in the docstrings of the function h_j_coupling in the module Hamiltonians.py.
+      
+      Default value is None.
     
     - initial_state: either string or numpy.ndarray
   
@@ -84,40 +95,72 @@ def nuclear_system_setup(spin_par, zeem_par, quad_par, initial_state='canonical'
     
     Returns
     -------
-    - [0]: Nuclear_Spin
+    - [0]: Nuclear_Spin / Many_Spins
     
-           The spin subject to the NMR/NQR experiment.
+           The single spin/spin system subject to the NMR/NQR experiment.
 
     - [1]: Observable
   
-           The unperturbed Hamiltonian, consisting of the Zeeman and quadrupolar terms (expressed in MHz).
+           The unperturbed Hamiltonian, consisting of the Zeeman, quadrupolar and J-coupling terms (expressed in MHz).
     
     - [2]: Density_Matrix
   
            The density matrix representing the state of the system at time t=0, initialised according to initial_state.
     """
     
-    spin = Nuclear_Spin(spin_par['quantum number'], \
-                        spin_par['gamma/2pi'])
+    if not isinstance(spin_par, list):
+        spin_par = [spin_par]
+    if not isinstance(quad_par, list):
+        quad_par = [quad_par]
+        
+    if len(spin_par) != len(quad_par):
+        raise IndexError("The number of passed sets of spin parameters must be equal to the number of the quadrupolar ones.")
+        
+    spins = []
+    h_q = []
+    h_z = []        
     
-    h_z = h_zeeman(spin, zeem_par['theta_z'], \
-                         zeem_par['phi_z'], \
-                         zeem_par['field magnitude'])
+    h_unperturbed = 0
     
-    h_q = h_quadrupole(spin, quad_par['coupling constant'], \
-                             quad_par['asymmetry parameter'], \
-                             quad_par['alpha_q'], \
-                             quad_par['beta_q'], \
-                             quad_par['gamma_q'])
+    for i in range(len(spin_par)):
+        spins.append(Nuclear_Spin(spin_par[i]['quantum number'], \
+                                  spin_par[i]['gamma/2pi']))
+        
+        h_q.append(h_quadrupole(spins[i], quad_par[i]['coupling constant'], \
+                                          quad_par[i]['asymmetry parameter'], \
+                                          quad_par[i]['alpha_q'], \
+                                          quad_par[i]['beta_q'], \
+                                          quad_par[i]['gamma_q']))
+        
+        h_z.append(h_zeeman(spins[i], zeem_par['theta_z'], \
+                                      zeem_par['phi_z'], \
+                                      zeem_par['field magnitude']))
+        
+    spin_system = Many_Spins(spins)
     
-    h_unperturbed = Observable(h_z.matrix + h_q.matrix)
+    h_unperturbed = Operator(spin_system.d)*0
+    
+    for i in range(spin_system.n_spins):
+        h_i = h_q[i] + h_z[i]
+        for j in range(i):
+            h_i = tensor_product_operator(Operator(spin_system.spin[j].d), h_i)
+        for k in range(spin_system.n_spins)[i+1:]:
+            h_i = tensor_product_operator(h_i, Operator(spin_system.spin[k].d))
+        h_unperturbed = h_unperturbed + h_i
+    
+    if j_matrix is not None:
+        h_j = h_j_coupling(spin_system, j_matrix)
+        h_unperturbed = h_unperturbed + h_j
     
     if isinstance(initial_state, str) and initial_state == 'canonical':
         dm_initial = canonical_density_matrix(h_unperturbed, temperature)
     else:
         dm_initial = Density_Matrix(initial_state)
     
-    return spin, h_unperturbed, dm_initial
+    if len(spins) == 1:
+        return spins[0], Observable(h_unperturbed.matrix), dm_initial
+    else:
+        return spin_system, Observable(h_unperturbed.matrix), dm_initial
 
 
 def power_absorption_spectrum(spin, h_unperturbed, normalized=True, dm_initial='none'):
