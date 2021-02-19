@@ -3,7 +3,7 @@ import numpy as np
 
 from Operators import Operator, Density_Matrix, Observable
 
-def tensor_product_operator(A, B):
+def tensor_product(A, B):
     """
     Returns the tensor product of two operators.
     

@@ -3,7 +3,7 @@ import numpy as np
 
 from Operators import Operator, Observable
 
-from Many_Body import tensor_product_operator
+from Many_Body import tensor_product
 
 class Nuclear_Spin:
     """
@@ -126,7 +126,7 @@ class Many_Spins(Nuclear_Spin):
     """
     An instance of this class represents a system made up of many nuclear spins, and its attributes include the individual Nuclear_Spin objects, the dimensions of the full Hilbert space and the components of the overall spin operator.
     """
-    def __init__(self, *spins):
+    def __init__(self, spins):
         """
         Constructs an instance of Many_Spins.
   
@@ -185,9 +185,9 @@ class Many_Spins(Nuclear_Spin):
         for i in range(self.n_spins):
             term = self.spin[i].I[component]
             for j in range(self.n_spins)[:i]:
-                term = tensor_product_operator(Operator(self.spin[j].d), term)
+                term = tensor_product(Operator(self.spin[j].d), term)
             for k in range(self.n_spins)[i+1:]:
-                term = tensor_product_operator(term, Operator(self.spin[k].d))
+                term = tensor_product(term, Operator(self.spin[k].d))
             many_spin_op = many_spin_op + term
             
         if component in 'xyz':

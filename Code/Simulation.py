@@ -14,7 +14,7 @@ from Operators import Operator, Density_Matrix, Observable, \
                       magnus_expansion_3rd_term, \
                       canonical_density_matrix
 
-from Many_Body import tensor_product_operator
+from Many_Body import tensor_product
 
 from Nuclear_Spin import Nuclear_Spin, Many_Spins
 
@@ -143,9 +143,9 @@ def nuclear_system_setup(spin_par, quad_par, zeem_par, j_matrix=None, initial_st
     for i in range(spin_system.n_spins):
         h_i = h_q[i] + h_z[i]
         for j in range(i):
-            h_i = tensor_product_operator(Operator(spin_system.spin[j].d), h_i)
+            h_i = tensor_product(Operator(spin_system.spin[j].d), h_i)
         for k in range(spin_system.n_spins)[i+1:]:
-            h_i = tensor_product_operator(h_i, Operator(spin_system.spin[k].d))
+            h_i = tensor_product(h_i, Operator(spin_system.spin[k].d))
         h_unperturbed = h_unperturbed + h_i
     
     if j_matrix is not None:
@@ -215,9 +215,9 @@ def power_absorption_spectrum(spin, h_unperturbed, normalized=True, dm_initial=N
         for i in range(spin.n_spins):
             mm_i = spin.spin[i].gyro_ratio_over_2pi*spin.spin[i].I['x']
             for j in range(i):
-                mm_i = tensor_product_operator(Operator(spin.spin[j].d), mm_i)
+                mm_i = tensor_product(Operator(spin.spin[j].d), mm_i)
             for k in range(spin.n_spins)[i+1:]:
-                mm_i = tensor_product_operator(mm_i, Operator(spin.spin[k].d))
+                mm_i = tensor_product(mm_i, Operator(spin.spin[k].d))
             magnetic_moment = magnetic_moment + mm_i
     else:
         magnetic_moment = spin.gyro_ratio_over_2pi*spin.I['x']

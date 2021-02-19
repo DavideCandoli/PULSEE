@@ -10,7 +10,7 @@ from hypothesis import given, settings, note
 from Operators import Operator, Density_Matrix, Observable, \
                       random_operator, random_density_matrix, random_observable
 
-from Many_Body import tensor_product_operator, partial_trace
+from Many_Body import tensor_product, partial_trace
 
 @given(d = st.integers(min_value=1, max_value=8))
 @settings(deadline = None)
@@ -19,7 +19,7 @@ def test_tensor_product_conserves_density_matrix_properties(d):
     B = random_density_matrix(d)
     
     try:
-        C = tensor_product_operator(A, B)
+        C = tensor_product(A, B)
     except ValueError as ve:
         if "The input array lacks the following properties: \n" in ve.args[0]:
             error_message = ve.args[0][49:]
@@ -39,9 +39,9 @@ def test_partial_trace_is_inverse_tensor_product(d):
     C = random_operator(d+1)
     C = C/C.trace()
     
-    AB = tensor_product_operator(A, B)
-    BC = tensor_product_operator(B, C)
-    ABC = tensor_product_operator(AB, C)
+    AB = tensor_product(A, B)
+    BC = tensor_product(B, C)
+    ABC = tensor_product(AB, C)
     
     p_t = partial_trace(ABC, [d-1, d, d+1], 0)
     
