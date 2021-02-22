@@ -317,7 +317,7 @@ def plot_power_absorption_spectrum(frequencies, intensities, show=True, save=Fal
 
 
 def evolve(spin, h_unperturbed, dm_initial, \
-           mode, pulse_time, \
+           mode=None, pulse_time=0, \
            picture='RRF', RRF_par={'nu_RRF': 0,
                                    'theta_RRF': 0,
                                    'phi_RRF': 0}, \
@@ -343,10 +343,15 @@ def evolve(spin, h_unperturbed, dm_initial, \
     - mode: pandas.DataFrame
   
             Table of the parameters of each electromagnetic mode in the pulse. See the description of the same-named argument of the function h_multiple_mode_pulse in page Hamiltonians for the details on the tabular organisation of these data.
+            
+            When it is None, the evolution of the system is performed for the given time duration without any applied pulse.
+            The default value is None.
     
     - pulse_time: float
   
                   Duration of the pulse of radiation sent onto the sample (in microseconds).
+                  
+                  The default value is 0.
     
     - picture: string
   
@@ -396,6 +401,10 @@ def evolve(spin, h_unperturbed, dm_initial, \
         o_change_of_picture = h_unperturbed
     else:
         o_change_of_picture = RRF_operator(spin, RRF_par)
+        
+    if mode is None:
+        mode = pd.DataFrame([(0., 0., 0., 0., 0)], 
+                            columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
     times, time_step = np.linspace(0, pulse_time, num=max(2, int(pulse_time*n_points)), retstep=True)
     h_new_picture = []
@@ -407,7 +416,7 @@ def evolve(spin, h_unperturbed, dm_initial, \
         magnus_exp = magnus_exp + magnus_expansion_2nd_term(h_new_picture, time_step)
         if order>2:
             magnus_exp = magnus_exp + magnus_expansion_3rd_term(h_new_picture, time_step)
-                                    
+    
     dm_evolved_new_picture = dm_initial.sim_trans(-magnus_exp, exp=True)
     
     dm_evolved = dm_evolved_new_picture.changed_picture(o_change_of_picture, pulse_time, invert=True)
