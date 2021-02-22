@@ -26,7 +26,7 @@ from Hamiltonians import h_zeeman, h_quadrupole, \
                          h_j_coupling
 
 
-def nuclear_system_setup(spin_par, quad_par, zeem_par, j_matrix=None, initial_state='canonical', temperature=1e-4):
+def nuclear_system_setup(spin_par, quad_par=None, zeem_par=None, j_matrix=None, initial_state='canonical', temperature=1e-4):
     """
     Sets up the nuclear system under study, returning the objects representing the spin (either a single one or a multiple spins' system), the unperturbed Hamiltonian (made up of the Zeeman, quadrupolar and J-coupling contributions) and the initial state of the system.
 
@@ -57,8 +57,11 @@ def nuclear_system_setup(spin_par, quad_par, zeem_par, j_matrix=None, initial_st
     
     where 'coupling constant' stands for the product e2qQ in the expression of the quadrupole term of the Hamiltonian (to be provided in MHz), 'asymmetry parameter' refers to the same-named property of the EFG, and 'alpha_q', 'beta_q' and 'gamma_q' are the Euler angles for the conversion from the system of the principal axes of the EFG tensor (PAS) to the LAB system (to be expressed in radians).
     
+      When it is None, the quadrupolar interaction of all the spins in the system is not taken into account.
+      Default value is None.
+    
     - zeem_par: dict
-   
+       
       Map containing information about the magnetic field interacting with the magnetic moment of each nucleus in the system. The keys and values required to this argument are shown in the table below:
 
       |         key         |       value      |
@@ -68,13 +71,15 @@ def nuclear_system_setup(spin_par, quad_par, zeem_par, j_matrix=None, initial_st
       |  'field magnitude'  |  positive float  |
 
       where 'theta_z' and 'phi_z' are the polar and azimuthal angles of the magnetic field with respect to the LAB system (to be measured in radians), while field magnitude is to be expressed in tesla.
+      
+      When it is None, the Zeeman interaction is not taken into account.
+      Default value is None.
     
-    - j_matrix: None or np.ndarray
-    
-      When it is None, the J-coupling effects are not taken into account.
+    - j_matrix: np.ndarray
     
       Array whose elements represent the coefficients Jmn which determine the strength of the J-coupling between each pair of spins in the system. For the details on these data, see the description of the same-named parameter in the docstrings of the function h_j_coupling in the module Hamiltonians.py.
       
+      When it is None, the J-coupling effects are not taken into account.      
       Default value is None.
     
     - initial_state: either string or numpy.ndarray
@@ -110,10 +115,10 @@ def nuclear_system_setup(spin_par, quad_par, zeem_par, j_matrix=None, initial_st
     
     if not isinstance(spin_par, list):
         spin_par = [spin_par]
-    if not isinstance(quad_par, list):
+    if quad_par is not None and not isinstance(quad_par, list):
         quad_par = [quad_par]
         
-    if len(spin_par) != len(quad_par):
+    if quad_par is not None and len(spin_par) != len(quad_par):
         raise IndexError("The number of passed sets of spin parameters must be equal to the number of the quadrupolar ones.")
         
     spins = []
@@ -126,16 +131,22 @@ def nuclear_system_setup(spin_par, quad_par, zeem_par, j_matrix=None, initial_st
         spins.append(Nuclear_Spin(spin_par[i]['quantum number'], \
                                   spin_par[i]['gamma/2pi']))
         
-        h_q.append(h_quadrupole(spins[i], quad_par[i]['coupling constant'], \
-                                          quad_par[i]['asymmetry parameter'], \
-                                          quad_par[i]['alpha_q'], \
-                                          quad_par[i]['beta_q'], \
-                                          quad_par[i]['gamma_q']))
+        if quad_par is not None:
+            h_q.append(h_quadrupole(spins[i], quad_par[i]['coupling constant'], \
+                                              quad_par[i]['asymmetry parameter'], \
+                                              quad_par[i]['alpha_q'], \
+                                              quad_par[i]['beta_q'], \
+                                              quad_par[i]['gamma_q']))
+        else:
+            h_q.append(h_quadrupole(spins[i], 0., 0., 0., 0., 0.))
         
-        h_z.append(h_zeeman(spins[i], zeem_par['theta_z'], \
-                                      zeem_par['phi_z'], \
-                                      zeem_par['field magnitude']))
-        
+        if zeem_par is not None:
+            h_z.append(h_zeeman(spins[i], zeem_par['theta_z'], \
+                                          zeem_par['phi_z'], \
+                                          zeem_par['field magnitude']))
+        else:
+            h_z.append(h_zeeman(spins[i], 0., 0., 0.))
+    
     spin_system = Many_Spins(spins)
     
     h_unperturbed = Operator(spin_system.d)*0
