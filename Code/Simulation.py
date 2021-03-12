@@ -117,10 +117,10 @@ def nuclear_system_setup(spin_par, quad_par=None, zeem_par=None, j_matrix=None, 
         spin_par = [spin_par]
     if quad_par is not None and not isinstance(quad_par, list):
         quad_par = [quad_par]
-        
+    
     if quad_par is not None and len(spin_par) != len(quad_par):
         raise IndexError("The number of passed sets of spin parameters must be equal to the number of the quadrupolar ones.")
-        
+    
     spins = []
     h_q = []
     h_z = []        
@@ -345,6 +345,7 @@ def evolve(spin, h_unperturbed, dm_initial, \
             Table of the parameters of each electromagnetic mode in the pulse. See the description of the same-named argument of the function h_multiple_mode_pulse in page Hamiltonians for the details on the tabular organisation of these data.
             
             When it is None, the evolution of the system is performed for the given time duration without any applied pulse.
+            
             The default value is None.
     
     - pulse_time: float
@@ -405,20 +406,20 @@ def evolve(spin, h_unperturbed, dm_initial, \
     if mode is None:
         mode = pd.DataFrame([(0., 0., 0., 0., 0)], 
                             columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
-    
+        
     times, time_step = np.linspace(0, pulse_time, num=max(2, int(pulse_time*n_points)), retstep=True)
     h_new_picture = []
     for t in times:
         h_new_picture.append(h_changed_picture(spin, mode, h_unperturbed, o_change_of_picture, t))
-            
+    
     magnus_exp = magnus_expansion_1st_term(h_new_picture, time_step)
     if order>1:
         magnus_exp = magnus_exp + magnus_expansion_2nd_term(h_new_picture, time_step)
         if order>2:
             magnus_exp = magnus_exp + magnus_expansion_3rd_term(h_new_picture, time_step)
-    
+        
     dm_evolved_new_picture = dm_initial.sim_trans(-magnus_exp, exp=True)
-    
+            
     dm_evolved = dm_evolved_new_picture.changed_picture(o_change_of_picture, pulse_time, invert=True)
         
     return Density_Matrix(dm_evolved.matrix)
@@ -542,6 +543,7 @@ def plot_real_part_density_matrix(dm, many_spin_indexing = None, show=True, save
     if many_spin_indexing is None:
         for i in range(d):
             tick_label.append('|' + str(Fraction((d-1)/2-i)) + '>')
+
     else:        
         d_sub = many_spin_indexing
         n_sub = len(d_sub)
@@ -573,8 +575,6 @@ def plot_real_part_density_matrix(dm, many_spin_indexing = None, show=True, save
     xticks(np.arange(start=0.5, stop=data_array.shape[0]+0.5), tick_label)
     yticks(np.arange(start=0.5, stop=data_array.shape[0]+0.5), tick_label)
     
-    ax.set_xlabel("m")    
-    ax.set_ylabel("m")
     ax.set_zlabel("Re(\N{GREEK SMALL LETTER RHO})")
     
     if save:
