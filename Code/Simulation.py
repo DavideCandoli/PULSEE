@@ -55,7 +55,7 @@ def nuclear_system_setup(spin_par, quad_par=None, zeem_par=None, j_matrix=None, 
       |        'beta_q'         |       float        |
       |        'gamma_q'        |       float        |
     
-    where 'coupling constant' stands for the product e2qQ in the expression of the quadrupole term of the Hamiltonian (to be provided in MHz), 'asymmetry parameter' refers to the same-named property of the EFG, and 'alpha_q', 'beta_q' and 'gamma_q' are the Euler angles for the conversion from the system of the principal axes of the EFG tensor (PAS) to the LAB system (to be expressed in radians).
+    where 'coupling constant' stands for the product e2qQ in the expression of the quadrupole term of the Hamiltonian (to be provided in MHz), 'asymmetry parameter' refers to the same-named property of the EFG, and 'alpha_q', 'beta_q' and 'gamma_q' are the Euler angles for the conversion from the LAB coordinate system to the system of the principal axes of the EFG tensor (PAS) (to be expressed in radians).
     
       When it is None, the quadrupolar interaction of all the spins in the system is not taken into account.
       Default value is None.
@@ -370,7 +370,7 @@ def evolve(spin, h_unperturbed, dm_initial, \
     
     - n_points: float
   
-                Counts (approximatively) the number of points per microsecond in which the time interval [0, pulse_time] is sampled in the discrete approximation of the time-dependent Hamiltonian of the system.
+                Counts the number of points in which the time interval [0, pulse_time] is sampled in the discrete approximation of the time-dependent Hamiltonian of the system.
     
                 Default value is 10.
     
@@ -407,7 +407,7 @@ def evolve(spin, h_unperturbed, dm_initial, \
         mode = pd.DataFrame([(0., 0., 0., 0., 0)], 
                             columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
         
-    times, time_step = np.linspace(0, pulse_time, num=max(2, int(pulse_time*n_points)), retstep=True)
+    times, time_step = np.linspace(0, pulse_time, num=max(2, int(n_points)), retstep=True)
     h_new_picture = []
     for t in times:
         h_new_picture.append(h_changed_picture(spin, mode, h_unperturbed, o_change_of_picture, t))
@@ -500,7 +500,7 @@ def plot_real_part_density_matrix(dm, many_spin_indexing = None, show=True, save
                    Path of the directory where the graph will be saved (starting from the current directory). The name of the directory must be terminated with a slash /.
     
                    Default value is the empty string (current directory).
-    
+
     Action
     ------
     If show=True, draws a histogram on a 2-dimensional grid representing the density matrix, with the real part of each element indicated along the z axis.
@@ -862,7 +862,8 @@ def fourier_phase_shift(frequencies, fourier, fourier_neg=None, peak_frequency=0
 # If another set of data is passed as fourier_neg, the function plots a couple of graphs, with the
 # one at the top interpreted as the NMR signal produced by a magnetization rotating counter-clockwise,
 # the one at the bottom corresponding to the opposite sense of rotation
-def plot_fourier_transform(frequencies, fourier, fourier_neg=None, square_modulus=False, scaling_factor=None, show=True, save=False, name='FTSignal', destination=''):
+def plot_fourier_transform(frequencies, fourier, fourier_neg=None, square_modulus=False, 
+                           scaling_factor=None, show=True, save=False, name='FTSignal', destination=''):
     """
     Plots the Fourier transform of a signal as a function of the frequency.
   
