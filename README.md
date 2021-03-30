@@ -1,8 +1,9 @@
-# NQR-NMR Simulation Software
+# PULSEE
+## Program for the simULation of nuclear Spin Ensemble Evolution
 
 ## Author: Davide Candoli (Università di Bologna)
 
-This project consists of a software which simulates a typical nuclear quadrupole/magnetic resonance experiment on a solid state sample, describing the dynamics of nuclear spins in condensed matter under the effect external magnetic fields and reproducing the traditional results observed in laboratory.
+PULSEE is an open-source software for the simulation a typical nuclear quadrupole/magnetic resonance experiment on a solid state sample, describing the dynamics of nuclear spins in condensed matter under the effect external magnetic fields and reproducing the traditional results observed in laboratory.
 
 * [Physics background](#physics-background)
   + [Unit standard of the software](#unit-standard-of-the-software)
