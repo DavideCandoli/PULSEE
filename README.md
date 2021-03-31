@@ -277,11 +277,13 @@ When the quadrupolar interaction is non-negligible, but still very small compare
 An experiment with these conditions can be easily simulated following the same steps described in the pure Zeeman case with the only difference being a non-zero quadrupolar coupling constant:
 
 ```
-quad_par = {'coupling constant' : 0.1,
+quad_par = {'coupling constant' : 0.2,
             'asymmetry parameter' : 0.,
             'alpha_q' : 0.,
             'beta_q' : 0.,
             'gamma_q' : 0.}
+            
+spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par=spin_par, quad_par=quad_par, zeem_par=zeem_par, initial_state='canonical', temperature=1e-4)
 ```
 
 The presence of this perturbation leads eventually to a spectrum with two resonance peaks.
@@ -289,7 +291,7 @@ The presence of this perturbation leads eventually to a spectrum with two resona
 
 As one can see, the real and imaginary parts of the spectrum at each peak don't fit the conventional absorptive/dispersive lorentzian shapes, which would be a nice feature to be visualized. By means of the function `fourier_phase_shift`, one can obtain the phase for the correction of the shape of the spectrum at a specified peak (the simultaneous correction at both peaks is impossible):
 ```
-phi = fourier_phase_shift(f, ft, peak_frequency_hint=-0.9)
+phi = fourier_phase_shift(f, ft, peak_frequency=-0.82, int_domain_width=0.2)
 
 plot_fourier_transform(f, np.exp(1j*phi)*ft)
 ```
@@ -297,24 +299,22 @@ plot_fourier_transform(f, np.exp(1j*phi)*ft)
 
 #### Pure NQR experiment
 
-Another important category of experiments is the case of *pure NQR*, where the only term of the unperturbed Hamiltonian is the quadrupolar interaction. Such an experiment can be simulated changing the parameters in the previous two examples as
+Another important type of experiments is that of *pure NQR*, where the only term of the unperturbed Hamiltonian is the quadrupolar interaction. The pure NQR of spin 3/2 nuclei can be simulated changing the parameters in the previous two examples as
 ```
 spin_par = {'quantum number' : 3/2,
             'gamma/2pi' : 1.}
-    
-zeem_par = {'field magnitude' : 0.,
-            'theta_z' : 0.,
-            'phi_z' : 0.}
     
 quad_par = {'coupling constant' : 2.,
             'asymmetry parameter' : 0.,
             'alpha_q' : 0.,
             'beta_q' : 0.,
             'gamma_q' : 0.}
+            
+spin, h_unperturbed, dm_0 = nuclear_system_setup(spin_par=spin_par, quad_par=quad_par, zeem_par=None, initial_state='canonical', temperature=1e-4)
 ```
-where we have set the spin quantum number to 3/2 and the coupling constant of the quadrupole interaction to 2 MHz.
+where we have set the coupling constant of the quadrupole interaction to 2 MHz.
 
-In such a configuration, the pulse set up before turns out to be in resonance with the new system as well, so can be left unaltered.
+In such a configuration, the pulse set up in the previous example turns to be in resonance with the new system as well, so that it can be left unaltered.
 
 The initial state is
 ![Pure_NQR - Initial_State](Figures_README/Pure_NQR_Initial_State.png)
@@ -322,7 +322,7 @@ The initial state is
 while the evolved one is  
 ![Pure_NQR - Evolved_State](Figures_README/Pure_NQR_Evolved_State.png)
 
-In this case, however, the resonant frequencies of the system are both 1 and -1 MHz, due to the characteristics of the pure quadrupolar energy spectrum, so both the rotating waves that compose the linearly polarized pulse are able to induce transitions. In order to visualize properly both the positive and negative resonance lines in the spectrum, the functions for the analysis of the FID must be run as follows:
+In this case, the frequencies of transition of the system have same modulus but opposite sign, namely 1 and -1 MHz. This means that both the rotating waves that make up the linearly polarized pulse are able to induce transitions. In order to visualize properly both the positive and negative resonance lines in the spectrum, the functions for the analysis of the FID must be run with the following parameters:
 ```
 f, ft, ft_n = fourier_transform_signal(t, fid, 0.5, 1.5, opposite_frequency=True)
 
