@@ -202,6 +202,18 @@ Below, the content and usage of these modules is reported briefly:
     
 ### Examples of execution
 
+Any simulation can be implemented using only the functions defined in the module Simulation. Therefore, the imports required by a generic simulation code are the following:
+```
+from Simulation import nuclear_system_setup, \
+                       evolve, \
+                       plot_real_part_density_matrix, \
+                       FID_signal, \
+                       plot_real_part_FID_signal, \
+                       fourier_transform_signal, \
+                       fourier_phase_shift, \
+                       plot_fourier_transform
+```
+
 #### Pure Zeeman experiment
 
 The simplest experiment one can simulate is the case of pure NMR, where a static magnetic field (conventionally directed along z) is applied to a nucleus where the quadrupolar interaction is negligible.
