@@ -11,7 +11,7 @@ from hypothesis import given, note
 from Operators import Operator, Density_Matrix, Observable, \
                       random_operator, random_density_matrix, random_observable
 
-from Many_Body import tensor_product_operator, partial_trace
+from Many_Body import partial_trace
 
 from Nuclear_Spin import Nuclear_Spin, Many_Spins
 
