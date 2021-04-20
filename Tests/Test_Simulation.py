@@ -297,12 +297,12 @@ def test_opposite_fourier_transform_when_FID_differ_of_pi():
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
     dm_evolved = evolve(spin, h_unperturbed, dm_0, \
-                        mode, pulse_time=1, \
+                        mode, pulse_time=math.pi, \
                         picture='IP', \
                         n_points=10)
     
-    t, signal1 = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=200, T2=50)
-    t, signal2 = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=200, T2=50, phi=math.pi)
+    t, signal1 = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=250, T2=100)
+    t, signal2 = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=250, T2=100, phi=math.pi)
     
     f, fourier1 = fourier_transform_signal(t, signal1, 7.5, 12.5)
     f, fourier2 = fourier_transform_signal(t, signal2, 7.5, 12.5)
@@ -336,17 +336,17 @@ def test_two_methods_phase_adjustment():
                         columns=['frequency', 'amplitude', 'phase', 'theta_p', 'phi_p'])
     
     dm_evolved = evolve(spin, h_unperturbed, dm_0, \
-                        mode, pulse_time=1, \
+                        mode, pulse_time=math.pi, \
                         picture='IP', \
                         n_points=10)
     
-    t, fid = FID_signal(spin, h_unperturbed, dm_evolved, T2=50, acquisition_time=200)
+    t, fid = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=500)
     f, fourier0 = fourier_transform_signal(t, fid, 9, 11)
             
     phi = fourier_phase_shift(f, fourier0, peak_frequency=10, int_domain_width=1)
     fourier1 = np.exp(1j*phi)*fourier0
             
-    t, fid_rephased = FID_signal(spin, h_unperturbed, dm_evolved, T2=50, acquisition_time=200, phi=phi)
+    t, fid_rephased = FID_signal(spin, h_unperturbed, dm_evolved, acquisition_time=500, phi=phi)
     f, fourier2 = fourier_transform_signal(t, fid_rephased, 9, 11)
         
     assert np.all(np.isclose(fourier1, fourier2, rtol=1e-10))
