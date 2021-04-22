@@ -206,6 +206,8 @@ Any simulation can be implemented using only the functions defined in the module
 ```
 from Simulation import nuclear_system_setup, \
                        evolve, \
+                       power_absorption_spectrum, \
+                       plot_power_absorption_spectrum, \
                        plot_real_part_density_matrix, \
                        FID_signal, \
                        plot_real_part_FID_signal, \
