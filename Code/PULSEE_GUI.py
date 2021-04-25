@@ -39,7 +39,7 @@ from kivy.uix.checkbox import CheckBox
 from kivy.uix.slider import Slider
 from kivy.uix.popup import Popup
 
-from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
+from kivy.garden.matplotlib import FigureCanvasKivyAgg
 
 # NMR-NQRSimulationSoftware imports
 from Operators import Operator, Density_Matrix, Observable
@@ -255,8 +255,9 @@ class System_Parameters(FloatLayout):
             sim_man.quad_par['beta_q'] = (float(null_string(self.beta_q.text))*math.pi)/180
             
             sim_man.quad_par['gamma_q'] = (float(null_string(self.gamma_q.text))*math.pi)/180
-                        
-            self.store_and_write_nu_q(sim_man)
+            
+            if not np.isclose(sim_man.spin_par['quantum number'], 1/2, rtol=1e-10):
+                self.store_and_write_nu_q(sim_man)
             
             sim_man.decoherence_time = float(null_string(self.decoherence.text))
             
@@ -267,20 +268,20 @@ class System_Parameters(FloatLayout):
             if sim_man.canonical_dm_0:
                 sim_man.spin, sim_man.h_unperturbed, sim_man.dm[0] = \
                 nuclear_system_setup(sim_man.spin_par, \
-                                     sim_man.zeem_par, \
                                      sim_man.quad_par, \
+                                     sim_man.zeem_par, \
                                      initial_state='canonical', \
                                      temperature=sim_man.temperature)
             
-            else:            
+            else:
                 for i in range(self.d):
                     for j in range(self.d):
                         self.manual_dm_elements[i, j] = complex(null_string(self.dm_elements[i, j].text))
-            
+                        
                 sim_man.spin, sim_man.h_unperturbed, sim_man.dm[0] = \
                 nuclear_system_setup(sim_man.spin_par, \
-                                     sim_man.zeem_par, \
                                      sim_man.quad_par, \
+                                     sim_man.zeem_par, \
                                      initial_state=self.manual_dm_elements, \
                                      temperature=300)
                         
@@ -1574,7 +1575,7 @@ class Panels(TabbedPanel):
 
 
 # Class of the application and main class of the program
-class PulseBit(App):
+class PULSEE(App):
     
     sim_man = Simulation_Manager()
     
@@ -1582,4 +1583,4 @@ class PulseBit(App):
                 
         return Panels(size=(500, 500), do_default_tab=False, tab_pos='top_mid', sim_man=self.sim_man)
     
-PulseBit().run()
+PULSEE().run()
