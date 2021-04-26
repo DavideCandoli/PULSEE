@@ -75,6 +75,8 @@ The GUI has been implemented with the tools provided by the Python library `kivy
 
 In order to run the GUI, it is required the additional installation of the module `kivy.garden` and `garden.matplotlib.backend_kivy`.
 
+**Remark:** The package `garden.matplotlib.backend_kivy` is only compatible with `matplotlib` 3.1 or older.
+
 `kivy.garden` -> https://kivy.org/doc/stable/api-kivy.garden.html
 
 `garden.matplotlib.backend_kivy` -> https://github.com/kivy-garden/garden.matplotlib/blob/master/backend_kivy.py
