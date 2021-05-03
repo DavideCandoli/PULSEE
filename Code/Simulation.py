@@ -504,7 +504,7 @@ def plot_real_part_density_matrix(dm, many_spin_indexing = None, show=True, save
 
     Action
     ------
-    If show=True, draws a histogram on a 2-dimensional grid representing the density matrix, with the real part of each element indicated along the z axis. Blue bars indicate the positive matrix elements, red bars the negative ones.
+    If show=True, draws a histogram on a 2-dimensional grid representing the density matrix, with the real part of each element indicated along the z axis. Blue bars indicate the positive matrix elements, red bars indicate the negative elements in absolute value.
 
     Returns
     -------
