@@ -7,6 +7,7 @@ import matplotlib.pylab as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.pyplot import xticks, yticks
 from matplotlib.axes import Axes
+from matplotlib.patches import Patch
 
 from Operators import Operator, Density_Matrix, Observable, \
                       magnus_expansion_1st_term, \
@@ -312,7 +313,7 @@ def plot_power_absorption_spectrum(frequencies, intensities, show=True, save=Fal
     if save: plt.savefig(destination + name)
     
     if show: plt.show()
-        
+    
     return fig
 
 
@@ -503,7 +504,7 @@ def plot_real_part_density_matrix(dm, many_spin_indexing = None, show=True, save
 
     Action
     ------
-    If show=True, draws a histogram on a 2-dimensional grid representing the density matrix, with the real part of each element indicated along the z axis.
+    If show=True, draws a histogram on a 2-dimensional grid representing the density matrix, with the real part of each element indicated along the z axis. Blue bars indicate the positive matrix elements, red bars the negative ones.
 
     Returns
     -------
@@ -532,10 +533,19 @@ def plot_real_part_density_matrix(dm, many_spin_indexing = None, show=True, save
     x_data = x_data.flatten()
     y_data = y_data.flatten()
     z_data = data_array.flatten()
+        
+    bar_color = np.zeros(len(z_data), dtype=object)
+        
+    for i in range(len(z_data)):
+        if z_data[i]<-1e-10:
+            bar_color[i] = 'tab:red'
+        else:
+            bar_color[i] = 'tab:blue'
+                            
     ax.bar3d(x_data,
              y_data,
              np.zeros(len(z_data)),
-             dx, dy, z_data)
+             dx, dy, np.absolute(z_data), color=bar_color)
     
     d = data_array.shape[0]
     tick_label = []
@@ -576,6 +586,12 @@ def plot_real_part_density_matrix(dm, many_spin_indexing = None, show=True, save
     yticks(np.arange(start=0.5, stop=data_array.shape[0]+0.5), tick_label)
     
     ax.set_zlabel("Re(\N{GREEK SMALL LETTER RHO})")
+    
+    
+    legend_elements = [Patch(facecolor='tab:blue', label='<m|\N{GREEK SMALL LETTER RHO}|m> > 0'), \
+                       Patch(facecolor='tab:red', label='<m|\N{GREEK SMALL LETTER RHO}|m> < 0')]
+    
+    ax.legend(handles=legend_elements, loc='upper left')
     
     if save:
         plt.savefig(destination + name)
