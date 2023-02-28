@@ -2,6 +2,9 @@
 
 ## Author: Davide Candoli (Università di Bologna)
 
+###IMPORTANT
+This branch is no longer developed. The actively developed branch is https://github.com/vemiBGH/PULSEE.
+
 PULSEE is an open-source software for the simulation of typical nuclear quadrupole/magnetic resonance experiments on a solid-state sample, describing the dynamics of nuclear spins in condensed matter under the effect of external magnetic fields and reproducing the traditional results observed in laboratory.
 
 * [Physics background](#physics-background)
